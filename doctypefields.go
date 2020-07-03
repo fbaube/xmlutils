@@ -2,6 +2,7 @@ package xmlmodels
 
 import (
 	"fmt"
+	"errors"
 	S "strings"
 	SU "github.com/fbaube/stringutils"
 )
@@ -27,54 +28,58 @@ var knownRootTags = []string{"html", "map", "topic", "task", "concept", "referen
 // }
 
 // XmlDoctype is a parse of a complete DOCTYPE declaration.
-// For [Lw]DITA, what interests us is
-// PUBLIC "-//OASIS//DTD (PublicTextDesc)//EN" or sometimes
-// PUBLIC "-//OASIS//ELEMENTS (PublicTextDesc)//EN" and
-// maybe followed by SYSTEM...
+// For [Lw]DITA, what interests us is something like
+//  PUBLIC "-//OASIS//DTD (PublicTextDesc)//EN" or sometimes
+//  PUBLIC "-//OASIS//ELEMENTS (PublicTextDesc)//EN" and
+//  maybe followed by SYSTEM...
+//
+// The structure of a DOCTYPE is like so:
 //  * PUBLIC | SYSTEM = Availability
-//  * - = Reg'n = Org'zn & DTD are not reg'd with ISO.
-//  * OASIS = Org'zn
+//  * - = Registration = Organization & DTD are not registeredd with ISO.
+//  * OASIS = Organization
 //  * DTD = Public Text Class (CAPACITY | CHARSET | DOCUMENT |
-//    DTD | ELEMENTS | ENTITIES | LPD | NONSGML | NOTATION |
-//    SHORTREF | SUBDOC | SYNTAX | TEXT )
+//      DTD | ELEMENTS | ENTITIES | LPD | NONSGML | NOTATION |
+//      SHORTREF | SUBDOC | SYNTAX | TEXT )
 //  * (*) = Public Text Description, incl. any version number
 //  * EN = Public Text Language
 //  * URL = optional, explicit
 //
-// We don't include the RAW Doctype here cos this field can
-// be nil but the Doctype string needs to be in the DB as a
-// separate column, even if it is empty.
+// We don't include the raw DOCTYPE here because this structure can be optional
+// but we still need to have the Doctype string in the DB as a separate column,
+// even if it is empty (i.e. "").
 //
 type XmlDoctypeFields struct {
-	Availability string // "PUBLIC" or "SYSTEM"
-	FPIfields
-	XmlPublicIDcatalogRecord
-	// TopTag is the tag declared in the DOCTYPE
+	// PIDSIDcatalogFileRecord is the PID + SID.
+	PIDSIDcatalogFileRecord
+	// TopTag is the tag declared in the DOCTYPE, which
+	// should match the root tag in the text of the file.
 	TopTag string
-	// MType is here because a DOCTYPE does indeed let us create one.
+	// MType is here because a DOCTYPE does indeed give
+	// us enough information to create one.
 	DoctypeMType string
 }
 
 // NewXmlDoctypeFieldsInclMType parses an XML DOCTYPE declaration.
-// (However it does not process internal DTD subsets.)
+// (Note that it does not however process internal DTD subsets.)
+// Valid input forms:
 //
-//  <!DOCTYPE topic PUBLIC "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN">
+//  <!DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN">
 //  <!DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" "./foo.dtd">
 //  <!DOCTYPE topic SYSTEM "./foo.dtd">
-//    DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (etc. etc.)
-//            topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (etc. etc.)
-//                  PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (etc. etc.)
+//    DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
+//            topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
+//                  PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
 //
 // It should also work on a DOCTYPE reference plucked out of a DTD file,
 // one that tells the user what DOCTYPE declaration will reference the DTD.
-// In other words, the XML Catalog reference. Therefore, let this function
-// parse a string that begins as minimally as a PUBLIC or SYSTEM (see the
-// last example above), and maybe don't worry about how the string ends.
+// In other words, the XML Catalog reference. Therefore, this function should
+// parse an input string that begins as minimally as a PUBLIC or SYSTEM (see
+// the last example above), and maybe don't worry about how the input string ends.
 //
-// Target strings of great interest:
+// Some input strings of great interest:
 //  DOCTYPE topic PUBLIC "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN"
 //  DOCTYPE map   PUBLIC "-//OASIS//DTD LIGHTWEIGHT DITA Map//EN"
-//  DOCTYPE html     (i.e. HTML5)
+//  DOCTYPE html       (i.e. HTML5)
 //  DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" (MAYBE!)
 //
 func NewXmlDoctypeFieldsInclMType(s string) (*XmlDoctypeFields, error) {
@@ -118,13 +123,14 @@ func NewXmlDoctypeFieldsInclMType(s string) (*XmlDoctypeFields, error) {
 	unk, _ = SU.SplitOffFirstWord(s)
 	if unk != "PUBLIC" && unk != "SYSTEM" {
 		if !SU.IsInSliceIgnoreCase(unk, knownRootTags) {
-			return nil, fmt.Errorf("<%s>: Unrecognized DOCTYPE root element or " +
-				"bad DOCTYPE availability (neither PUBLIC nor SYSTEM)", unk)
+			return nil, errors.New("Unrecognized DOCTYPE root element or " +
+				"bad DOCTYPE availability (neither PUBLIC nor SYSTEM): " + unk)
 		}
 		pDTF.TopTag, s = SU.SplitOffFirstWord(s)
 	}
-	pDTF.Availability, s = SU.SplitOffFirstWord(s)
-	if pDTF.Availability != "PUBLIC" && pDTF.Availability != "SYSTEM" {
+	var PubOrSys string
+	PubOrSys, s = SU.SplitOffFirstWord(s)
+	if PubOrSys != "PUBLIC" && PubOrSys != "SYSTEM" {
 		panic("Lost the PUBLIC/SYSTEM")
 		// return nil, fmt.Errorf("Bad DOCTYPE availability<" +
 		// 	p.Availability + "> (neither PUBLIC nor SYSTEM)")
@@ -160,23 +166,28 @@ func NewXmlDoctypeFieldsInclMType(s string) (*XmlDoctypeFields, error) {
 		}
 		qtd2 = SU.MustXmlUnquote(qtd2)
 	}
-	if pDTF.Availability == "SYSTEM" {
-		if qtd2 != "" {
-			return pDTF, fmt.Errorf("xm.dtflds.SecondSYSTEMargument<%s>", qtd2)
-		}
-		pDTF.XmlSystemID = XmlSystemID(qtd1)
-	} else if pDTF.Availability == "PUBLIC" {
-		ppid, e := NewXmlPublicIDcatalogRecord(qtd1)
-		if e != nil {
-			return nil, fmt.Errorf("xm.dtflds.NewXmlPublicID<%s>: %w", qtd1, e)
-		}
-		pDTF.XmlPublicIDcatalogRecord = *ppid
-		pDTF.XmlSystemID = XmlSystemID(qtd2)
-	} else {
-		panic("Unkwnown availability: " + pDTF.Availability)
-	}
 
-	sd := pDTF.XmlPublicIDcatalogRecord.FPIfields.PublicTextClass
+	// If both qtd1 and qtd2 are set then they must be FPI and URI.
+	// If only qtd1 is set, it can be either FPI (PUBLIC) or URI (SYSTEM).
+	var pPidSid *PIDSIDcatalogFileRecord
+
+	if PubOrSys == "SYSTEM" {
+		if qtd2 != "" {
+			return pDTF, fmt.Errorf("xm.dtflds.SecondArgumentForSYSTEM: %s", qtd2)
+		}
+		pPidSid, e = NewPIDSIDcatalogFileRecord("", qtd1)
+		// pDTF.PIDSIDcatalogFileRecord =
+	} else if PubOrSys == "PUBLIC" {
+		pPidSid, e = NewPIDSIDcatalogFileRecord(qtd1, qtd2)
+		if e != nil {
+			return nil, fmt.Errorf("xm.dtflds.NewXmlPublicID<%s|%s>: %w", qtd1, qtd2, e)
+		}
+	} else {
+		panic("Unkwnown availability: " + PubOrSys)
+	}
+	pDTF.PIDSIDcatalogFileRecord = *pPidSid
+
+	sd := pDTF.PIDSIDcatalogFileRecord.PIDFPIfields.PublicTextClass
 	if sd == "" {
 		return pDTF, nil
 	}
@@ -201,11 +212,13 @@ func (xdf XmlDoctypeFields) String() string {
 	if "" == xdf.TopTag {
 		panic("xdf.TopTag")
 	}
+	var dtmt = "[no MType determined]"
+	if xdf.DoctypeMType != "" { dtmt = xdf.DoctypeMType }
 	// "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN" "lw-topic.dtd"
-	return fmt.Sprintf("(%s,%s,%s) %s", xdf.Availability, xdf.TopTag,
-		xdf.DoctypeMType, xdf.XmlPublicIDcatalogRecord)
+	return fmt.Sprintf("(%s,%s)rec|%s|",
+		xdf.TopTag, dtmt, xdf.PIDSIDcatalogFileRecord.DString())
 }
 
 func (xdf XmlDoctypeFields) DString() string {
-	return fmt.Sprintf("xm.xdf.DS: %+v", xdf)
+	return xdf.String() // fmt.Sprintf("xm.xdf.DS: %+v", xdf)
 }

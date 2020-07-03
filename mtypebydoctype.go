@@ -4,12 +4,15 @@ import (
 	S "strings"
 )
 
+// DoctypeMType maps a DOCTYPE string to an MType string and a bool, Is it LwDITA?
 type DoctypeMType struct {
-	toMatch  string
-	mtype    string
-	isLwDITA bool
+	ToMatch  string
+	MType    string
+	IsLwDITA bool
 }
 
+// DTMTmap maps DOCTYPEs to MTypes (and: Is it LwDITA ?). This list
+// should suffice for all ordinary XML files (except of course Docbook).
 var DTMTmap = []DoctypeMType {
 	   // This will require special handling
    { "html", "html/cnt/html5", false },
@@ -38,13 +41,13 @@ var DTMTmap = []DoctypeMType {
 	{ "//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//", "html/cnt/blarg", false },
 }
 
-// GetMTypeByDoctype returns MType "" if no match. 
+// GetMTypeByDoctype returns MType "" if no match.
 func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool) {
 	if dt == "<!DOCTYPE html>" {
 		return "html/cont/html", false
 	}
 	for _,p := range DTMTmap {
-		if S.Contains(dt, p.toMatch) { return p.mtype, p.isLwDITA }
+		if S.Contains(dt, p.ToMatch) { return p.MType, p.IsLwDITA }
 	}
 	return "", false
 }

@@ -7,13 +7,13 @@ package xmlmodels
 // NS_XML is the XML namespace.
 var NS_XML = "http://www.w3.org/XML/1998/namespace"
 
-// NS_XML is the OASIS namespace for XML catalogs.
+// NS_OASIS_XML_CATALOG is the OASIS namespace for XML catalogs.
 var NS_OASIS_XML_CATALOG = "urn:oasis:names:tc:entity:xmlns:xml:catalog:"
 
 // WARNING: Go has lotsa XML namespace problems:
 // https://github.com/golang/go/issues/13400#issuecomment-162459219
 
-// XML_NS_Recognized is recognized values in the XML namespace.
+// XML_NS_Recognized is recognized values in the "xml:" namespace.
 var XML_NS_Recognized = []string{
 	// `lang` identifies the human language used in the
 	// scope of the element to which it's attached.

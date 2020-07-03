@@ -7,7 +7,8 @@ import (
 	S "strings"
 )
 
-// Peek_xml takes a string.
+// Peek_xml takes a string and does the bare minimum to find XML preamble,
+// DOCTYPE, root element, and whether DTD stuff was encountered. 
 func Peek_xml(content string) (preamble string, doctype string, rootTag xml.StartElement, gotDTDstuff bool, err error) {
 	var e error
 	var s string

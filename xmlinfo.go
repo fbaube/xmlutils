@@ -6,6 +6,7 @@ import (
 
 // STD_PREAMBLE is "<?xml version="1.0" encoding="UTF-8"?>" + "\n"
 var STD_PREAMBLE string = xml.Header
+// STD_PreambleFields is our parse of variable "STD_PREAMBLE".
 var STD_PreambleFields XmlPreambleFields
 
 func init() {
@@ -21,6 +22,7 @@ type XmlInfo struct {
 	// Defaults to xmlmodels.STD_PreambleFields
  	XmlPreambleFields
 	XmlDoctype
+	// XmlDoctypeFields is a ptr - nil if there is no DOCTYPE declaration.
  *XmlDoctypeFields
 
  	// TagDefCt is for DTD-type files (.dtd, .mod, .ent)
@@ -44,10 +46,12 @@ type XmlInfo struct {
 	// TODO Maybe also add maps for NOTs (Notations)
 }
 
+// XmlContype categorizes the XML file. See variable "XmlContypes".
 type XmlContype string
+// XmlDoctype is just a DOCTYPE string, for example: <!DOCTYPE html>
 type XmlDoctype string
 
-// XmlContypes, maybe DTDmod should be DTDelms.
+// XmlContypes note: maybe DTDmod should be DTDelms.
 var XmlContypes = []XmlContype{"Unknown", "DTD", "DTDmod", "DTDent",
 	"RootTagData", "RootTagMixedContent", "MultipleRootTags", "INVALID"}
 

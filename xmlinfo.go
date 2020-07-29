@@ -1,35 +1,18 @@
 package xmlmodels
 
-import (
-	"encoding/xml"
-)
-
-// STD_PREAMBLE is "<?xml version="1.0" encoding="UTF-8"?>" + "\n"
-var STD_PREAMBLE string = xml.Header
-// STD_PreambleFields is our parse of variable "STD_PREAMBLE".
-var STD_PreambleFields XmlPreambleFields
-
-func init() {
-	pf, e := NewXmlPreambleFields(STD_PREAMBLE)
-	if e != nil {
-		panic("xm.xmlinfo.stdpreamble: " + e.Error())
-	}
-	STD_PreambleFields = *pf
-}
-
 type XmlInfo struct {
 	XmlContype
 	// Defaults to xmlmodels.STD_PreambleFields
- 	XmlPreambleFields
+	XmlPreambleFields
 	XmlDoctype
 	// XmlDoctypeFields is a ptr - nil if there is no DOCTYPE declaration.
- *XmlDoctypeFields
+	*XmlDoctypeFields
 
- 	// TagDefCt is for DTD-type files (.dtd, .mod, .ent)
- 	// // TagDefCt int // Nr of <!ELEMENT ...>
- 	// RootTagIndex int  // Or some sort of pointer into the tree.
- 	// RootTagCt is >1 means mark the content as a Fragment.
- 	// // RootTagCt int
+	// TagDefCt is for DTD-type files (.dtd, .mod, .ent)
+	// // TagDefCt int // Nr of <!ELEMENT ...>
+	// RootTagIndex int  // Or some sort of pointer into the tree.
+	// RootTagCt is >1 means mark the content as a Fragment.
+	// // RootTagCt int
 
 	// (Obs.cmt) XML items are
 	//  - (DOCS) IDs & IDREFs
@@ -48,6 +31,7 @@ type XmlInfo struct {
 
 // XmlContype categorizes the XML file. See variable "XmlContypes".
 type XmlContype string
+
 // XmlDoctype is just a DOCTYPE string, for example: <!DOCTYPE html>
 type XmlDoctype string
 

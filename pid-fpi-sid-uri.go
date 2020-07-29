@@ -4,15 +4,14 @@ import (
 	"encoding/xml"
 	"fmt"
 	S "strings"
+
 	// FU "github.com/fbaube/fileutils"
 	SU "github.com/fbaube/stringutils"
 )
 
-// DTDtypeFileExtensions are for content guessing.
-var DTDtypeFileExtensions = []string{".dtd", ".mod", ".ent"}
-
 // XmlPublicID = PID = Public ID = FPI = Formal Public Identifier
 type XmlPublicID string
+
 // XmlSystemID = SID = System ID = URI (Universal Resource Identifier)
 // (can be a filepath or an HTTP address)
 type XmlSystemID string
@@ -40,7 +39,7 @@ type PIDFPIfields struct {
 func (p PIDFPIfields) String() string {
 	return fmt.Sprintf("%s,%s,%s,%s,%s",
 		p.Registration, SU.Yn(p.IsOasis), p.Organization,
-			p.PublicTextClass, p.PublicTextDesc)
+		p.PublicTextClass, p.PublicTextDesc)
 }
 
 // PIDSIDcatalogFileRecord representa a line item from a parsed XML catalog file.
@@ -48,9 +47,9 @@ func (p PIDFPIfields) String() string {
 // struct is also used to record the PID and/or SID of a DOCTYPE declaration.
 type PIDSIDcatalogFileRecord struct {
 	// XMLName probably does not ever need to be printed.
-	XMLName  xml.Name `xml:"public"`
+	XMLName xml.Name `xml:"public"`
 	// XmlPublicID (PID) (FPI) is the DOCTYPE string
-	XmlPublicID `xml:"publicId,attr"`
+	XmlPublicID  `xml:"publicId,attr"`
 	PIDFPIfields // PublicID
 	// XmlSystemID is the path to the file. Tipicly a relative filepath.
 	XmlSystemID `xml:"uri,attr"`
@@ -58,7 +57,7 @@ type PIDSIDcatalogFileRecord struct {
 	// Note that we must use a string in order to avoid an import cycle.
 	AbsFilePath string // FU.AbsFilePath
 	HttpPath    string
-	Err error // in case an entry barfs
+	Err         error // in case an entry barfs
 	// DoctypeIdentifierFields
 }
 
@@ -76,33 +75,37 @@ func NewPIDSIDcatalogFileRecord(pid string, sid string) (*PIDSIDcatalogFileRecor
 	if pid == "" && sid == "" {
 		return nil, nil
 	}
-	if SU.IsXmlQuoted(pid) { pid = SU.MustXmlUnquote(pid) }
-	if SU.IsXmlQuoted(sid) { sid = SU.MustXmlUnquote(sid) }
+	if SU.IsXmlQuoted(pid) {
+		pid = SU.MustXmlUnquote(pid)
+	}
+	if SU.IsXmlQuoted(sid) {
+		sid = SU.MustXmlUnquote(sid)
+	}
 	p := new(PIDSIDcatalogFileRecord)
 
 	if pid != "" {
-	   // -//OASIS//DTD LIGHTWEIGHT DITA Topic//EN
-	   var ss []string
-	   ss = S.Split(pid, "/")
-		 // fmt.Printf("(DD) (%d) %#v \n", len(ss), ss)
-		 ss = SU.DeleteEmptyStrings(ss)
-		 // {"-", "OASIS", "DTD LIGHTWEIGHT DITA Topic", "EN"}
-		 // fmt.Printf("(DD) (%d) %#v \n", len(ss), ss)
-		 if len(ss) != 4 || ss[0] != "-" || ss[3] != "EN" {
-			 return nil, fmt.Errorf("Malformed Public ID: " + pid)
-		 }
-	 	 p.XmlPublicID  = XmlPublicID(pid)
-		 p.Registration = ss[0]
-		 p.Organization = ss[1]
-		 p.IsOasis = ("OASIS" == p.Organization)
-		 p.PublicTextClass, p.PublicTextDesc = SU.SplitOffFirstWord(ss[2])
-		 // ilog.Printf("PubID|%s|%s|%s|\n", p.Organization, p.PTClass, p.PTDesc)
-		 // fmt.Printf("(DD:pPID) PubID<%s|%s|%s>\n", p.Organization, p.PTClass, p.PTDesc)
-	 }
-	 if sid != "" {
-		 p.XmlSystemID = XmlSystemID(sid)
-	 }
-		 return p, nil
+		// -//OASIS//DTD LIGHTWEIGHT DITA Topic//EN
+		var ss []string
+		ss = S.Split(pid, "/")
+		// fmt.Printf("(DD) (%d) %#v \n", len(ss), ss)
+		ss = SU.DeleteEmptyStrings(ss)
+		// {"-", "OASIS", "DTD LIGHTWEIGHT DITA Topic", "EN"}
+		// fmt.Printf("(DD) (%d) %#v \n", len(ss), ss)
+		if len(ss) != 4 || ss[0] != "-" || ss[3] != "EN" {
+			return nil, fmt.Errorf("Malformed Public ID: " + pid)
+		}
+		p.XmlPublicID = XmlPublicID(pid)
+		p.Registration = ss[0]
+		p.Organization = ss[1]
+		p.IsOasis = ("OASIS" == p.Organization)
+		p.PublicTextClass, p.PublicTextDesc = SU.SplitOffFirstWord(ss[2])
+		// ilog.Printf("PubID|%s|%s|%s|\n", p.Organization, p.PTClass, p.PTDesc)
+		// fmt.Printf("(DD:pPID) PubID<%s|%s|%s>\n", p.Organization, p.PTClass, p.PTDesc)
+	}
+	if sid != "" {
+		p.XmlSystemID = XmlSystemID(sid)
+	}
+	return p, nil
 }
 
 // Echo returns the public ID _unquoted_.

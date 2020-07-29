@@ -2,7 +2,23 @@ package xmlmodels
 
 // This file: About the "xml" namespace
 
-// TODO NS is specified, inherited, default
+// TODO NS is specified, inherited, default.
+
+// NS is e.g. { "xml", "http://www.w3.org/XML/1998/namespace" }
+type NS struct {
+	// Prefix is the shorthand version.
+	Prefix string
+	// URI is the full version.
+	URI string
+}
+
+// One of these has to be filled in for the NS declarations at the top of a
+// content file. Also this can describe the NS state at any point in parsing
+// or traversing a content tree.
+type NSsnapshot struct {
+	Default NS
+	Others  []NS
+}
 
 // NS_XML is the XML namespace.
 var NS_XML = "http://www.w3.org/XML/1998/namespace"

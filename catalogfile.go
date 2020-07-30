@@ -38,7 +38,7 @@ func (p *XmlCatalogFile) GetByPublicID(s string) *PIDSIDcatalogFileRecord {
 // NewXmlCatalogFile is a convenience function that reads in the
 // file and then processes the file contents. It is not clear what the
 // constraints on the path are (but a relative path should work okay).
-func NewXmlCatalogFile_noGT(fpath string) (pXC *XmlCatalogFile, err error) {
+func NewXmlCatalogFile(fpath string) (pXC *XmlCatalogFile, err error) {
 	if fpath == "" {
 		return nil, nil
 	}
@@ -69,7 +69,7 @@ func NewXmlCatalogFile_noGT(fpath string) (pXC *XmlCatalogFile, err error) {
 
 	for _, GT := range pubEntries {
 		// println("  CAT-ENTRY:", GT.Echo()) // entry.GAttList.Echo())
-		pID, e := NewSIDPIDcatalogRecordfromGToken_noGT(GT)
+		pID, e := NewSIDPIDcatalogRecordfromStartElm(GT)
 		// NOTE Gotta fix the filepath
 		// // ## pID.AbsFilePath = // FU.AbsFilePath(
 		// // ## 	FU.AbsWRT(string(pID.AbsFilePath), FP.Dir(string(fpath))) // )
@@ -102,7 +102,7 @@ func NewXmlCatalogFile_noGT(fpath string) (pXC *XmlCatalogFile, err error) {
 	return pXC, nil
 }
 
-func NewSIDPIDcatalogRecordfromGToken_noGT(se xml.StartElement) (pID *PIDSIDcatalogFileRecord, err error) {
+func NewSIDPIDcatalogRecordfromStartElm(se xml.StartElement) (pID *PIDSIDcatalogFileRecord, err error) {
 	if se.Name.Local == "" {
 		return nil, nil
 	}

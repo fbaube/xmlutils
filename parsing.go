@@ -14,6 +14,7 @@ type ConcreteParseResults_xml struct {
 	NodeList   []xml.Token
 	NodeDepths []int
 	CPR_raw    string
+	DumpDest   io.Writer
 }
 
 func GetConcreteParseResults_xml(s string) (*ConcreteParseResults_xml, error) {

@@ -2,8 +2,8 @@ package xmlmodels
 
 type XmlInfo struct {
 	XmlContype
-	// Defaults to xmlmodels.STD_PreambleFields
-	XmlPreambleFields
+	// nil if no preamble - defaults to xmlmodels.STD_PreambleFields
+	*XmlPreambleFields
 	XmlDoctype
 	// XmlDoctypeFields is a ptr - nil if there is no DOCTYPE declaration.
 	*XmlDoctypeFields

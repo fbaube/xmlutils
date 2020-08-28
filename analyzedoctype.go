@@ -159,19 +159,6 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 	// We don't include the raw DOCTYPE here because this structure can be optional
 	// but we still need to have the Doctype string in the DB as a separate column,
 	// even if it is empty (i.e. "").
-	//
-	/*
-	   type XmlDoctypeFields struct {
-	   	// PIDSIDcatalogFileRecord is the PID + SID.
-	   	PIDSIDcatalogFileRecord
-	   	// TopTag is the tag declared in the DOCTYPE, which
-	   	// should match the root tag in the text of the file.
-	   	TopTag string
-	   	// MType is here because a DOCTYPE does indeed give
-	   	// us enough information to create one.
-	   	DoctypeMType string
-	   }
-	*/
 
 	// NewXmlDoctypeFieldsInclMType parses an XML DOCTYPE declaration.
 	// (Note that it does not however process internal DTD subsets.)

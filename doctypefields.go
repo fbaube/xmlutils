@@ -2,15 +2,12 @@ package xmlmodels
 
 import (
 	"fmt"
-	"errors"
-	S "strings"
-	SU "github.com/fbaube/stringutils"
 )
 
 // This file contains LwDITA-specific stuff, but it is hard-coded
 // and does not pull in other packages, so we leave it alone for now.
 
-var knownRootTags = []string{"html", "map", "topic", "task", "concept", "reference"}
+// var knownRootTags = []string{"html", "map", "topic", "task", "concept", "reference"}
 
 // Copied from mcfile.go:
 // [0] XML, BIN, TXT, MD
@@ -48,7 +45,7 @@ var knownRootTags = []string{"html", "map", "topic", "task", "concept", "referen
 // but we still need to have the Doctype string in the DB as a separate column,
 // even if it is empty (i.e. "").
 //
-type XmlDoctypeFields struct {
+type DoctypeFields struct {
 	// PIDSIDcatalogFileRecord is the PID + SID.
 	PIDSIDcatalogFileRecord
 	// TopTag is the tag declared in the DOCTYPE, which
@@ -56,7 +53,9 @@ type XmlDoctypeFields struct {
 	TopTag string
 	// MType is here because a DOCTYPE does indeed give
 	// us enough information to create one.
-	DoctypeMType string
+	// DoctypeMType string
+	Contyping
+	error
 }
 
 // NewXmlDoctypeFieldsInclMType parses an XML DOCTYPE declaration.
@@ -82,6 +81,7 @@ type XmlDoctypeFields struct {
 //  DOCTYPE html       (i.e. HTML5)
 //  DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" (MAYBE!)
 //
+/*
 func NewXmlDoctypeFieldsInclMType(s string) (*XmlDoctypeFields, error) {
 
 	if s == "" {
@@ -194,31 +194,61 @@ func NewXmlDoctypeFieldsInclMType(s string) (*XmlDoctypeFields, error) {
 	// Now let's set the MType using some intelligent guesses,
 	// to compare to the results of GetMTypeByDocType(..)
 	if S.Contains(sd, "DITA") {
-		 pDTF.DoctypeMType = "dita/[TBS]/" + pDTF.TopTag
+		pDTF.DoctypeMType = "dita/[TBS]/" + pDTF.TopTag
 	}
 	if S.Contains(sd, "XDITA") ||
-		 S.Contains(sd, "LW DITA") ||
-		 S.Contains(sd, "LIGHTWEIGHT DITA") {
-		 pDTF.DoctypeMType = "lwdita/xdita/" + pDTF.TopTag
+		S.Contains(sd, "LW DITA") ||
+		S.Contains(sd, "LIGHTWEIGHT DITA") {
+		pDTF.DoctypeMType = "lwdita/xdita/" + pDTF.TopTag
 	}
 	return pDTF, nil
 }
+*/
 
-func (xdf XmlDoctypeFields) Echo() string {
+func (xdf DoctypeFields) Echo() string {
 	return "OOPS:TBS"
-	} // xd.raw + "\n" }
+} // xd.raw + "\n" }
 
-func (xdf XmlDoctypeFields) String() string {
-	if "" == xdf.TopTag {
-		panic("xdf.TopTag")
+func (xdf DoctypeFields) String() string {
+	TT := xdf.TopTag
+	if "" == TT {
+		TT = "(no rootElm)"
 	}
 	var dtmt = "[no MType determined]"
-	if xdf.DoctypeMType != "" { dtmt = xdf.DoctypeMType }
+	if xdf.MType != "" {
+		dtmt = xdf.MType
+	}
 	// "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN" "lw-topic.dtd"
-	return fmt.Sprintf("(%s,%s)rec|%s|",
-		xdf.TopTag, dtmt, xdf.PIDSIDcatalogFileRecord.DString())
+	return fmt.Sprintf("rootElm:%s,MType:%s,PIDSIDrec <|> %s <|>",
+		TT, dtmt, xdf.PIDSIDcatalogFileRecord.DString())
 }
 
-func (xdf XmlDoctypeFields) DString() string {
+func (xdf DoctypeFields) DString() string {
 	return xdf.String() // fmt.Sprintf("xm.xdf.DS: %+v", xdf)
+}
+
+// === Implement interface Errable
+
+func (p *DoctypeFields) HasError() bool {
+	return p.error != nil && p.error.Error() != ""
+}
+
+// GetError is necessary cos "Error()"" dusnt tell you whether "error"
+// is "nil", which is the indication of no error. Therefore we need
+// this function, which can actually return the telltale "nil".
+func (p *DoctypeFields) GetError() error {
+	return p.error
+}
+
+// Error satisfies interface "error", but the
+// weird thing is that "error" can be nil.
+func (p *DoctypeFields) Error() string {
+	if p.error != nil {
+		return p.error.Error()
+	}
+	return ""
+}
+
+func (p *DoctypeFields) SetError(e error) {
+	p.error = e
 }

@@ -11,10 +11,8 @@ import (
 
 type ConcreteParseResults_xml struct {
 	// ParseTree ??
-	NodeList   []xml.Token
-	NodeDepths []int
-	CPR_raw    string
-	DumpDest   io.Writer
+	NodeList []xml.Token
+	CommonCPR
 }
 
 func GetConcreteParseResults_xml(s string) (*ConcreteParseResults_xml, error) {
@@ -25,6 +23,7 @@ func GetConcreteParseResults_xml(s string) (*ConcreteParseResults_xml, error) {
 		return nil, fmt.Errorf("pu.xml.parseResults: %w", e)
 	}
 	p := new(ConcreteParseResults_xml)
+	p.CommonCPR = *NewCommonCPR()
 	p.NodeList = nl
 	p.CPR_raw = s
 	return p, nil

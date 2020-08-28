@@ -6,7 +6,7 @@ type XmlInfo struct {
 	*XmlPreambleFields
 	XmlDoctype
 	// XmlDoctypeFields is a ptr - nil if there is no DOCTYPE declaration.
-	*XmlDoctypeFields
+	*DoctypeFields
 
 	// TagDefCt is for DTD-type files (.dtd, .mod, .ent)
 	// // TagDefCt int // Nr of <!ELEMENT ...>

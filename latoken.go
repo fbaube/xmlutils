@@ -12,7 +12,7 @@ type FilePosition struct {
 }
 
 func (fp FilePosition) String() string {
-	return fmt.Sprintf("L%02dc%02d:%03d", fp.Lnr, fp.Col, fp.Pos)
+	return fmt.Sprintf("L%02dc%02d", fp.Lnr, fp.Col)
 }
 
 // LAToken is a location-aware token.

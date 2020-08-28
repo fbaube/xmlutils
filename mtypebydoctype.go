@@ -1,9 +1,6 @@
 package xmlmodels
 
-import (
-	S "strings"
-)
-
+/*
 // DoctypeMType maps a DOCTYPE string to an MType string and a bool, Is it LwDITA?
 type DoctypeMType struct {
 	ToMatch  string
@@ -53,3 +50,4 @@ func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool) {
 	}
 	return "", false
 }
+*/

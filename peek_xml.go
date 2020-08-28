@@ -4,21 +4,29 @@ import (
 	"encoding/xml"
 	"fmt"
 	S "strings"
+
+	SU "github.com/fbaube/stringutils"
 )
 
-type XmlStructure struct {
+// XmlStructurePeek is created by FU.AnalyseFile(..)
+// when preparing an FU.AnalysisRecord.
+type XmlStructurePeek struct {
 	Preamble    string
 	Doctype     string
-	RootTag     xml.StartElement
+	RootTag     string // xml.StartElement
 	HasDTDstuff bool
 	error
-	KeyElms map[string]*FilePosition
+	// scratch variable
+	// KeyElms   map[string]*FilePosition
+	// These next two are set ONLY if only a single key elm from the list is found.
+	KeyElmTag string
+	KeyElmPos FilePosition
 }
 
 // PeekAtStructure_xml takes a string and does the bare minimum to find XML
 // preamble, DOCTYPE, root element, whether DTD stuff was encountered, and
 // elements that surround metadata and body text.
-func PeekAtStructure_xml(content string, keyElms map[string]*FilePosition) *XmlStructure {
+func PeekAtStructure_xml(content string, keyElms []string) *XmlStructurePeek {
 	var e error
 	var s string
 
@@ -30,9 +38,8 @@ func PeekAtStructure_xml(content string, keyElms map[string]*FilePosition) *XmlS
 
 	var didFirstPass bool
 	var foundRootElm bool
-	var pXS *XmlStructure
-	pXS = new(XmlStructure)
-	pXS.KeyElms = keyElms
+	var pXSP *XmlStructurePeek
+	pXSP = new(XmlStructurePeek)
 
 	// DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 	var latokens []LAToken
@@ -42,8 +49,8 @@ func PeekAtStructure_xml(content string, keyElms map[string]*FilePosition) *XmlS
 	latokens, e = DoParse_xml_locationAware(content)
 	if e != nil {
 		println("Peek: Error:", e.Error())
-		pXS.SetError(fmt.Errorf("peek: parser error: %w", e))
-		return pXS
+		pXSP.SetError(fmt.Errorf("peek: parser error: %w", e))
+		return pXSP
 	}
 	for _, LAT = range latokens {
 		T = LAT.Token
@@ -56,8 +63,8 @@ func PeekAtStructure_xml(content string, keyElms map[string]*FilePosition) *XmlS
 			if "xml" == S.TrimSpace(tok.Target) {
 				s = S.TrimSpace(string(tok.Inst))
 				// println("XML-PR:", tok.Target, tok.Inst)
-				if (pXS.Preamble == "") && !didFirstPass {
-					pXS.Preamble = "<?xml " + s + "?>"
+				if (pXSP.Preamble == "") && !didFirstPass {
+					pXSP.Preamble = "<?xml " + s + "?>"
 				} else {
 					println("xm.peek: Got xml PI as non-first / repeated token ?!:", s)
 				}
@@ -68,18 +75,20 @@ func PeekAtStructure_xml(content string, keyElms map[string]*FilePosition) *XmlS
 			var tok xml.StartElement
 			tok = xml.CopyToken(T).(xml.StartElement)
 			// Found the XML root tag ?
+			localName := tok.Name.Local
 			if !foundRootElm {
-				pXS.RootTag = tok
+				pXSP.RootTag = localName
 				foundRootElm = true
 			}
-			localName := tok.Name.Local
-			v, ok := keyElms[localName]
-			if ok {
-				if v == nil {
-					keyElms[localName] = &LAT.FilePosition
-					fmt.Printf("--> Found <%s> at %s \n", localName, LAT.FilePosition)
+			_, bb := SU.IsInSlice(localName, keyElms)
+			if bb {
+				if pXSP.KeyElmTag == "" {
+					pXSP.KeyElmTag = localName
+					pXSP.KeyElmPos = LAT.FilePosition
+					fmt.Printf("--> Found key elm <%s> at %s (%d) \n",
+						localName, pXSP.KeyElmPos, pXSP.KeyElmPos.Pos)
 				} else {
-					println("DUPE!:", localName)
+					println("Mult. key elms:", pXSP.KeyElmTag, localName)
 				}
 			}
 			didFirstPass = true
@@ -91,14 +100,14 @@ func PeekAtStructure_xml(content string, keyElms map[string]*FilePosition) *XmlS
 			s = S.TrimSpace(string(tok))
 			if S.HasPrefix(s, "ELEMENT ") || S.HasPrefix(s, "ATTLIST ") ||
 				S.HasPrefix(s, "ENTITY ") || S.HasPrefix(s, "NOTATION ") {
-				pXS.HasDTDstuff = true
+				pXSP.HasDTDstuff = true
 				continue
 			}
 			if S.HasPrefix(s, "DOCTYPE ") {
-				if pXS.Doctype != "" {
+				if pXSP.Doctype != "" {
 					println("xm.peek: Second DOCTYPE ?!")
 				} else {
-					pXS.Doctype = "<!" + s + ">"
+					pXSP.Doctype = "<!" + s + ">"
 				}
 			}
 			didFirstPass = true
@@ -106,31 +115,31 @@ func PeekAtStructure_xml(content string, keyElms map[string]*FilePosition) *XmlS
 			didFirstPass = true
 		}
 	}
-	return pXS
+	return pXSP
 }
 
 // === Implement interface Errable
 
-func (p *XmlStructure) HasError() bool {
+func (p *XmlStructurePeek) HasError() bool {
 	return p.error != nil && p.error.Error() != ""
 }
 
 // GetError is necessary cos "Error()"" dusnt tell you whether "error"
 // is "nil", which is the indication of no error. Therefore we need
 // this function, which can actually return the telltale "nil".
-func (p *XmlStructure) GetError() error {
+func (p *XmlStructurePeek) GetError() error {
 	return p.error
 }
 
 // Error satisfies interface "error", but the
 // weird thing is that "error" can be nil.
-func (p *XmlStructure) Error() string {
+func (p *XmlStructurePeek) Error() string {
 	if p.error != nil {
 		return p.error.Error()
 	}
 	return ""
 }
 
-func (p *XmlStructure) SetError(e error) {
+func (p *XmlStructurePeek) SetError(e error) {
 	p.error = e
 }

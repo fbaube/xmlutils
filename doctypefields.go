@@ -46,9 +46,9 @@ import (
 type DoctypeFields struct {
 	// PIDSIDcatalogFileRecord is the PID + SID.
 	PIDSIDcatalogFileRecord
-	// TopTag is the tag declared in the DOCTYPE, which
+	// DTrootElm is the tag declared in the DOCTYPE, which
 	// should match the root tag in the text of the file.
-	TopTag string
+	DTrootElm string
 	// MType is here because a DOCTYPE does indeed give
 	// us enough information to create one.
 	// DoctypeMType string
@@ -76,7 +76,7 @@ func (xdf DoctypeFields) Echo() string {
 } // xd.raw + "\n" }
 
 func (xdf DoctypeFields) String() string {
-	TT := xdf.TopTag
+	TT := xdf.DTrootElm
 	if "" == TT {
 		TT = "(no rootElm)"
 	}

@@ -4,8 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	S "strings"
-
-	SU "github.com/fbaube/stringutils"
 )
 
 // XmlStructurePeek is created by FU.AnalyseFile(..)
@@ -13,20 +11,16 @@ import (
 type XmlStructurePeek struct {
 	Preamble    string
 	Doctype     string
-	RootTag     string // xml.StartElement
 	HasDTDstuff bool
+	KeyElms
 	error
-	// scratch variable
-	// KeyElms   map[string]*FilePosition
-	// These next two are set ONLY if only a single key elm from the list is found.
-	KeyElmTag string
-	KeyElmPos FilePosition
 }
 
 // PeekAtStructure_xml takes a string and does the bare minimum to find XML
 // preamble, DOCTYPE, root element, whether DTD stuff was encountered, and
 // elements that surround metadata and body text.
-func PeekAtStructure_xml(content string, keyElms []string) *XmlStructurePeek {
+// It is called by FU.AnalyzeFile
+func PeekAtStructure_xml(content string) *XmlStructurePeek {
 	var e error
 	var s string
 
@@ -38,6 +32,8 @@ func PeekAtStructure_xml(content string, keyElms []string) *XmlStructurePeek {
 
 	var didFirstPass bool
 	var foundRootElm bool
+	var metaTagToFind string
+	var textTagToFind string
 	var pXSP *XmlStructurePeek
 	pXSP = new(XmlStructurePeek)
 
@@ -70,25 +66,61 @@ func PeekAtStructure_xml(content string, keyElms []string) *XmlStructurePeek {
 				}
 			}
 			didFirstPass = true
+		case xml.EndElement:
+			// type xml.EndElement struct { Name Name ; Attr []Attr }
+			var tok xml.EndElement
+			tok = xml.CopyToken(T).(xml.EndElement)
+			// Found the XML root tag ?
+			localName := tok.Name.Local
+			switch localName {
+			case pXSP.RootElm.Name:
+				pXSP.RootElm.EndPos = LAT.FilePosition
+				println("--> Closed root elm:", LAT.FilePosition.String())
+			case pXSP.MetaElm.Name:
+				pXSP.MetaElm.EndPos = LAT.FilePosition
+				println("--> Closed meta elm", LAT.FilePosition.String())
+			case pXSP.TextElm.Name:
+				pXSP.TextElm.EndPos = LAT.FilePosition
+				println("--> Closed text elm", LAT.FilePosition.String())
+			}
+
 		case xml.StartElement:
 			// type xml.StartElement struct { Name Name ; Attr []Attr }
 			var tok xml.StartElement
 			tok = xml.CopyToken(T).(xml.StartElement)
-			// Found the XML root tag ?
 			localName := tok.Name.Local
+
 			if !foundRootElm {
-				pXSP.RootTag = localName
+				pXSP.RootElm.Name = localName
+				pXSP.RootElm.Atts = tok.Attr
+				pXSP.RootElm.BegPos = LAT.FilePosition
 				foundRootElm = true
-			}
-			_, bb := SU.IsInSlice(localName, keyElms)
-			if bb {
-				if pXSP.KeyElmTag == "" {
-					pXSP.KeyElmTag = localName
-					pXSP.KeyElmPos = LAT.FilePosition
-					fmt.Printf("--> Found key elm <%s> at %s (%d) \n",
-						localName, pXSP.KeyElmPos, pXSP.KeyElmPos.Pos)
+
+				var pKeyElm *KeyElmInfo
+				pKeyElm = GetKeyElm(localName)
+				if pKeyElm == nil {
+					println("==> Can't find info for key elm:", localName)
 				} else {
-					println("Mult. key elms:", pXSP.KeyElmTag, localName)
+					metaTagToFind = pKeyElm.Meta
+					textTagToFind = pKeyElm.Text
+					fmt.Printf("--> Found key elm beg <%s> at %s (%d), needs meta<%s> text<%s> \n",
+						localName, pXSP.RootElm.BegPos.String(), pXSP.RootElm.BegPos.Pos,
+						metaTagToFind, textTagToFind)
+				}
+			} else {
+				if localName == metaTagToFind {
+					pXSP.MetaElm.Name = localName
+					pXSP.MetaElm.Atts = tok.Attr
+					pXSP.MetaElm.BegPos = LAT.FilePosition
+					fmt.Printf("--> Found meta elm <%s> at %s (%d) \n",
+						metaTagToFind, pXSP.MetaElm.BegPos.String(), pXSP.MetaElm.BegPos.Pos)
+				}
+				if localName == textTagToFind {
+					pXSP.TextElm.Name = localName
+					pXSP.TextElm.Atts = tok.Attr
+					pXSP.TextElm.BegPos = LAT.FilePosition
+					fmt.Printf("--> Found text elm <%s> at %s (%d) \n",
+						textTagToFind, pXSP.TextElm.BegPos.String(), pXSP.TextElm.BegPos.Pos)
 				}
 			}
 			didFirstPass = true

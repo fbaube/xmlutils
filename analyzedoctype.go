@@ -29,6 +29,7 @@ type Contyping struct {
 type DoctypeMType struct {
 	ToMatch       string
 	DoctypesMType string
+	RootElm       string
 	IsLwDITA      bool
 }
 
@@ -36,35 +37,38 @@ type DoctypeMType struct {
 // should suffice for all ordinary XML files (except of course Docbook).
 var DTMTmap = []DoctypeMType{
 	// This will require special handling
-	{"html", "html/cnt/html5", false},
+	{"html", "html/cnt/html5", "html", false},
 	// uri="dtd/lw-topic.dtd"
-	{"//DTD LIGHTWEIGHT DITA Topic//", "xml/cnt/topic", true},
-	{"//DTD LW DITA Topic//", "xml/cnt/topic", true},
-	{"//DTD XDITA Topic//", "html/cnt/topic", true},
+	{"//DTD LIGHTWEIGHT DITA Topic//", "xml/cnt/topic", "topic", true},
+	{"//DTD LW DITA Topic//", "xml/cnt/topic", "topic", true},
+	{"//DTD XDITA Topic//", "html/cnt/topic", "topic", true},
 	// uri="dtd/lw-map.dtd"
-	{"//DTD LIGHTWEIGHT DITA Map//", "xml/map/---", true},
-	{"//DTD LW DITA Map//", "xml/map/---", true},
-	{"//DTD XDITA Map//", "html/map/---", true},
+	{"//DTD LIGHTWEIGHT DITA Map//", "xml/map/---", "map", true},
+	{"//DTD LW DITA Map//", "xml/map/---", "map", true},
+	{"//DTD XDITA Map//", "html/map/---", "map", true},
 	// DITA 1.3
-	{"//DTD DITA Concept//", "xml/cnt/concept", false},
-	{"//DTD DITA Topic//", "xml/cnt/topic", false},
-	{"//DTD DITA Task//", "xml/cnt/task", false},
+	{"//DTD DITA Concept//", "xml/cnt/concept", "concept", false},
+	{"//DTD DITA Topic//", "xml/cnt/topic", "topic", false},
+	{"//DTD DITA Task//", "xml/cnt/task", "task", false},
 	//
-	// https://www.w3.org/QA/2002/04/valid-dtd-list.html
+	// https://www.w3.org/QA/2002/04/valid-dtd-list.html"
+	// NOTE: The root element "html" of the document must contain an xmlns
+	// declaration for the XHTML namespace [XMLNS]. The namespace for XHTML
+	// is defined to be http://www.w3.org/1999/xhtml
 	//
-	{"//DTD HTML 4.", "html/cnt/html4", false},
-	{"//DTD XHTML 1.0 ", "html/cnt/xhtml1.0", false},
-	{"//DTD XHTML 1.1//", "html/cnt/xhtml1.1", false},
-	{"//DTD MathML 2.0//", "html/cnt/mathml", false},
-	{"//DTD SVG 1.0//", "xml/img/svg1.0", false},
-	{"//DTD SVG 1.1", "xml/img/svg", false},
-	{"//DTD XHTML Basic 1.1//", "html/cnt/topic", false},
-	{"//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//", "html/cnt/blarg", false},
+	{"//DTD HTML 4.", "html/cnt/html4", "html", false},
+	{"//DTD XHTML 1.0 ", "html/cnt/xhtml1.0", "html", false},
+	{"//DTD XHTML 1.1//", "html/cnt/xhtml1.1", "html", false},
+	{"//DTD MathML 2.0//", "html/cnt/mathml", "", false},
+	{"//DTD SVG 1.0//", "xml/img/svg1.0", "svg", false},
+	{"//DTD SVG 1.1", "xml/img/svg", "svg", false},
+	{"//DTD XHTML Basic 1.1//", "html/cnt/topic", "html", false},
+	{"//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//", "html/cnt/blarg", "html", false},
 }
 
 func (p Contyping) String() (s string) {
 	return fmt.Sprintf("filext:%s mtype:%s mimetype:%s isLwdita:%s isProcbl:%s",
-		p.FileExt, p.MType, p.MimeType, p.IsLwDita, p.IsProcbl)
+		p.FileExt, p.MType, p.MimeType, SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
 }
 
 // AnalyzeDoctype expects to receive a file extension plus a content type
@@ -92,11 +96,11 @@ func (p Contyping) String() (s string) {
 //
 func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 
-	println("--> xm.anlDT: inCntpg:", pC.String())
-	println("-->    inDoctype:", aDoctype)
-	pDF := new(DoctypeFields)
+	println("--> xm.adt: inCntpg:", pC.String())
+	println("--> xm.adt: inDoctp:", aDoctype)
 	pC.IsLwDita = false
 	pC.IsProcbl = false
+	pDF := new(DoctypeFields)
 	pDF.Contyping = *pC
 
 	aDoctype = S.TrimSpace(aDoctype)
@@ -106,7 +110,7 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 
 	// A quick win ?
 	if aDoctype == "<!DOCTYPE html>" || aDoctype == "html" {
-		pDF.TopTag = "html"
+		pDF.DTrootElm = "html"
 		pDF.MType = "html/cnt/html5"
 		// Not sure about this next line
 		pDF.PublicTextClass = "(HTML5)"
@@ -115,6 +119,7 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 	for _, p := range DTMTmap {
 		if S.Contains(aDoctype, p.ToMatch) {
 			pDF.MType = p.DoctypesMType
+			pDF.DTrootElm = p.RootElm
 			pDF.IsLwDita = p.IsLwDITA
 			pDF.IsProcbl = p.IsLwDITA
 			return pDF
@@ -204,7 +209,7 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 	// Quick exit: HTML5
 	if S.EqualFold(aDoctype, "html") || S.EqualFold(aDoctype, "html>") {
 		println("==> Caught HTML5 doctype later rather than sooner ?!")
-		pDF.TopTag = "html"
+		pDF.DTrootElm = "html"
 		pDF.MType = "html/cnt/html5"
 		pDF.PublicTextClass = "(HTML5)"
 		return pDF
@@ -221,7 +226,7 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 			pDF.SetError(errors.New("Unrecognized DOCTYPE root element or " +
 				"bad DOCTYPE availability (neither PUBLIC nor SYSTEM): " + unk))
 		}
-		pDF.TopTag, aDoctype = SU.SplitOffFirstWord(aDoctype)
+		pDF.DTrootElm, aDoctype = SU.SplitOffFirstWord(aDoctype)
 	}
 	var PubOrSys string
 	PubOrSys, aDoctype = SU.SplitOffFirstWord(aDoctype)
@@ -244,13 +249,13 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 	// FIXME Handle cases of bad quoting.
 	qtd1, qtd2, e := SU.SplitOffQuotedToken(aDoctype)
 	if e != nil {
-		pDF.SetError(fmt.Errorf("xm.dtflds.SplitOffQuotedToken(1)<%s>", aDoctype))
+		pDF.SetError(fmt.Errorf("xm.adt.SplitOffQuotedToken(1)<%s>", aDoctype))
 		return pDF
 	}
 	qtd2 = S.TrimSpace(qtd2)
 	if qtd2 != "" {
 		if !SU.IsXmlQuoted(qtd2) {
-			pDF.SetError(fmt.Errorf("xm.dtflds.SplitOffQuotedToken(2)<%s>", aDoctype))
+			pDF.SetError(fmt.Errorf("xm.adt.SplitOffQuotedToken(2)<%s>", aDoctype))
 			return pDF
 		}
 		qtd2 = SU.MustXmlUnquote(qtd2)
@@ -262,7 +267,7 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 
 	if PubOrSys == "SYSTEM" {
 		if qtd2 != "" {
-			pDF.SetError(fmt.Errorf("xm.dtflds.SecondArgumentForSYSTEM: %s", qtd2))
+			pDF.SetError(fmt.Errorf("xm.adt.SecondArgumentForSYSTEM: %s", qtd2))
 			return pDF
 		}
 		pPidSid, e = NewPIDSIDcatalogFileRecord("", qtd1)
@@ -270,7 +275,7 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 	} else if PubOrSys == "PUBLIC" {
 		pPidSid, e = NewPIDSIDcatalogFileRecord(qtd1, qtd2)
 		if e != nil {
-			pDF.SetError(fmt.Errorf("xm.dtflds.NewXmlPublicID<%s|%s>: %w", qtd1, qtd2, e))
+			pDF.SetError(fmt.Errorf("xm.adt.NewXmlPublicID<%s|%s>: %w", qtd1, qtd2, e))
 			return pDF
 		}
 	} else {
@@ -285,12 +290,12 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 	// Now let's set the MType using some intelligent guesses,
 	// to compare to the results of GetMTypeByDocType(..)
 	if S.Contains(sd, "DITA") {
-		pDF.MType = "dita/[TBS]/" + pDF.TopTag
+		pDF.MType = "dita/[TBS]/" + pDF.DTrootElm
 	}
 	if S.Contains(sd, "XDITA") ||
 		S.Contains(sd, "LW DITA") ||
 		S.Contains(sd, "LIGHTWEIGHT DITA") {
-		pDF.MType = "lwdita/xdita/" + pDF.TopTag
+		pDF.MType = "lwdita/xdita/" + pDF.DTrootElm
 	}
 	/*
 		if pDTF.TopTag != "" && Peek.RootTag != "" &&

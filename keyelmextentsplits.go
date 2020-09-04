@@ -110,8 +110,15 @@ func (p *AnalysisRecord) MakeContentitySections(sCont string) {
 		p.RootElm.String(), p.MetaElm.String(), p.TextElm.String())
 	if p.MetaElm.BegPos.Pos != 0 {
 		pCS.Meta_raw = sCont[p.MetaElm.BegPos.Pos:p.MetaElm.EndPos.Pos]
+		fmt.Printf("D=> xm.KE: set Meta_raw <%d:%d> %s \n",
+			p.MetaElm.BegPos.Pos, p.MetaElm.EndPos.Pos, pCS.Meta_raw)
+		println("D=> xm.nuCS: Meta_raw:", pCS.Meta_raw)
 	}
 	if p.TextElm.BegPos.Pos != 0 {
 		pCS.Text_raw = sCont[p.TextElm.BegPos.Pos:p.TextElm.EndPos.Pos]
+		fmt.Printf("D=> xm.KE: set Text_raw <%d:%d> %s \n",
+			p.TextElm.BegPos.Pos, p.TextElm.EndPos.Pos, pCS.Text_raw)
+		println("D=> xm.nuCS: Text_raw:", pCS.Text_raw)
 	}
+	p.ContentitySections = *pCS
 }

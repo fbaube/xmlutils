@@ -85,8 +85,8 @@ func (xdf DoctypeFields) String() string {
 		dtmt = xdf.MType
 	}
 	// "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN" "lw-topic.dtd"
-	return fmt.Sprintf("rootElm:%s,MType:%s,PIDSIDrec <|> %s <|>",
-		TT, dtmt, xdf.PIDSIDcatalogFileRecord.DString())
+	return fmt.Sprintf("rootElm:%s,MType:%s,Cntpg:%s,PIDSIDrec <|> %s <|>",
+		TT, dtmt, xdf.Contyping, xdf.PIDSIDcatalogFileRecord.DString())
 }
 
 func (xdf DoctypeFields) DString() string {

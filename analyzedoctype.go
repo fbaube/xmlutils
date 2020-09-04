@@ -114,6 +114,7 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 		pDF.MType = "html/cnt/html5"
 		// Not sure about this next line
 		pDF.PublicTextClass = "(HTML5)"
+		println("--> xm.adt: Got HTML5")
 		return pDF
 	}
 	for _, p := range DTMTmap {
@@ -122,6 +123,7 @@ func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
 			pDF.DTrootElm = p.RootElm
 			pDF.IsLwDita = p.IsLwDITA
 			pDF.IsProcbl = p.IsLwDITA
+			println("--> xm.adt: Got a match on", pDF.MType)
 			return pDF
 		}
 	}

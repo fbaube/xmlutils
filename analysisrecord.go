@@ -41,5 +41,5 @@ func (p AnalysisRecord) FileType() string {
 	// return S.ToUpper(MTypeSub(p.MType, 0))
 	// Cut & Paste
 	i := S.Index(p.MType, "/")
-	return p.MType[:i]
+	return S.ToUpper(p.MType[:i])
 }

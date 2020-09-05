@@ -62,9 +62,10 @@ type KeyElms struct {
 	TextElm ElmExtent
 }
 
-func (p *KeyElms) Check() {
+func (p *KeyElms) CheckXml() bool {
 	if p.RootElm.Name == "" {
-		println("--> Key elm RootElm not found")
+		// println("--> Key elm RootElm not found")
+		return false
 	}
 	if p.MetaElm.Name == "" {
 		println("--> Key elm MetaElm not found")
@@ -81,6 +82,7 @@ func (p *KeyElms) Check() {
 	if p.TextElm.BegPos.Pos != 0 && p.TextElm.EndPos.Pos == 0 {
 		println("--> Key elm TextElm has no closing tag")
 	}
+	return true
 }
 
 func (p *KeyElms) IsSplittable() bool {

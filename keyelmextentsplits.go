@@ -26,7 +26,7 @@ type KeyElmInfo struct {
 var KeyElmInfos = []*KeyElmInfo{
 	{"html", "head", "body"},
 	{"topic", "prolog", "body"},
-	{"map", "", ""},
+	{"map", "topicmeta", ""},
 	{"reference", "", ""},
 	{"task", "", ""},
 	{"bookmap", "", ""},
@@ -96,10 +96,6 @@ func (p *KeyElms) IsSplittable() bool {
 }
 
 func (p *AnalysisRecord) MakeContentitySections(sCont string) {
-	if !p.IsSplittable() {
-		println("xm.KE: not splittable")
-		return
-	}
 	pCS := new(ContentitySections)
 	// Fields to set:
 	// Raw      string

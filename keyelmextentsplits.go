@@ -68,10 +68,10 @@ func (p *KeyElms) CheckXml() bool {
 		return false
 	}
 	if p.MetaElm.Name == "" {
-		println("--> Key elm MetaElm not found")
+		println("--> Metadata header element not found")
 	}
 	if p.TextElm.Name == "" {
-		println("--> Key elm TextElm not found")
+		println("--> Content body text element not found")
 	}
 	if p.RootElm.BegPos.Pos != 0 && p.RootElm.EndPos.Pos == 0 {
 		println("--> Key elm RootElm has no closing tag")

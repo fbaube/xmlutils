@@ -12,6 +12,9 @@ type FilePosition struct {
 }
 
 func (fp FilePosition) String() string {
+	if fp.Lnr == 0 && fp.Col == 0 {
+		return "0"
+	}
 	return fmt.Sprintf("L%02dc%02d", fp.Lnr, fp.Col)
 }
 

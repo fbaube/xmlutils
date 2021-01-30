@@ -43,7 +43,7 @@ import (
 // but we still need to have the Doctype string in the DB as a separate column,
 // even if it is empty (i.e. "").
 //
-type DoctypeFields struct {
+type XmlDoctypeFields struct {
 	// PIDSIDcatalogFileRecord is the PID + SID.
 	PIDSIDcatalogFileRecord
 	// DTrootElm is the tag declared in the DOCTYPE, which
@@ -52,7 +52,7 @@ type DoctypeFields struct {
 	// MType is here because a DOCTYPE does indeed give
 	// us enough information to create one.
 	// DoctypeMType string
-	Contyping
+	ContypingInfo
 	error
 }
 
@@ -71,11 +71,11 @@ type DoctypeFields struct {
 //  DOCTYPE html       (i.e. HTML5)
 //  DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" (MAYBE!)
 
-func (xdf DoctypeFields) Echo() string {
+func (xdf XmlDoctypeFields) Echo() string {
 	return "OOPS:TBS"
 } // xd.raw + "\n" }
 
-func (xdf DoctypeFields) String() string {
+func (xdf XmlDoctypeFields) String() string {
 	TT := xdf.DTrootElm
 	if "" == TT {
 		TT = "(no rootElm)"
@@ -86,35 +86,35 @@ func (xdf DoctypeFields) String() string {
 	}
 	// "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN" "lw-topic.dtd"
 	return fmt.Sprintf("rootElm:%s,MType:%s,Cntpg:%s,PIDSIDrec <|> %s <|>",
-		TT, dtmt, xdf.Contyping, xdf.PIDSIDcatalogFileRecord.DString())
+		TT, dtmt, xdf.ContypingInfo, xdf.PIDSIDcatalogFileRecord.DString())
 }
 
-func (xdf DoctypeFields) DString() string {
+func (xdf XmlDoctypeFields) DString() string {
 	return xdf.String() // fmt.Sprintf("xm.xdf.DS: %+v", xdf)
 }
 
 // === Implement interface Errable
 
-func (p *DoctypeFields) HasError() bool {
+func (p *XmlDoctypeFields) HasError() bool {
 	return p.error != nil && p.error.Error() != ""
 }
 
 // GetError is necessary cos "Error()"" dusnt tell you whether "error"
 // is "nil", which is the indication of no error. Therefore we need
 // this function, which can actually return the telltale "nil".
-func (p *DoctypeFields) GetError() error {
+func (p *XmlDoctypeFields) GetError() error {
 	return p.error
 }
 
 // Error satisfies interface "error", but the
 // weird thing is that "error" can be nil.
-func (p *DoctypeFields) Error() string {
+func (p *XmlDoctypeFields) Error() string {
 	if p.error != nil {
 		return p.error.Error()
 	}
 	return ""
 }
 
-func (p *DoctypeFields) SetError(e error) {
+func (p *XmlDoctypeFields) SetError(e error) {
 	p.error = e
 }

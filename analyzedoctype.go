@@ -14,11 +14,12 @@ import (
 
 var knownRootTags = []string{"html", "map", "topic", "task", "concept", "reference"}
 
-// Contyping has fields related to typing content (i.e. determining its type).
-type Contyping struct {
+// ContypingInfo has fields related to typing content (i.e. determining its type).
+type ContypingInfo struct {
 	FileExt  string
 	MimeType string
 	MType    string
+	Doctype  string
 	IsLwDita bool
 	// IsProcbl means, is it processable (by us) ?
 	// i.e. CAN we process it ? (Even if it might not be LwDITA.)
@@ -66,7 +67,7 @@ var DTMTmap = []DoctypeMType{
 	{"//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//", "html/cnt/blarg", "html", false},
 }
 
-func (p Contyping) String() (s string) {
+func (p ContypingInfo) String() (s string) {
 	return fmt.Sprintf("filext:%s mtype:%s mimetype:%s isLwdita:%s isProcbl:%s",
 		p.FileExt, p.MType, p.MimeType, SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
 }
@@ -94,14 +95,14 @@ func (p Contyping) String() (s string) {
 // The last one is quite important because it is the format that appears
 // in XML catalog files.
 //
-func (pC *Contyping) AnalyzeDoctype(aDoctype string) *DoctypeFields {
+func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 
 	println("--> xm.adt: inCntpg:", pC.String())
 	println("--> xm.adt: inDoctp:", aDoctype)
 	pC.IsLwDita = false
 	pC.IsProcbl = false
-	pDF := new(DoctypeFields)
-	pDF.Contyping = *pC
+	pDF := new(XmlDoctypeFields)
+	pDF.ContypingInfo = *pC
 
 	aDoctype = S.TrimSpace(aDoctype)
 

@@ -3,7 +3,7 @@ package xmlmodels
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	// "path"
 
@@ -44,7 +44,7 @@ func NewXmlCatalogFile(fpath string) (pXC *XmlCatalogFile, err error) {
 	}
 	var raw []byte
 	var e error
-	raw, e = ioutil.ReadFile(fpath)
+	raw, e = os.ReadFile(fpath)
 	if e != nil {
 		println("==> Can't read XML catalog file:", fpath, ", reason:", e)
 		return nil, fmt.Errorf("gparse.NewXmlCatalog.ReadFile<%s>: %w", fpath, e)
@@ -165,7 +165,7 @@ func (p *XmlCatalogFile) Validate() (retval bool) {
 		abspath = dirpart + "/" + string(pEntry.XmlSystemID)
 
 		var e error
-		_, e = ioutil.ReadFile(abspath)
+		_, e = os.ReadFile(abspath)
 		if e != nil {
 			fmt.Printf("==> Catalog<%s>: Bad System ID / URI <%s> for Public ID <%s> (%s) \n",
 				p.AbsFilePath, pEntry.XmlSystemID, pEntry.XmlPublicID, e.Error())

@@ -8,14 +8,21 @@ import (
 // "Record" because it is meant to be persisted to the database.
 // It is embedded in db.ContentRecord
 type AnalysisRecord struct {
-	Contyping
-	// RootTag        string // e.g. "html", enclosing both <head> and <body>
-	// RootAtts       string // e.g. <html lang="en"> yields << lang="en" >>
+	ContypingInfo
 	MarkdownFlavor string
 	KeyElms
 	ContentitySections
-	XmlInfo
-	DitaInfo
+	// XmlInfo
+	XmlContype
+	// XmlPreambleFields is nil if no preamble -
+	// always defaults to xmlmodels.STD_PreambleFields
+	*XmlPreambleFields
+	// XmlDoctypeFields is a ptr - nil if ContypingInfo.Doctype
+	// is "", i.e. if there is no DOCTYPE declaration
+	*XmlDoctypeFields
+	// DitaInfo
+	DitaMarkupLg
+	DitaContype
 }
 
 // IsXML is true for all XML, including all HTML.

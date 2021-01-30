@@ -4,9 +4,9 @@ type XmlInfo struct {
 	XmlContype
 	// nil if no preamble - defaults to xmlmodels.STD_PreambleFields
 	*XmlPreambleFields
-	XmlDoctype
+	// XmlDoctype
 	// XmlDoctypeFields is a ptr - nil if there is no DOCTYPE declaration.
-	*DoctypeFields
+	*XmlDoctypeFields
 
 	// TagDefCt is for DTD-type files (.dtd, .mod, .ent)
 	// // TagDefCt int // Nr of <!ELEMENT ...>

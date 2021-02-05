@@ -50,15 +50,15 @@ func NewXmlCatalogFile(fpath string) (pXC *XmlCatalogFile, err error) {
 		return nil, fmt.Errorf("gparse.NewXmlCatalog.ReadFile<%s>: %w", fpath, e)
 	}
 
-	var pCPR *ConcreteParseResults_xml
-	pCPR, e = GetConcreteParseResults_xml(string(raw))
+	var pCPR *ParserResults_xml
+	pCPR, e = GenerateParserResults_xml(string(raw))
 	if e != nil {
 		return nil, fmt.Errorf("gparse.xml.parseResults: %w", e)
 	}
 	var catRoot xml.StartElement      // *gtoken.GToken
 	var pubEntries []xml.StartElement // []*gtoken.GToken
-	catRoot = GetFirstStartElmByTag(pCPR.NodeList, "catalog")
-	pubEntries = GetAllStartElmsByTag(pCPR.NodeList, "public")
+	catRoot = GetFirstStartElmByTag(pCPR.NodeSlice, "catalog")
+	pubEntries = GetAllStartElmsByTag(pCPR.NodeSlice, "public")
 	if catRoot.Name.Local == "" {
 		panic("No <catalog> root elm")
 	}

@@ -9,22 +9,22 @@ import (
 	SU "github.com/fbaube/stringutils"
 )
 
-type ConcreteParseResults_xml struct {
+type ParserResults_xml struct {
 	// ParseTree ??
-	NodeList []xml.Token
+	NodeSlice []xml.Token
 	CommonCPR
 }
 
-func GetConcreteParseResults_xml(s string) (*ConcreteParseResults_xml, error) {
+func GenerateParserResults_xml(s string) (*ParserResults_xml, error) {
 	var nl []xml.Token
 	var e error
 	nl, e = DoParse_xml(s)
 	if e != nil {
 		return nil, fmt.Errorf("pu.xml.parseResults: %w", e)
 	}
-	p := new(ConcreteParseResults_xml)
+	p := new(ParserResults_xml)
 	p.CommonCPR = *NewCommonCPR()
-	p.NodeList = nl
+	p.NodeSlice = nl
 	p.CPR_raw = s
 	return p, nil
 }

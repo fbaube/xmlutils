@@ -130,5 +130,10 @@ func (p *AnalysisRecord) MakeContentitySections(sCont string) {
 			p.TextElm.BegPos.Pos, p.TextElm.EndPos.Pos, pCS.Text_raw)
 		println("D=> xm.nuCS: Text_raw:", pCS.Text_raw)
 	}
+	// If nothing found, assume it is entirely Text.
+	if p.KeyElms.HasNone() {
+		println("--> No meta/text division detected")
+		p.Text_raw = p.Raw
+	}
 	p.ContentitySections = *pCS
 }

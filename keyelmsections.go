@@ -62,6 +62,18 @@ type KeyElms struct {
 	TextElm ElmExtent
 }
 
+func (p *KeyElms) HasNone() bool {
+	return p.RootElm.Name == "" &&
+		p.MetaElm.Name == "" &&
+		p.TextElm.Name == ""
+}
+
+func (p *KeyElms) SetToAllText() bool {
+	return p.RootElm.Name == "" &&
+		p.MetaElm.Name == "" &&
+		p.TextElm.Name == ""
+}
+
 func (p *KeyElms) CheckXml() bool {
 	if p.RootElm.Name == "" {
 		// println("--> Key elm RootElm not found")

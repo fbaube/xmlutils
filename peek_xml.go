@@ -76,15 +76,15 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			case pXSP.RootElm.Name:
 				pXSP.RootElm.EndPos = LAT.FilePosition
 				pXSP.RootElm.EndPos.Pos += len(localName) + 3
-				println("--> Closed root elm:", LAT.FilePosition.String())
+				println("--> End root elm:", LAT.FilePosition.String())
 			case pXSP.MetaElm.Name:
 				pXSP.MetaElm.EndPos = LAT.FilePosition
 				pXSP.MetaElm.EndPos.Pos += len(localName) + 3
-				println("--> Closed meta elm", LAT.FilePosition.String())
+				println("--> End meta elm", LAT.FilePosition.String())
 			case pXSP.TextElm.Name:
 				pXSP.TextElm.EndPos = LAT.FilePosition
 				pXSP.TextElm.EndPos.Pos += len(localName) + 3
-				println("--> Closed text elm", LAT.FilePosition.String())
+				println("--> End text elm", LAT.FilePosition.String())
 			}
 
 		case xml.StartElement:
@@ -106,7 +106,7 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				} else {
 					metaTagToFind = pKeyElm.Meta
 					textTagToFind = pKeyElm.Text
-					fmt.Printf("--> Found key elm beg <%s> at %s (%d), needs meta<%s> text<%s> \n",
+					fmt.Printf("--> Got key elm beg <%s> at %s (%d), needs meta<%s> text<%s> \n",
 						localName, pXSP.RootElm.BegPos.String(), pXSP.RootElm.BegPos.Pos,
 						metaTagToFind, textTagToFind)
 				}
@@ -115,14 +115,14 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 					pXSP.MetaElm.Name = localName
 					pXSP.MetaElm.Atts = tok.Attr
 					pXSP.MetaElm.BegPos = LAT.FilePosition
-					fmt.Printf("--> Found meta elm <%s> at %s (%d) \n",
+					fmt.Printf("--> Got meta elm <%s> at %s (%d) \n",
 						metaTagToFind, pXSP.MetaElm.BegPos.String(), pXSP.MetaElm.BegPos.Pos)
 				}
 				if localName == textTagToFind {
 					pXSP.TextElm.Name = localName
 					pXSP.TextElm.Atts = tok.Attr
 					pXSP.TextElm.BegPos = LAT.FilePosition
-					fmt.Printf("--> Found text elm <%s> at %s (%d) \n",
+					fmt.Printf("--> Got text elm <%s> at %s (%d) \n",
 						textTagToFind, pXSP.TextElm.BegPos.String(), pXSP.TextElm.BegPos.Pos)
 				}
 			}

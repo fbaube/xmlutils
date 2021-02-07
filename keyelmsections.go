@@ -74,7 +74,7 @@ func (p *KeyElms) SetToAllText() bool {
 		p.TextElm.Name == ""
 }
 
-func (p *KeyElms) CheckXml() bool {
+func (p *KeyElms) CheckXmlSections() bool {
 	if p.RootElm.Name == "" {
 		// println("--> Key elm RootElm not found")
 		return false

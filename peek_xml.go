@@ -76,15 +76,15 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			case pXSP.RootElm.Name:
 				pXSP.RootElm.EndPos = LAT.FilePosition
 				pXSP.RootElm.EndPos.Pos += len(localName) + 3
-				println("--> End root elm:", LAT.FilePosition.String())
+				println("--> End root elm at", LAT.FilePosition.String())
 			case pXSP.MetaElm.Name:
 				pXSP.MetaElm.EndPos = LAT.FilePosition
 				pXSP.MetaElm.EndPos.Pos += len(localName) + 3
-				println("--> End meta elm", LAT.FilePosition.String())
+				println("--> End meta elm at", LAT.FilePosition.String())
 			case pXSP.TextElm.Name:
 				pXSP.TextElm.EndPos = LAT.FilePosition
 				pXSP.TextElm.EndPos.Pos += len(localName) + 3
-				println("--> End text elm", LAT.FilePosition.String())
+				println("--> End text elm at", LAT.FilePosition.String())
 			}
 
 		case xml.StartElement:

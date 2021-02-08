@@ -60,7 +60,7 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []xml.Token, err error)
 			break
 		}
 		if e != nil {
-			return xtokens, fmt.Errorf("pu.xml.doParse: %w", e)
+			return xtokens, fmt.Errorf("pu.xml.doParse.1: %w", e)
 		}
 		TT = xml.CopyToken(T)
 		xtokens = append(xtokens, TT)
@@ -89,7 +89,7 @@ func DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 			break
 		}
 		if e != nil {
-			return xtokens, fmt.Errorf("pu.xml.doParse: %w", e)
+			return xtokens, fmt.Errorf("pu.xml.doParse.2: %w", e)
 		}
 		TT = xml.CopyToken(T)
 		LAT = *new(LAToken)

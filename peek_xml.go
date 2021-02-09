@@ -6,8 +6,8 @@ import (
 	S "strings"
 )
 
-// XmlStructurePeek is created by FU.AnalyseFile(..)
-// when preparing an FU.AnalysisRecord.
+// XmlStructurePeek is called by FU.AnalyseFile(..)
+// when preparing an FU.AnalysisRecord .
 type XmlStructurePeek struct {
 	Preamble    string
 	Doctype     string
@@ -18,7 +18,11 @@ type XmlStructurePeek struct {
 
 // PeekAtStructure_xml takes a string and does the bare minimum to find XML
 // preamble, DOCTYPE, root element, whether DTD stuff was encountered, and
-// elements that surround metadata and body text.
+// the locations of outer elements containing metadata and body text.
+//
+// It uses the Go stdlib parser, so success in finding a root element in
+// this function all but guarantees that the string is valid XML.
+//
 // It is called by FU.AnalyzeFile
 func PeekAtStructure_xml(content string) *XmlStructurePeek {
 	var e error

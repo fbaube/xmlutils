@@ -74,6 +74,8 @@ func (p *KeyElms) SetToAllText() bool {
 		p.TextElm.Name == ""
 }
 
+// CheckXmlSections returns true is a root element was found,
+// and writes messages about other findings.
 func (p *KeyElms) CheckXmlSections() bool {
 	if p.RootElm.Name == "" {
 		// println("--> Key elm RootElm not found")

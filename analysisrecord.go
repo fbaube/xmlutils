@@ -8,14 +8,21 @@ import (
 // "Record" because it is meant to be persisted to the database.
 // It is embedded in db.ContentRecord
 type AnalysisRecord struct {
+	// ContypingInfo is simple fields:
+	// FileExt MimeType MType Doctype IsLwDita IsProcbl
 	ContypingInfo
 	MarkdownFlavor string
+	// KeyElms is: (Root,Meta,Text)ElmExtent
 	KeyElms
+	// ContentitySections is: Text_raw, Meta_raw, MetaFormat; MetaProps SU.PropSet
 	ContentitySections
-	// XmlInfo
+	// XmlInfo is: XmlPreambleFields, XmlDoctype, XmlDoctypeFields, ENTITY stuff
+	/* XmlInfo */
+	// XmlContype is: "Unknown", "DTD", "DTDmod", "DTDent", "RootTagData",
+	// "RootTagMixedContent", "MultipleRootTags", "INVALID"}
 	XmlContype
-	// XmlPreambleFields is nil if no preamble -
-	// always defaults to xmlmodels.STD_PreambleFields
+	// XmlPreambleFields is nil if no preamble - it can always
+	// default to xmlmodels.STD_PreambleFields (from stdlib)
 	*XmlPreambleFields
 	// XmlDoctypeFields is a ptr - nil if ContypingInfo.Doctype
 	// is "", i.e. if there is no DOCTYPE declaration

@@ -1,5 +1,6 @@
 package xmlmodels
 
+/*
 type XmlInfo struct {
 	XmlContype
 	// nil if no preamble - defaults to xmlmodels.STD_PreambleFields
@@ -28,6 +29,7 @@ type XmlInfo struct {
 	// DElms map[string]*gtree.GTag
 	// TODO Maybe also add maps for NOTs (Notations)
 }
+*/
 
 // XmlContype categorizes the XML file. See variable "XmlContypes".
 type XmlContype string
@@ -38,7 +40,3 @@ type XmlDoctype string
 // XmlContypes note: maybe DTDmod should be DTDelms.
 var XmlContypes = []XmlContype{"Unknown", "DTD", "DTDmod", "DTDent",
 	"RootTagData", "RootTagMixedContent", "MultipleRootTags", "INVALID"}
-
-func (p *XmlInfo) String() string {
-	return "XmlInfo:meh"
-}

@@ -12,7 +12,7 @@ type XmlStructurePeek struct {
 	Preamble    string
 	Doctype     string
 	HasDTDstuff bool
-	KeyElms
+	KeyElmsWithRanges
 	error
 }
 
@@ -103,14 +103,14 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				pXSP.RootElm.BegPos = LAT.FilePosition
 				foundRootElm = true
 
-				var pKeyElm *KeyElmInfo
-				pKeyElm = GetKeyElm(localName)
-				if pKeyElm == nil {
+				var pKeyElmTriplet *KeyElmTriplet
+				pKeyElmTriplet = GetKeyElmTriplet(localName)
+				if pKeyElmTriplet == nil {
 					println("==> Can't find info for key elm:", localName)
 				} else {
-					metaTagToFind = pKeyElm.Meta
-					textTagToFind = pKeyElm.Text
-					fmt.Printf("--> Got key elm beg <%s> at %s (%d), needs meta<%s> text<%s> \n",
+					metaTagToFind = pKeyElmTriplet.Meta
+					textTagToFind = pKeyElmTriplet.Text
+					fmt.Printf("--> Got key elm.beg <%s> at %s (%d), it takes meta<%s> text<%s> \n",
 						localName, pXSP.RootElm.BegPos.String(), pXSP.RootElm.BegPos.Pos,
 						metaTagToFind, textTagToFind)
 				}

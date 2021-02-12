@@ -13,13 +13,13 @@ type AnalysisRecord struct {
 	ContypingInfo
 	MarkdownFlavor string
 	// KeyElms is: (Root,Meta,Text)ElmExtent
-	KeyElms
+	KeyElmsWithRanges
 	// ContentitySections is: Text_raw, Meta_raw, MetaFormat; MetaProps SU.PropSet
-	ContentitySections
+	ContentityRawSections
 	// XmlInfo is: XmlPreambleFields, XmlDoctype, XmlDoctypeFields, ENTITY stuff
 	/* XmlInfo */
-	// XmlContype is: "Unknown", "DTD", "DTDmod", "DTDent", "RootTagData",
-	// "RootTagMixedContent", "MultipleRootTags", "INVALID"}
+	// XmlContype is an enum: "Unknown", "DTD", "DTDmod", "DTDent",
+	// "RootTagData", "RootTagMixedContent", "MultipleRootTags", "INVALID"}
 	XmlContype
 	// XmlPreambleFields is nil if no preamble - it can always
 	// default to xmlmodels.STD_PreambleFields (from stdlib)

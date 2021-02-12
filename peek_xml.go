@@ -12,7 +12,7 @@ type XmlStructurePeek struct {
 	Preamble    string
 	Doctype     string
 	HasDTDstuff bool
-	KeyElmsWithRanges
+	ContentityStructure
 	error
 }
 
@@ -77,17 +77,17 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			// Found the XML root tag ?
 			localName := tok.Name.Local
 			switch localName {
-			case pXSP.RootElm.Name:
-				pXSP.RootElm.EndPos = LAT.FilePosition
-				pXSP.RootElm.EndPos.Pos += len(localName) + 3
+			case pXSP.Root.Name:
+				pXSP.Root.End = LAT.FilePosition
+				pXSP.Root.End.Pos += len(localName) + 3
 				println("--> End root elm at", LAT.FilePosition.String())
-			case pXSP.MetaElm.Name:
-				pXSP.MetaElm.EndPos = LAT.FilePosition
-				pXSP.MetaElm.EndPos.Pos += len(localName) + 3
+			case pXSP.Meta.Name:
+				pXSP.Meta.End = LAT.FilePosition
+				pXSP.Meta.End.Pos += len(localName) + 3
 				println("--> End meta elm at", LAT.FilePosition.String())
-			case pXSP.TextElm.Name:
-				pXSP.TextElm.EndPos = LAT.FilePosition
-				pXSP.TextElm.EndPos.Pos += len(localName) + 3
+			case pXSP.Text.Name:
+				pXSP.Text.End = LAT.FilePosition
+				pXSP.Text.End.Pos += len(localName) + 3
 				println("--> End text elm at", LAT.FilePosition.String())
 			}
 
@@ -98,9 +98,9 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			localName := tok.Name.Local
 
 			if !foundRootElm {
-				pXSP.RootElm.Name = localName
-				pXSP.RootElm.Atts = tok.Attr
-				pXSP.RootElm.BegPos = LAT.FilePosition
+				pXSP.Root.Name = localName
+				pXSP.Root.Atts = tok.Attr
+				pXSP.Root.Beg = LAT.FilePosition
 				foundRootElm = true
 
 				var pKeyElmTriplet *KeyElmTriplet
@@ -111,23 +111,23 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text
 					fmt.Printf("--> Got key elm.beg <%s> at %s (%d), it takes meta<%s> text<%s> \n",
-						localName, pXSP.RootElm.BegPos.String(), pXSP.RootElm.BegPos.Pos,
+						localName, pXSP.Root.Beg.String(), pXSP.Root.Beg.Pos,
 						metaTagToFind, textTagToFind)
 				}
 			} else {
 				if localName == metaTagToFind {
-					pXSP.MetaElm.Name = localName
-					pXSP.MetaElm.Atts = tok.Attr
-					pXSP.MetaElm.BegPos = LAT.FilePosition
+					pXSP.Meta.Name = localName
+					pXSP.Meta.Atts = tok.Attr
+					pXSP.Meta.Beg = LAT.FilePosition
 					fmt.Printf("--> Got meta elm <%s> at %s (%d) \n",
-						metaTagToFind, pXSP.MetaElm.BegPos.String(), pXSP.MetaElm.BegPos.Pos)
+						metaTagToFind, pXSP.Meta.Beg.String(), pXSP.Meta.Beg.Pos)
 				}
 				if localName == textTagToFind {
-					pXSP.TextElm.Name = localName
-					pXSP.TextElm.Atts = tok.Attr
-					pXSP.TextElm.BegPos = LAT.FilePosition
+					pXSP.Text.Name = localName
+					pXSP.Text.Atts = tok.Attr
+					pXSP.Text.Beg = LAT.FilePosition
 					fmt.Printf("--> Got text elm <%s> at %s (%d) \n",
-						textTagToFind, pXSP.TextElm.BegPos.String(), pXSP.TextElm.BegPos.Pos)
+						textTagToFind, pXSP.Text.Beg.String(), pXSP.Text.Beg.Pos)
 				}
 			}
 			didFirstPass = true

@@ -12,10 +12,12 @@ type AnalysisRecord struct {
 	// FileExt MimeType MType Doctype IsLwDita IsProcbl
 	ContypingInfo
 	MarkdownFlavor string
+
+	ContentityStructure
 	// KeyElms is: (Root,Meta,Text)ElmExtent
-	KeyElmsWithRanges
+	// KeyElmsWithRanges
 	// ContentitySections is: Text_raw, Meta_raw, MetaFormat; MetaProps SU.PropSet
-	ContentityRawSections
+	// ContentityRawSections
 	// XmlInfo is: XmlPreambleFields, XmlDoctype, XmlDoctypeFields, ENTITY stuff
 	/* XmlInfo */
 	// XmlContype is an enum: "Unknown", "DTD", "DTDmod", "DTDent",

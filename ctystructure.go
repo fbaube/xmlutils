@@ -142,19 +142,20 @@ func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 		return false
 	}
 	p.Raw = sCont
+	// BEFOR?: root<html(146:306)> meta<(0:0)> text<body(155:298)>
+	// AFTER?: (mmm:root (mmm:meta/:nnn) (146:html/:306) /root:nnn)
+	//    OR?: (mmm:root (146:html/:306) /root:nnn)
 	fmt.Printf("xm.nuCS: root<%s> meta<%s> text<%s> \n",
 		p.Root.String(), p.Meta.String(), p.Text.String())
 	if p.Meta.Beg.Pos != 0 {
-		// p.Meta_raw = sCont[p.Meta.Beg.Pos:p.Meta.End.Pos]
-		fmt.Printf("D=> xm.KE: set Meta_raw <%d:%d> %s \n",
+		fmt.Printf("D=> xm.KE: MetaRaw: <%d:%d> |%s| \n",
 			p.Meta.Beg.Pos, p.Meta.End.Pos, p.MetaRaw())
-		println("D=> xm.nuCS: Meta_raw:", p.MetaRaw())
+		// println("D=> xm.nuCS: MetaRaaw:", p.MetaRaw())
 	}
 	if p.Text.Beg.Pos != 0 {
-		// p.Text_raw = sCont[p.Text.Beg.Pos:p.Text.End.Pos]
-		fmt.Printf("D=> xm.KE: set Text_raw <%d:%d> %s \n",
+		fmt.Printf("D=> xm.KE: TextRaw: <%d:%d> |%s| \n",
 			p.Text.Beg.Pos, p.Text.End.Pos, p.TextRaw())
-		println("D=> xm.nuCS: Text_raw:", p.TextRaw())
+		// println("D=> xm.nuCS: TextRaw:", p.TextRaw())
 	}
 	return true
 }

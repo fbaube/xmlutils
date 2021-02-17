@@ -15,7 +15,7 @@ import (
 
 // XmlCatalogFile represents a parsed XML catalog file, at the top level.
 type XmlCatalogFile struct {
-	XMLName xml.Name `xml:"catalog"̀`
+	XMLName xml.Name `xml:"catalog"`
 	// "public" or "system"
 	Prefer                string                    `xml:"prefer,attr"`
 	XmlPublicIDsubrecords []PIDSIDcatalogFileRecord `xml:"public"`

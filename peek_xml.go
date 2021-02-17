@@ -110,8 +110,8 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				} else {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text
-					fmt.Printf("--> Got key elm.beg <%s> at %s (%d), it takes meta<%s> text<%s> \n",
-						localName, pXSP.Root.Beg.String(), pXSP.Root.Beg.Pos,
+					fmt.Printf("--> Got key elm.beg <%s> at %s, find meta<%s> text<%s> \n",
+						localName, pXSP.Root.Beg.String(),
 						metaTagToFind, textTagToFind)
 				}
 			} else {
@@ -119,15 +119,15 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 					pXSP.Meta.Name = localName
 					pXSP.Meta.Atts = tok.Attr
 					pXSP.Meta.Beg = LAT.FilePosition
-					fmt.Printf("--> Got meta elm <%s> at %s (%d) \n",
-						metaTagToFind, pXSP.Meta.Beg.String(), pXSP.Meta.Beg.Pos)
+					fmt.Printf("--> Got meta elm <%s> at %s \n",
+						metaTagToFind, pXSP.Meta.Beg.String())
 				}
 				if localName == textTagToFind {
 					pXSP.Text.Name = localName
 					pXSP.Text.Atts = tok.Attr
 					pXSP.Text.Beg = LAT.FilePosition
-					fmt.Printf("--> Got text elm <%s> at %s (%d) \n",
-						textTagToFind, pXSP.Text.Beg.String(), pXSP.Text.Beg.Pos)
+					fmt.Printf("--> Got text elm <%s> at %s \n",
+						textTagToFind, pXSP.Text.Beg.String())
 				}
 			}
 			didFirstPass = true

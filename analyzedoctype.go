@@ -68,8 +68,8 @@ var DTMTmap = []DoctypeMType{
 }
 
 func (p ContypingInfo) String() (s string) {
-	return fmt.Sprintf("filext:%s mtype:%s mimetype:%s isLwdita:%s isProcbl:%s",
-		p.FileExt, p.MType, p.MimeType, SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
+	return fmt.Sprintf("filext:%s mtype:%s mimetype:%s", //  isLwdita:%s isProcbl:%s",
+		p.FileExt, p.MType, p.MimeType) // , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
 }
 
 // AnalyzeDoctype expects to receive a file extension plus a content type
@@ -97,8 +97,7 @@ func (p ContypingInfo) String() (s string) {
 //
 func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 
-	println("--> xm.adt: inCntpg:", pC.String())
-	println("--> xm.adt: inDoctp:", aDoctype)
+	println("--> xm.adt: inDoctp?<%s> inCntpg:", SU.Yn("" == aDoctype), pC.String())
 	pC.IsLwDita = false
 	pC.IsProcbl = false
 	pDF := new(XmlDoctypeFields)

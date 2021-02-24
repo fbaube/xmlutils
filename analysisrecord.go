@@ -56,6 +56,9 @@ func (p AnalysisRecord) FileType() string {
 	// Normal case
 	// return S.ToUpper(MTypeSub(p.MType, 0))
 	// Cut & Paste
+	if p.MType == "" {
+		return "OOPS_NO_MType"
+	}
 	i := S.Index(p.MType, "/")
 	return S.ToUpper(p.MType[:i])
 }

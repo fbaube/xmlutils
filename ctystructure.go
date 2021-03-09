@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 
+	L "github.com/fbaube/mlog"
 	SU "github.com/fbaube/stringutils"
 )
 
@@ -93,19 +94,19 @@ func (p *ContentityStructure) CheckXmlSections() bool {
 		return false
 	}
 	if p.Meta.Name == "" {
-		println("--> Metadata header element not found")
+		L.L.Info("Metadata header element not found")
 	}
 	if p.Text.Name == "" {
-		println("--> Content body text element not found")
+		L.L.Info("Content body text element not found")
 	}
 	if p.Root.Beg.Pos != 0 && p.Root.End.Pos == 0 {
-		println("--> Key elm root has no closing tag")
+		L.L.Warning("Key elm root has no closing tag")
 	}
 	if p.Meta.Beg.Pos != 0 && p.Meta.End.Pos == 0 {
-		println("--> Key elm for metadata header has no closing tag")
+		L.L.Warning("Key elm for metadata header has no closing tag")
 	}
 	if p.Text.Beg.Pos != 0 && p.Text.End.Pos == 0 {
-		println("--> Key elm for body text has no closing tag")
+		L.L.Warning("Key elm for body text has no closing tag")
 	}
 	return true
 }
@@ -145,15 +146,15 @@ func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 	// BEFOR?: root<html(146:306)> meta<(0:0)> text<body(155:298)>
 	// AFTER?: (mmm:root (mmm:meta/:nnn) (146:html/:306) /root:nnn)
 	//    OR?: (mmm:root (146:html/:306) /root:nnn)
-	fmt.Printf("xm.nuCS: root<%s> meta<%s> text<%s> \n",
+	L.L.Dbg("xm.nuCS: root<%s> meta<%s> text<%s>",
 		p.Root.String(), p.Meta.String(), p.Text.String())
 	if p.Meta.Beg.Pos != 0 {
-		fmt.Printf("D=> xm.KE: MetaRaw: <%d:%d> |%s| \n",
+		L.L.Dbg("xm.KE: MetaRaw: <%d:%d> |%s|",
 			p.Meta.Beg.Pos, p.Meta.End.Pos, p.MetaRaw())
 		// println("D=> xm.nuCS: MetaRaaw:", p.MetaRaw())
 	}
 	if p.Text.Beg.Pos != 0 {
-		fmt.Printf("D=> xm.KE: TextRaw: <%d:%d> |%s| \n",
+		L.L.Dbg("xm.KE: TextRaw: <%d:%d> |%s|",
 			p.Text.Beg.Pos, p.Text.End.Pos, p.TextRaw())
 		// println("D=> xm.nuCS: TextRaw:", p.TextRaw())
 	}

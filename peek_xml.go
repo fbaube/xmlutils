@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	S "strings"
+
+	L "github.com/fbaube/mlog"
 )
 
 // XmlStructurePeek is called by FU.AnalyseFile(..)
@@ -48,8 +50,8 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 
 	latokens, e = DoParse_xml_locationAware(content)
 	if e != nil {
-		println("Peek: Error:", e.Error())
-		pXSP.SetError(fmt.Errorf("peek: parser error: %w", e))
+		L.L.Error("xm.peek: " + e.Error())
+		pXSP.SetError(fmt.Errorf("xm.peek: parser error: %w", e))
 		return pXSP
 	}
 	for _, LAT = range latokens {
@@ -66,7 +68,8 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				if (pXSP.Preamble == "") && !didFirstPass {
 					pXSP.Preamble = "<?xml " + s + "?>"
 				} else {
-					println("xm.peek: Got xml PI as non-first / repeated token ?!:", s)
+					// Not fatal
+					L.L.Error("xm.peek: Got xml PI as non-first / repeated token")
 				}
 			}
 			didFirstPass = true
@@ -80,15 +83,15 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			case pXSP.Root.Name:
 				pXSP.Root.End = LAT.FilePosition
 				pXSP.Root.End.Pos += len(localName) + 3
-				println("--> End root elm at", LAT.FilePosition.String())
+				L.L.Dbg("End root elm at: " + LAT.FilePosition.String())
 			case pXSP.Meta.Name:
 				pXSP.Meta.End = LAT.FilePosition
 				pXSP.Meta.End.Pos += len(localName) + 3
-				println("--> End meta elm at", LAT.FilePosition.String())
+				L.L.Dbg("End meta elm at: " + LAT.FilePosition.String())
 			case pXSP.Text.Name:
 				pXSP.Text.End = LAT.FilePosition
 				pXSP.Text.End.Pos += len(localName) + 3
-				println("--> End text elm at", LAT.FilePosition.String())
+				L.L.Dbg("End text elm at: " + LAT.FilePosition.String())
 			}
 
 		case xml.StartElement:
@@ -106,11 +109,11 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				var pKeyElmTriplet *KeyElmTriplet
 				pKeyElmTriplet = GetKeyElmTriplet(localName)
 				if pKeyElmTriplet == nil {
-					println("==> Can't find info for key elm:", localName)
+					L.L.Warning("Can't find info for key elm: " + localName)
 				} else {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text
-					fmt.Printf("--> Got key elm.beg <%s> at %s, find meta<%s> text<%s> \n",
+					L.L.Progress("Got key elm.beg <%s> at %s, find meta<%s> text<%s>",
 						localName, pXSP.Root.Beg.String(),
 						metaTagToFind, textTagToFind)
 				}
@@ -119,14 +122,14 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 					pXSP.Meta.Name = localName
 					pXSP.Meta.Atts = tok.Attr
 					pXSP.Meta.Beg = LAT.FilePosition
-					fmt.Printf("--> Got meta elm <%s> at %s \n",
+					L.L.Dbg("Got meta elm <%s> at %s",
 						metaTagToFind, pXSP.Meta.Beg.String())
 				}
 				if localName == textTagToFind {
 					pXSP.Text.Name = localName
 					pXSP.Text.Atts = tok.Attr
 					pXSP.Text.Beg = LAT.FilePosition
-					fmt.Printf("--> Got text elm <%s> at %s \n",
+					L.L.Dbg("Got text elm <%s> at %s \n",
 						textTagToFind, pXSP.Text.Beg.String())
 				}
 			}
@@ -144,7 +147,7 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			}
 			if S.HasPrefix(s, "DOCTYPE ") {
 				if pXSP.Doctype != "" {
-					println("xm.peek: Second DOCTYPE ?!")
+					L.L.Warning("xm.peek: Got second DOCTYPE")
 				} else {
 					pXSP.Doctype = "<!" + s + ">"
 				}

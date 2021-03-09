@@ -6,6 +6,7 @@ import (
 	S "strings"
 
 	// FU "github.com/fbaube/fileutils"
+	L "github.com/fbaube/mlog"
 	SU "github.com/fbaube/stringutils"
 )
 
@@ -97,7 +98,7 @@ func (p ContypingInfo) String() (s string) {
 //
 func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 
-	println("--> xm.adt: inDoctp?<%s> inCntpg:", SU.Yn("" == aDoctype), pC.String())
+	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn("" == aDoctype), pC.String())
 	pC.IsLwDita = false
 	pC.IsProcbl = false
 	pDF := new(XmlDoctypeFields)
@@ -114,7 +115,7 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 		pDF.MType = "html/cnt/html5"
 		// Not sure about this next line
 		pDF.PublicTextClass = "(HTML5)"
-		println("--> xm.adt: Got HTML5")
+		L.L.Dbg("xm.adt: Got HTML5")
 		return pDF
 	}
 	for _, p := range DTMTmap {
@@ -123,7 +124,7 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 			pDF.DTrootElm = p.RootElm
 			pDF.IsLwDita = p.IsLwDITA
 			pDF.IsProcbl = p.IsLwDITA
-			println("--> xm.adt: Got a match on", pDF.MType)
+			L.L.Dbg("xm.adt: Got a match on: " + pDF.MType)
 			return pDF
 		}
 	}
@@ -287,6 +288,7 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 
 	sd := pDF.PIDSIDcatalogFileRecord.PIDFPIfields.PublicTextClass
 	if sd == "" {
+		println("!!> Odd exit")
 		return pDF
 	}
 	// Now let's set the MType using some intelligent guesses,
@@ -307,5 +309,8 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 			panic("ROOT TAG MISMATCH")
 		}
 	*/
+	if pDF.MType == "" {
+		println("!!> No MType in AR!")
+	}
 	return pDF
 }

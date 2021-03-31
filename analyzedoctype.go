@@ -69,7 +69,7 @@ var DTMTmap = []DoctypeMType{
 }
 
 func (p ContypingInfo) String() (s string) {
-	return fmt.Sprintf("filext:%s mtype:%s mimetype:%s", //  isLwdita:%s isProcbl:%s",
+	return fmt.Sprintf("filext<%s> MType<%s> MIME-type<%s>", //  isLwdita:%s isProcbl:%s",
 		p.FileExt, p.MType, p.MimeType) // , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
 }
 
@@ -98,7 +98,7 @@ func (p ContypingInfo) String() (s string) {
 //
 func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 
-	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn("" == aDoctype), pC.String())
+	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn(aDoctype == ""), pC.String())
 	pC.IsLwDita = false
 	pC.IsProcbl = false
 	pDF := new(XmlDoctypeFields)
@@ -124,7 +124,7 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 			pDF.DTrootElm = p.RootElm
 			pDF.IsLwDita = p.IsLwDITA
 			pDF.IsProcbl = p.IsLwDITA
-			L.L.Dbg("xm.adt: Got a match on: " + pDF.MType)
+			L.L.Info("DOCTYPE matches: " + pDF.MType)
 			return pDF
 		}
 	}
@@ -274,6 +274,10 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 			return pDF
 		}
 		pPidSid, e = NewPIDSIDcatalogFileRecord("", qtd1)
+		if e != nil {
+			pDF.SetError(fmt.Errorf("xm.adt.NewPIDSIDcatalogFileRecord<%s|%s>: %w", qtd1, qtd2, e))
+			return pDF
+		}
 		// pDTF.PIDSIDcatalogFileRecord =
 	} else if PubOrSys == "PUBLIC" {
 		pPidSid, e = NewPIDSIDcatalogFileRecord(qtd1, qtd2)

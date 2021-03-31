@@ -24,7 +24,7 @@ func XmlAttsEqual(arg1, arg2 xml.Attr) bool {
 }
 
 func XmlAttSlicesEqual(arg1, arg2 []xml.Attr) bool {
-	if (arg1 == nil || len(arg1) == 0) && (arg2 == nil || len(arg2) == 0) {
+	if len(arg1) == 0 && len(arg2) == 0 {
 		return true
 	}
 	if arg1 == nil || arg2 == nil || len(arg1) == 0 || len(arg2) == 0 {

@@ -77,7 +77,7 @@ func (xdf XmlDoctypeFields) Echo() string {
 
 func (xdf XmlDoctypeFields) String() string {
 	TT := xdf.DTrootElm
-	if "" == TT {
+	if TT == "" {
 		TT = "(no rootElm)"
 	}
 	var dtmt = "[no MType determined]"

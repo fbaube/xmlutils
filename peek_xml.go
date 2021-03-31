@@ -62,7 +62,7 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			// type xml.ProcInst struct { Target string ; Inst []byte }
 			var tok xml.ProcInst
 			tok = xml.CopyToken(T).(xml.ProcInst)
-			if "xml" == S.TrimSpace(tok.Target) {
+			if S.TrimSpace(tok.Target) == "xml" {
 				s = S.TrimSpace(string(tok.Inst))
 				// println("XML-PR:", tok.Target, tok.Inst)
 				if (pXSP.Preamble == "") && !didFirstPass {

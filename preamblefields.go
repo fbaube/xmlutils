@@ -1,9 +1,10 @@
 package xmlmodels
 
 import (
-	"fmt"
 	"errors"
+	"fmt"
 	S "strings"
+
 	SU "github.com/fbaube/stringutils"
 )
 
@@ -29,7 +30,7 @@ type XmlPreambleFields struct {
 	// e.g. "0" means XML 1.0
 	MinorVersion string
 	// Valid values and forms are TBS.
-	Encoding     string
+	Encoding string
 	// "yes"  or "no"
 	IsStandalone bool
 }
@@ -60,8 +61,8 @@ func NewXmlPreambleFields(s string) (*XmlPreambleFields, error) {
 		s = S.TrimSuffix(s, "?>")
 		s = S.TrimSpace(s)
 	} else if
-		// if leading "xml ", remove it.
-		S.HasPrefix(s, "xml ") {
+	// if leading "xml ", remove it.
+	S.HasPrefix(s, "xml ") {
 		s = S.TrimPrefix(s, "xml ")
 		s = S.TrimSpace(s)
 	}
@@ -89,7 +90,7 @@ func NewXmlPreambleFields(s string) (*XmlPreambleFields, error) {
 				return p, errors.New("XML preamble has bad XML major version number: " + value[:2])
 			}
 			p.MinorVersion = S.TrimPrefix(value, "1.")
-			if "0" != p.MinorVersion {
+			if p.MinorVersion != "0" {
 				return p, errors.New("XML preamble has bad XML minor version number: " + p.MinorVersion)
 			}
 		case "standalone":

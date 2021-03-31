@@ -129,7 +129,7 @@ func NewSIDPIDcatalogRecordfromStartElm(se xml.StartElement) (pID *PIDSIDcatalog
 	// {"-", "OASIS", "DTD LIGHTWEIGHT DITA Topic", "EN"}
 	// fmt.Printf("(DD:PIDss) (%d) %v \n", len(ss), ss)
 	if len(ss) != 4 || ss[0] != "-" || ss[3] != "EN" {
-		return nil, fmt.Errorf("Malformed Public ID<%s>", attPid)
+		return nil, fmt.Errorf("malformed Public ID<%s>", attPid)
 	}
 	pID = new(PIDSIDcatalogFileRecord)
 	// NOTE DANGER This is probably relative not absolute,
@@ -138,7 +138,7 @@ func NewSIDPIDcatalogRecordfromStartElm(se xml.StartElement) (pID *PIDSIDcatalog
 	pID.XmlSystemID = XmlSystemID(attUri)
 	pID.AbsFilePath = attUri // FU.AbsFilePath(attUri)
 	pID.Organization = ss[1]
-	pID.IsOasis = ("OASIS" == pID.Organization)
+	pID.IsOasis = (pID.Organization == "OASIS")
 	pID.PublicTextClass, pID.PublicTextDesc = SU.SplitOffFirstWord(ss[2])
 	// ilog.Printf("PubID|%s|%s|%s|\n", p.Organization, p.PTClass, p.PTDesc)
 	// fmt.Printf("(DD:pPID) PubID<%s|%s|%s> AFP<%s>\n",
@@ -155,7 +155,7 @@ func NewSIDPIDcatalogRecordfromStartElm(se xml.StartElement) (pID *PIDSIDcatalog
 func (p *XmlCatalogFile) Validate() (retval bool) {
 	retval = true
 	for i, pEntry := range p.XmlPublicIDsubrecords {
-		if "" == pEntry.XmlPublicID {
+		if pEntry.XmlPublicID == "" {
 			println("OOPS:", pEntry.String())
 			panic(fmt.Sprintf("Missing Public ID in catalog entry[%d]: %s",
 				i, p.AbsFilePath)) // Parts.String()))
@@ -190,11 +190,11 @@ func (p *XmlCatalogFile) Validate() (retval bool) {
 		// fmt.Printf("(DD) (%d) %#v \n", len(ss), ss)
 		if len(ss) != 4 || ss[0] != "-" || ss[3] != "EN" {
 			retval = false
-			pEntry.Err = fmt.Errorf("Malformed Public ID: %s", s)
+			pEntry.Err = fmt.Errorf("malformed Public ID: %s", s)
 			continue
 		}
 		pEntry.Organization = ss[1]
-		pEntry.IsOasis = ("OASIS" == pEntry.Organization)
+		pEntry.IsOasis = (pEntry.Organization == "OASIS")
 		pEntry.PublicTextClass, pEntry.PublicTextDesc = SU.SplitOffFirstWord(ss[2])
 		// ilog.Printf("PubID|%s|%s|%s|\n", p.Organization, p.PTClass, p.PTDesc)
 		// fmt.Printf("(DD:pPID) PubID<%s|%s|%s>\n", p.Organization, p.PTClass, p.PTDesc)

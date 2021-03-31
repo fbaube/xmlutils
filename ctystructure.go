@@ -14,17 +14,27 @@ type KeyElmTriplet struct {
 	Text string
 }
 
-// ContentityStructure is embedded in FU.AnalysisRecord
+// ContentityStructure is embedded in XM.AnalysisRecord
 type ContentityStructure struct {
 	Raw string // The entire input file
 	// Text_raw + Meta_raw = Raw (maybe plus surrounding tags)
 	Root Span // not meaningful for non-XML
 	Text Span
 	Meta Span
-	// MetaFormat is? YAML,XML
+	// MetaFormat is? "YAML","XML"
 	MetaFormat string
 	// MetaProps uses dot separators if hierarchy is needed
 	MetaProps SU.PropSet
+}
+
+func (p *ContentityStructure) GetSpan(sp Span) string {
+	if sp.End.Pos == 0 {
+		return ""
+	}
+	if sp.End.Pos == -1 && sp.Beg.Pos == 0 {
+		return p.Raw
+	}
+	return p.Raw[sp.Beg.Pos:sp.End.Pos]
 }
 
 /* KeyElmsWithRanges is embedded in XmlStructurePeek
@@ -35,8 +45,8 @@ type Spans struct {
 }
 */
 
+// Span FIXME Make this a ptr to a ContentityNode
 type Span struct {
-	// FIXME Make this a ptr to a ContentityNode
 	Name string
 	Atts []xml.Attr
 	FileRange
@@ -54,6 +64,11 @@ type FileRange struct {
 } */
 
 var KeyElmTriplets = []*KeyElmTriplet{
+	// WHATWG: "The head element of a document is the first head element that
+	// is a child of the html element, if there is one, or null otherwise.
+	// The body element of a document is the first of the html element's
+	// children that is either a body element or a frameset element, or
+	// null if there is no such element.
 	{"html", "head", "body"},
 	{"topic", "prolog", "body"},
 	{"map", "topicmeta", ""},
@@ -64,6 +79,17 @@ var KeyElmTriplets = []*KeyElmTriplet{
 	{"glossgroup", "", ""},
 }
 
+// HtmlKeyContentElms is elements that often surround the actual page content.
+var HtmlKeyContentElms = []string{"main", "content"}
+
+// HtmlSectioningContentElms have internal sections and subsections.
+var HtmlSectioningContentElms = []string{"article", "aside", "nav", "section"}
+
+// HtmlSectioningRootElms have their OWN outlines, separate from the
+// outlines of their ancestors, i.e. self-contained hierarchies.
+var HtmlSectioningRootElms = []string{
+	"blockquote", "body", "details", "dialog", "fieldset", "figure", "td"}
+
 func GetKeyElmTriplet(localName string) *KeyElmTriplet {
 	for _, ke := range KeyElmTriplets {
 		if ke.Name == localName {
@@ -73,8 +99,8 @@ func GetKeyElmTriplet(localName string) *KeyElmTriplet {
 	return nil
 }
 
-func (p *Span) String() string {
-	return fmt.Sprintf("%s(%d:%d)", p.Name, p.Beg.Pos, p.End.Pos)
+func (sp Span) String() string {
+	return fmt.Sprintf("%s[%d:%d]", sp.Name, sp.Beg.Pos, sp.End.Pos)
 }
 
 func (p *ContentityStructure) HasNone() bool {
@@ -82,22 +108,26 @@ func (p *ContentityStructure) HasNone() bool {
 }
 
 func (p *ContentityStructure) SetToAllText() {
-	println("!!> alltext: no-op")
-	return
+	p.Root.Beg.Pos = 0
+	p.Root.End.Pos = len(p.Raw)
+	p.Meta.Beg.Pos = 0
+	p.Meta.End.Pos = 0
+	p.Text.Beg.Pos = 0
+	p.Text.End.Pos = len(p.Raw)
 }
 
 // CheckXmlSections returns true is a root element was found,
 // and writes messages about other findings.
 func (p *ContentityStructure) CheckXmlSections() bool {
 	if p.Root.Name == "" {
-		// println("--> Key elm RootElm not found")
+		L.L.Info("No XML root element found")
 		return false
 	}
 	if p.Meta.Name == "" {
-		L.L.Info("Metadata header element not found")
+		L.L.Info("No top-level metadata header element found")
 	}
 	if p.Text.Name == "" {
-		L.L.Info("Content body text element not found")
+		L.L.Info("No top-level content body text element found")
 	}
 	if p.Root.Beg.Pos != 0 && p.Root.End.Pos == 0 {
 		L.L.Warning("Key elm root has no closing tag")
@@ -124,7 +154,7 @@ func (p *KeyElmsWithRanges) IsSplittable() bool {
 		p.TextElm.EndPos.Pos != 0
 }
 */
-
+/*
 func (p *ContentityStructure) MetaRaw() string {
 	return p.Raw[p.Meta.FileRange.Beg.Pos:p.Meta.FileRange.End.Pos]
 }
@@ -132,6 +162,7 @@ func (p *ContentityStructure) MetaRaw() string {
 func (p *ContentityStructure) TextRaw() string {
 	return p.Raw[p.Text.FileRange.Beg.Pos:p.Text.FileRange.End.Pos]
 }
+*/
 
 func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 	// If nothing found, assume it is entirely Text.
@@ -146,16 +177,16 @@ func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 	// BEFOR?: root<html(146:306)> meta<(0:0)> text<body(155:298)>
 	// AFTER?: (mmm:root (mmm:meta/:nnn) (146:html/:306) /root:nnn)
 	//    OR?: (mmm:root (146:html/:306) /root:nnn)
-	L.L.Dbg("xm.nuCS: root<%s> meta<%s> text<%s>",
+	L.L.Info("Key element ranges: root<%s> meta<%s> text<%s>",
 		p.Root.String(), p.Meta.String(), p.Text.String())
 	if p.Meta.Beg.Pos != 0 {
 		L.L.Dbg("xm.KE: MetaRaw: <%d:%d> |%s|",
-			p.Meta.Beg.Pos, p.Meta.End.Pos, p.MetaRaw())
+			p.Meta.Beg.Pos, p.Meta.End.Pos, p.GetSpan(p.Meta)) // p.MetaRaw())
 		// println("D=> xm.nuCS: MetaRaaw:", p.MetaRaw())
 	}
 	if p.Text.Beg.Pos != 0 {
 		L.L.Dbg("xm.KE: TextRaw: <%d:%d> |%s|",
-			p.Text.Beg.Pos, p.Text.End.Pos, p.TextRaw())
+			p.Text.Beg.Pos, p.Text.End.Pos, p.GetSpan(p.Text)) // p.TextRaw())
 		// println("D=> xm.nuCS: TextRaw:", p.TextRaw())
 	}
 	return true

@@ -97,7 +97,7 @@ func NewPIDSIDcatalogFileRecord(pid string, sid string) (*PIDSIDcatalogFileRecor
 		p.XmlPublicID = XmlPublicID(pid)
 		p.Registration = ss[0]
 		p.Organization = ss[1]
-		p.IsOasis = ("OASIS" == p.Organization)
+		p.IsOasis = (p.Organization == "OASIS")
 		p.PublicTextClass, p.PublicTextDesc = SU.SplitOffFirstWord(ss[2])
 		// ilog.Printf("PubID|%s|%s|%s|\n", p.Organization, p.PTClass, p.PTDesc)
 		// fmt.Printf("(DD:pPID) PubID<%s|%s|%s>\n", p.Organization, p.PTClass, p.PTDesc)

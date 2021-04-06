@@ -1,25 +1,25 @@
 package xmlmodels
 
-// DitaMarkupLg is a [Lw]DITA flavor. See enumeration "DitaMLs".
-type DitaMarkupLg string
+// DitaFlavor is a [Lw]DITA flavor. See enumeration "DitaFlavors".
+type DitaFlavor string
 
 // DitaContype is a [Lw]DITA Topic, Map, etc. See enumeration "DitaContypes".
 type DitaContype string
 
-// DitaInfo is two enumerations (so far): Markup language and Content type.
+// DitaInfo is two enumerations (so far): Markup flavor and Content type.
 // They are both "" IFF the file is not DITA/LwDITA.
-//  - ML: "1.2", "1.3", "XDITA", "HDITA", "MDATA".
+//  - MF: "1.2", "1.3", "XDITA", "HDITA", "MDATA".
 //  - CT: "Map", "Bookmap", "Topic", "Task", "Concept", "Reference",
 //        "Dita", "Glossary", "Conrefs", "LwMap", "LwTopic"
 /*
 type DitaInfo struct {
-	DitaMarkupLg
+	DitaFlavor
 	DitaContype
 }
 */
 
-// DitaMLs - see "type DitaMarkupLg".
-var DitaMLs = []DitaMarkupLg{"1.2", "1.3", "XDITA", "HDITA", "MDATA"}
+// DitaFlavors - see "type DitaFlavor".
+var DitaFlavors = []DitaFlavor{"1.2", "1.3", "XDITA", "HDITA", "MDATA"}
 
 // DitaContypes - see "type DitaContype".
 var DitaContypes = []DitaContype{"Map", "Bookmap", "Topic", "Task", "Concept",
@@ -27,11 +27,11 @@ var DitaContypes = []DitaContype{"Map", "Bookmap", "Topic", "Task", "Concept",
 
 /*
 func (di DitaInfo) String() string {
-	return fmt.Sprintf("ML<%s> CT<%s>", di.DitaMarkupLg, di.DitaContype)
+	return fmt.Sprintf("Flav<%s> CT<%s>", di.DitaFlavor, di.DitaContype)
 }
 
 func (di DitaInfo) DString() string {
-	return "<-- DITA " + string(di.DitaMarkupLg) +
+	return "<-- DITA " + string(di.DitaFlavor) +
 		" " + string(di.DitaContype) + " -->\n"
 }
 */

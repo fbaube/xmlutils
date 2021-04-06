@@ -6,7 +6,7 @@ import (
 
 // AnalysisRecord is the results of content analysis. It is named
 // "Record" because it is meant to be persisted to the database.
-// It is embedded in db.ContentRecord
+// It is embedded in db.ContentityRecord
 type AnalysisRecord struct {
 	// ContypingInfo is simple fields:
 	// FileExt MimeType MType Doctype IsLwDita IsProcbl
@@ -30,7 +30,7 @@ type AnalysisRecord struct {
 	// is "", i.e. if there is no DOCTYPE declaration
 	*XmlDoctypeFields
 	// DitaInfo
-	DitaMarkupLg
+	DitaFlavor
 	DitaContype
 }
 

@@ -17,7 +17,7 @@ type AnalysisRecord struct {
 	ContypingInfo
 	MarkdownFlavor string
 
-	ContentityStructure `db:"contentitystructure"`
+	ContentityStructure
 	// KeyElms is: (Root,Meta,Text)ElmExtent
 	// KeyElmsWithRanges
 	// ContentitySections is: Text_raw, Meta_raw, MetaFormat; MetaProps SU.PropSet
@@ -29,10 +29,10 @@ type AnalysisRecord struct {
 	XmlContype string
 	// XmlPreambleFields is nil if no preamble - it can always
 	// default to xmlmodels.STD_PreambleFields (from stdlib)
-	*XmlPreambleFields `db:"xmlpreamblefields"`
+	*XmlPreambleFields
 	// XmlDoctypeFields is a ptr - nil if ContypingInfo.Doctype
 	// is "", i.e. if there is no DOCTYPE declaration
-	*XmlDoctypeFields `db:"xmldoctypefields"`
+	*XmlDoctypeFields
 	// DitaInfo
 	DitaFlavor  string
 	DitaContype string

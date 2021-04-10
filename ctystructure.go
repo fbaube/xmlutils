@@ -8,12 +8,6 @@ import (
 	SU "github.com/fbaube/stringutils"
 )
 
-type KeyElmTriplet struct {
-	Name string
-	Meta string
-	Text string
-}
-
 // ContentityStructure is embedded in XM.AnalysisRecord
 type ContentityStructure struct {
 	Raw string // The entire input file
@@ -47,8 +41,9 @@ type Spans struct {
 
 // Span FIXME Make this a ptr to a ContentityNode
 type Span struct {
-	Name string
-	Atts []xml.Attr
+	TagName string
+	Atts    []xml.Attr
+	// SliceBounds
 	FileRange
 }
 
@@ -57,11 +52,15 @@ type FileRange struct {
 	End FilePosition
 }
 
-/* type FilePosition struct {
-	Pos int // Position, from xml.Decoder.InputOffset()
-	Lnr int // Line number
-	Col int // Column [number]
-} */
+type SliceBounds struct {
+	BegIdx, EndIdx int
+}
+
+type KeyElmTriplet struct {
+	Name string
+	Meta string
+	Text string
+}
 
 var KeyElmTriplets = []*KeyElmTriplet{
 	// WHATWG: "The head element of a document is the first head element that
@@ -100,11 +99,11 @@ func GetKeyElmTriplet(localName string) *KeyElmTriplet {
 }
 
 func (sp Span) String() string {
-	return fmt.Sprintf("%s[%d:%d]", sp.Name, sp.Beg.Pos, sp.End.Pos)
+	return fmt.Sprintf("%s[%d:%d]", sp.TagName, sp.Beg.Pos, sp.End.Pos)
 }
 
 func (p *ContentityStructure) HasNone() bool {
-	return p.Root.Name == "" && p.Meta.Name == "" && p.Text.Name == ""
+	return p.Root.TagName == "" && p.Meta.TagName == "" && p.Text.TagName == ""
 }
 
 func (p *ContentityStructure) SetToAllText() {
@@ -119,14 +118,14 @@ func (p *ContentityStructure) SetToAllText() {
 // CheckXmlSections returns true is a root element was found,
 // and writes messages about other findings.
 func (p *ContentityStructure) CheckXmlSections() bool {
-	if p.Root.Name == "" {
+	if p.Root.TagName == "" {
 		L.L.Info("No XML root element found")
 		return false
 	}
-	if p.Meta.Name == "" {
+	if p.Meta.TagName == "" {
 		L.L.Info("No top-level metadata header element found")
 	}
-	if p.Text.Name == "" {
+	if p.Text.TagName == "" {
 		L.L.Info("No top-level content body text element found")
 	}
 	if p.Root.Beg.Pos != 0 && p.Root.End.Pos == 0 {

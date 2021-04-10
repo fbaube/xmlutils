@@ -80,15 +80,15 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			// Found the XML root tag ?
 			localName := tok.Name.Local
 			switch localName {
-			case pXSP.Root.Name:
+			case pXSP.Root.TagName:
 				pXSP.Root.End = LAT.FilePosition
 				pXSP.Root.End.Pos += len(localName) + 3
 				L.L.Dbg("End root elm at: " + LAT.FilePosition.String())
-			case pXSP.Meta.Name:
+			case pXSP.Meta.TagName:
 				pXSP.Meta.End = LAT.FilePosition
 				pXSP.Meta.End.Pos += len(localName) + 3
 				L.L.Dbg("End meta elm at: " + LAT.FilePosition.String())
-			case pXSP.Text.Name:
+			case pXSP.Text.TagName:
 				pXSP.Text.End = LAT.FilePosition
 				pXSP.Text.End.Pos += len(localName) + 3
 				L.L.Dbg("End text elm at: " + LAT.FilePosition.String())
@@ -101,7 +101,7 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			localName := tok.Name.Local
 
 			if !foundRootElm {
-				pXSP.Root.Name = localName
+				pXSP.Root.TagName = localName
 				pXSP.Root.Atts = tok.Attr
 				pXSP.Root.Beg = LAT.FilePosition
 				foundRootElm = true
@@ -119,14 +119,14 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				}
 			} else {
 				if localName == metaTagToFind {
-					pXSP.Meta.Name = localName
+					pXSP.Meta.TagName = localName
 					pXSP.Meta.Atts = tok.Attr
 					pXSP.Meta.Beg = LAT.FilePosition
 					L.L.Dbg("Got meta elm <%s> at %s",
 						metaTagToFind, pXSP.Meta.Beg.String())
 				}
 				if localName == textTagToFind {
-					pXSP.Text.Name = localName
+					pXSP.Text.TagName = localName
 					pXSP.Text.Atts = tok.Attr
 					pXSP.Text.Beg = LAT.FilePosition
 					L.L.Dbg("Got text elm <%s> at %s \n",

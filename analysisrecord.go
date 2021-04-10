@@ -4,6 +4,10 @@ import (
 	S "strings"
 )
 
+type MType string
+type Doctype string
+type MimeType string
+
 // AnalysisRecord is the results of content analysis. It is named
 // "Record" because it is meant to be persisted to the database.
 // It is embedded in db.ContentityRecord
@@ -13,7 +17,7 @@ type AnalysisRecord struct {
 	ContypingInfo
 	MarkdownFlavor string
 
-	ContentityStructure
+	ContentityStructure `db:"contentitystructure"`
 	// KeyElms is: (Root,Meta,Text)ElmExtent
 	// KeyElmsWithRanges
 	// ContentitySections is: Text_raw, Meta_raw, MetaFormat; MetaProps SU.PropSet
@@ -22,16 +26,16 @@ type AnalysisRecord struct {
 	/* XmlInfo */
 	// XmlContype is an enum: "Unknown", "DTD", "DTDmod", "DTDent",
 	// "RootTagData", "RootTagMixedContent", "MultipleRootTags", "INVALID"}
-	XmlContype
+	XmlContype string
 	// XmlPreambleFields is nil if no preamble - it can always
 	// default to xmlmodels.STD_PreambleFields (from stdlib)
-	*XmlPreambleFields
+	*XmlPreambleFields `db:"xmlpreamblefields"`
 	// XmlDoctypeFields is a ptr - nil if ContypingInfo.Doctype
 	// is "", i.e. if there is no DOCTYPE declaration
-	*XmlDoctypeFields
+	*XmlDoctypeFields `db:"xmldoctypefields"`
 	// DitaInfo
-	DitaFlavor
-	DitaContype
+	DitaFlavor  string
+	DitaContype string
 }
 
 // IsXML is true for all XML, including all HTML.

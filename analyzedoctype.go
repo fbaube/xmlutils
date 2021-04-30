@@ -15,7 +15,7 @@ import (
 
 var knownRootTags = []string{"html", "map", "topic", "task", "concept", "reference"}
 
-// ContypingInfo has fields related to typing content (i.e. determining its type).
+// ContypingInfo has simple fields related to typing content (i.e. determining its type).
 type ContypingInfo struct {
 	FileExt  string
 	MimeType string

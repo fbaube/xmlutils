@@ -25,3 +25,9 @@ func (fp FilePosition) String() string {
 	}
 	return fmt.Sprintf("[%d](L%02dc%02d)", fp.Pos, fp.Lnr, fp.Col)
 }
+
+func NewFilePosition(i int) *FilePosition {
+	p := new(FilePosition)
+	p.Pos = i
+	return p
+}

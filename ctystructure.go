@@ -10,9 +10,10 @@ import (
 
 // ContentityStructure is embedded in XM.AnalysisRecord
 type ContentityStructure struct {
-	Raw string // The entire input file
 	// Text_raw + Meta_raw = Raw (maybe plus surrounding tags)
-	Root Span // not meaningful for non-XML
+	Raw string // The entire input file
+	// Root is not meaningful for non-XML
+	Root Span
 	Text Span
 	Meta Span
 	// MetaFormat is? "YAML","XML"

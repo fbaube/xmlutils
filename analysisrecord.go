@@ -16,7 +16,7 @@ type AnalysisRecord struct {
 	// FileExt MimeType MType Doctype IsLwDita IsProcbl
 	ContypingInfo
 	MarkdownFlavor string
-
+	// ContentityStructure includes Raw (the entire input content)
 	ContentityStructure
 	// KeyElms is: (Root,Meta,Text)ElmExtent
 	// KeyElmsWithRanges

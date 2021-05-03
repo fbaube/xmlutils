@@ -29,6 +29,12 @@ func (p *ContentityStructure) GetSpan(sp Span) string {
 	if sp.End.Pos == -1 && sp.Beg.Pos == 0 {
 		return p.Raw
 	}
+	if sp.Beg.Pos > sp.End.Pos {
+		panic(fmt.Sprintf("BEG %d END %d", sp.Beg.Pos, sp.End.Pos))
+	}
+	if len(p.Raw) == 0 {
+		panic("Zero-len Raw")
+	}
 	return p.Raw[sp.Beg.Pos:sp.End.Pos]
 }
 
@@ -173,7 +179,10 @@ func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 		p.ContentityStructure.Text.FileRange.End.Pos = len(p.Raw)
 		return false
 	}
-	p.Raw = sCont
+	if p.Raw == "" {
+		L.L.Error("MakeXmlContentitySections: no Raw")
+		p.Raw = sCont
+	}
 	// BEFOR?: root<html(146:306)> meta<(0:0)> text<body(155:298)>
 	// AFTER?: (mmm:root (mmm:meta/:nnn) (146:html/:306) /root:nnn)
 	//    OR?: (mmm:root (146:html/:306) /root:nnn)

@@ -109,7 +109,7 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				var pKeyElmTriplet *KeyElmTriplet
 				pKeyElmTriplet = GetKeyElmTriplet(localName)
 				if pKeyElmTriplet == nil {
-					L.L.Warning("Can't find info for key elm: " + localName)
+					L.L.Warning("No info for key elm: " + localName)
 				} else {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text

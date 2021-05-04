@@ -180,13 +180,13 @@ func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 		return false
 	}
 	if p.Raw == "" {
-		L.L.Error("MakeXmlContentitySections: no Raw")
+		L.L.Dbg("MakeXmlContentitySections: no Raw")
 		p.Raw = sCont
 	}
 	// BEFOR?: root<html(146:306)> meta<(0:0)> text<body(155:298)>
 	// AFTER?: (mmm:root (mmm:meta/:nnn) (146:html/:306) /root:nnn)
 	//    OR?: (mmm:root (146:html/:306) /root:nnn)
-	L.L.Info("Key element ranges: root<%s> meta<%s> text<%s>",
+	L.L.Info("Key elm ranges: root<%s> meta<%s> text<%s>",
 		p.Root.String(), p.Meta.String(), p.Text.String())
 	if p.Meta.Beg.Pos != 0 {
 		L.L.Dbg("xm.KE: MetaRaw: <%d:%d> |%s|",
@@ -195,7 +195,8 @@ func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 	}
 	if p.Text.Beg.Pos != 0 {
 		L.L.Dbg("xm.KE: TextRaw: <%d:%d> |%s|",
-			p.Text.Beg.Pos, p.Text.End.Pos, p.GetSpan(p.Text)) // p.TextRaw())
+			p.Text.Beg.Pos, p.Text.End.Pos,
+			SU.NormalizeWhitespace(p.GetSpan(p.Text)))
 		// println("D=> xm.nuCS: TextRaw:", p.TextRaw())
 	}
 	return true

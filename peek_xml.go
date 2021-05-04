@@ -113,7 +113,7 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				} else {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text
-					L.L.Progress("Got key elm.beg <%s> at %s, find meta<%s> text<%s>",
+					L.L.Progress("Got key elm.beg <%s>:%s => meta<%s> text<%s>",
 						localName, pXSP.Root.Beg.String(),
 						metaTagToFind, textTagToFind)
 				}

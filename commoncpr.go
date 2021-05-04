@@ -20,12 +20,13 @@ func NewCommonCPR() *CommonCPR {
 }
 
 func (p *CommonCPR) AsString(i int) string {
-	if p.NodeDepths == nil {
-		println("OOPS NodeDepths")
+	var sND, sFP = "?", "?"
+
+	if p.NodeDepths != nil && len(p.NodeDepths) > 0 {
+		sND = fmt.Sprintf("%d", p.NodeDepths[i])
 	}
-	if p.FilePosns == nil {
-		println("OOPS FilePosns")
+	if p.FilePosns != nil && len(p.FilePosns) > 0 && p.FilePosns[i].Pos > 0 {
+		sFP = fmt.Sprintf("%03d", p.FilePosns[i].Pos)
 	}
-	// fmt.Printf("## CmnCPR: i %d nd %d fp %d \n", i, len(p.NodeDepths), len(p.FilePosns))
-	return fmt.Sprintf("i%02d,Lv%02d,%s", i, p.NodeDepths[i], p.FilePosns[i])
+	return fmt.Sprintf("i%02d,L%s,c%s", i, sND, sFP)
 }

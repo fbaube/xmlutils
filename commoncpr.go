@@ -9,7 +9,8 @@ type CommonCPR struct {
 	NodeDepths []int
 	FilePosns  []*FilePosition
 	CPR_raw    string
-	DumpDest   io.Writer
+	// DiagDest is diagnostics destination
+	DiagDest io.Writer
 }
 
 func NewCommonCPR() *CommonCPR {

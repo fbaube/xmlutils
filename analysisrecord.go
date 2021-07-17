@@ -1,4 +1,4 @@
-package xmlmodels
+package xmutils
 
 import (
 	S "strings"

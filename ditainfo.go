@@ -1,4 +1,4 @@
-package xmlmodels
+package xmlutils
 
 // DitaFlavor is a [Lw]DITA flavor. See enumeration "DitaFlavors".
 type DitaFlavor string

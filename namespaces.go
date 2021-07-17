@@ -1,4 +1,4 @@
-package xmlmodels
+package xmlutils
 
 // This file: About the "xml" namespace
 

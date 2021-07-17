@@ -1,4 +1,4 @@
-package xmlmodels
+package xmlutils
 
 /*
 type XmlInfo struct {

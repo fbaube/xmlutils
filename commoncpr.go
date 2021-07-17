@@ -1,4 +1,4 @@
-package xmlmodels
+package xmlutils
 
 import (
 	"fmt"

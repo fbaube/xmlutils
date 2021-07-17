@@ -28,7 +28,7 @@ type AnalysisRecord struct {
 	// "RootTagData", "RootTagMixedContent", "MultipleRootTags", "INVALID"}
 	XmlContype string
 	// XmlPreambleFields is nil if no preamble - it can always
-	// default to xmlmodels.STD_PreambleFields (from stdlib)
+	// default to xmlutils.STD_PreambleFields (from stdlib)
 	*XmlPreambleFields
 	// XmlDoctypeFields is a ptr - nil if ContypingInfo.Doctype
 	// is "", i.e. if there is no DOCTYPE declaration

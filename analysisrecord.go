@@ -1,4 +1,4 @@
-package xmutils
+package xmlutils
 
 import (
 	S "strings"

@@ -50,7 +50,7 @@ func (p *AnalysisRecord) String() string {
 
 // FileType returns "XML", "MKDN", "HTML", or future stuff TBD.
 func (p AnalysisRecord) FileType() string {
-	// Exceptional case
+	// HTML is an exceptional case
 	if S.HasPrefix(p.MType, "xml/html/") {
 		return "HTML"
 	}
@@ -64,5 +64,8 @@ func (p AnalysisRecord) FileType() string {
 		return "OOPS_NO_MType"
 	}
 	i := S.Index(p.MType, "/")
+	if i == -1 {
+		return "OOPS_NO_/_IN_MType:" + p.MType
+	}
 	return S.ToUpper(p.MType[:i])
 }

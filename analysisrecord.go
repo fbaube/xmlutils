@@ -1,6 +1,7 @@
 package xmlutils
 
 import (
+	"strings"
 	S "strings"
 )
 
@@ -45,7 +46,38 @@ func (p AnalysisRecord) IsXML() bool {
 }
 
 func (p *AnalysisRecord) String() string {
-	return ("AR!")
+	/*
+		// ContypingInfo is simple fields:
+		// FileExt MimeType MType Doctype IsLwDita IsProcbl
+		ContypingInfo
+		MarkdownFlavor string
+		// ContentityStructure includes Raw (the entire input content)
+		ContentityStructure
+		// KeyElms is: (Root,Meta,Text)ElmExtent
+		// KeyElmsWithRanges
+		// ContentitySections is: Text_raw, Meta_raw, MetaFormat; MetaProps SU.PropSet
+		// ContentityRawSections
+		// XmlInfo is: XmlPreambleFields, XmlDoctype, XmlDoctypeFields, ENTITY stuff
+		/* XmlInfo * /
+		// XmlContype is an enum: "Unknown", "DTD", "DTDmod", "DTDent",
+		// "RootTagData", "RootTagMixedContent", "MultipleRootTags", "INVALID"}
+		XmlContype string
+		// XmlPreambleFields is nil if no preamble - it can always
+		// default to xmlutils.STD_PreambleFields (from stdlib)
+		*XmlPreambleFields
+		// XmlDoctypeFields is a ptr - nil if ContypingInfo.Doctype
+		// is "", i.e. if there is no DOCTYPE declaration
+		*XmlDoctypeFields
+		// DitaInfo
+		DitaFlavor  string
+		DitaContype string
+	*/
+	var sb strings.Builder
+	sb.WriteString("AnalysisRecord: ")
+	sb.WriteString("CntpgInfo: \n\t" + p.ContypingInfo.String() + "\n\t")
+	sb.WriteString("XmlCntp<" + p.XmlContype + "> ")
+	sb.WriteString("XmlDctpFlds<" + p.XmlDoctypeFields.String() + "> ")
+	return sb.String()
 }
 
 // FileType returns "XML", "MKDN", "HTML", or future stuff TBD.

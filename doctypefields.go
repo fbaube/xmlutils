@@ -52,7 +52,6 @@ type XmlDoctypeFields struct {
 	// MType is here because a DOCTYPE does indeed give
 	// us enough information to create one.
 	// DoctypeMType string
-	ContypingInfo
 	error
 }
 
@@ -80,13 +79,9 @@ func (xdf XmlDoctypeFields) String() string {
 	if TT == "" {
 		TT = "(no rootElm)"
 	}
-	var dtmt = "[no MType determined]"
-	if xdf.MType != "" {
-		dtmt = xdf.MType
-	}
 	// "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN" "lw-topic.dtd"
-	return fmt.Sprintf("rootElm:%s,MType:%s,Cntpg:%s,PIDSIDrec <|> %s <|>",
-		TT, dtmt, xdf.ContypingInfo, xdf.PIDSIDcatalogFileRecord.DString())
+	return fmt.Sprintf("rootElm:%s,PIDSIDrec <|> %s <|>",
+		TT /* dtmt, xdf.ContypingInfo, */, xdf.PIDSIDcatalogFileRecord.DString())
 }
 
 func (xdf XmlDoctypeFields) DString() string {

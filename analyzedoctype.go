@@ -98,11 +98,11 @@ func (p ContypingInfo) String() (s string) {
 //
 func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 
+	var pDF *XmlDoctypeFields
 	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn(aDoctype == ""), pC.String())
 	pC.IsLwDita = false
 	pC.IsProcbl = false
-	pDF := new(XmlDoctypeFields)
-	pDF.ContypingInfo = *pC
+	pDF = new(XmlDoctypeFields)
 
 	aDoctype = S.TrimSpace(aDoctype)
 
@@ -112,19 +112,21 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 	// A quick win ?
 	if aDoctype == "<!DOCTYPE html>" || aDoctype == "html" {
 		pDF.DTrootElm = "html"
-		pDF.MType = "html/cnt/html5"
+		pC.MType = "html/cnt/html5"
 		// Not sure about this next line
 		pDF.PublicTextClass = "(HTML5)"
 		L.L.Dbg("xm.adt: Got HTML5")
 		return pDF
 	}
 	for _, p := range DTMTmap {
+		// println("(1) " + aDoctype)
+		// println("(2) " + p.ToMatch)
 		if S.Contains(aDoctype, p.ToMatch) {
-			pDF.MType = p.DoctypesMType
 			pDF.DTrootElm = p.RootElm
-			pDF.IsLwDita = p.IsLwDITA
-			pDF.IsProcbl = p.IsLwDITA
-			L.L.Info("DOCTYPE matches: " + pDF.MType)
+			pC.MType = p.DoctypesMType
+			pC.IsLwDita = p.IsLwDITA
+			pC.IsProcbl = p.IsLwDITA
+			L.L.Info("DOCTYPE matches: " + pC.MType)
 			return pDF
 		}
 	}
@@ -213,7 +215,7 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 	if S.EqualFold(aDoctype, "html") || S.EqualFold(aDoctype, "html>") {
 		println("==> Caught HTML5 doctype later rather than sooner ?!")
 		pDF.DTrootElm = "html"
-		pDF.MType = "html/cnt/html5"
+		pC.MType = "html/cnt/html5"
 		pDF.PublicTextClass = "(HTML5)"
 		return pDF
 	}
@@ -298,12 +300,12 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 	// Now let's set the MType using some intelligent guesses,
 	// to compare to the results of GetMTypeByDocType(..)
 	if S.Contains(sd, "DITA") {
-		pDF.MType = "dita/[TBS]/" + pDF.DTrootElm
+		pC.MType = "dita/[TBS]/" + pDF.DTrootElm
 	}
 	if S.Contains(sd, "XDITA") ||
 		S.Contains(sd, "LW DITA") ||
 		S.Contains(sd, "LIGHTWEIGHT DITA") {
-		pDF.MType = "lwdita/xdita/" + pDF.DTrootElm
+		pC.MType = "lwdita/xdita/" + pDF.DTrootElm
 	}
 	/*
 		if pDTF.TopTag != "" && Peek.RootTag != "" &&
@@ -313,7 +315,7 @@ func (pC *ContypingInfo) AnalyzeXmlDoctype(aDoctype string) *XmlDoctypeFields {
 			panic("ROOT TAG MISMATCH")
 		}
 	*/
-	if pDF.MType == "" {
+	if pC.MType == "" {
 		println("!!> No MType in AR!")
 	}
 	return pDF

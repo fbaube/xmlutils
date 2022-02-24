@@ -69,7 +69,7 @@ var DTMTmap = []DoctypeMType{
 }
 
 func (p ContypingInfo) String() (s string) {
-	return fmt.Sprintf("<%s> MType<%s> MimeTp<%s>", //  isLwdita:%s isProcbl:%s",
+	return fmt.Sprintf("<%s> MType<%s> MimeType<%s>", //  isLwdita:%s isProcbl:%s",
 		p.FileExt, p.MType, p.MimeType) // , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
 }
 

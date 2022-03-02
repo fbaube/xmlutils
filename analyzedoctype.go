@@ -17,11 +17,12 @@ var knownRootTags = []string{"html", "map", "topic", "task", "concept", "referen
 
 // ContypingInfo has simple fields related to typing content (i.e. determining its type).
 type ContypingInfo struct {
-	FileExt  string
-	MimeType string
-	MType    string
-	Doctype  string
-	IsLwDita bool
+	FileExt         string
+	MimeType        string
+	MimeTypeAsSnift string
+	MType           string
+	Doctype         string
+	IsLwDita        bool
 	// IsProcbl means, is it processable (by us) ?
 	// i.e. CAN we process it ? (Even if it might not be LwDITA.)
 	IsProcbl bool
@@ -69,8 +70,10 @@ var DTMTmap = []DoctypeMType{
 }
 
 func (p ContypingInfo) String() (s string) {
-	return fmt.Sprintf("<%s> MType<%s> MimeType<%s>", //  isLwdita:%s isProcbl:%s",
-		p.FileExt, p.MType, p.MimeType) // , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
+	return fmt.Sprintf("<%s> MType<%s> MimeType<%s> (snift:%s)",
+		//  isLwdita:%s isProcbl:%s",
+		p.FileExt, p.MType, p.MimeType, p.MimeTypeAsSnift)
+	// , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
 }
 
 // AnalyzeDoctype expects to receive a file extension plus a content type

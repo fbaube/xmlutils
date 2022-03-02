@@ -194,9 +194,11 @@ func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 		// println("D=> xm.nuCS: MetaRaaw:", p.MetaRaw())
 	}
 	if p.Text.Beg.Pos != 0 {
-		L.L.Dbg("xm.KE: TextRaw: <%d:%d> |%s|",
+		L.L.Dbg("XU: TextRaw: <%d:%d> |%s|",
 			p.Text.Beg.Pos, p.Text.End.Pos,
-			SU.NormalizeWhitespace(p.GetSpan(p.Text)))
+			SU.TruncateTo(
+				SU.NormalizeWhitespace(p.GetSpan(p.Text)),
+				60))
 		// println("D=> xm.nuCS: TextRaw:", p.TextRaw())
 	}
 	return true

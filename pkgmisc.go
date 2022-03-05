@@ -23,12 +23,12 @@ var DITArootElms = []string{
 var STD_PREAMBLE string = xml.Header
 
 // STD_PreambleFields is our parse of variable "STD_PREAMBLE".
-var STD_PreambleFields XmlPreambleFields
+var STD_PreambleParsed ParsedPreamble
 
 func init() {
-	pf, e := NewXmlPreambleFields(STD_PREAMBLE)
+	pf, e := ParsePreamble(STD_PREAMBLE)
 	if e != nil {
 		panic("xm.xmlinfo.stdpreamble: " + e.Error())
 	}
-	STD_PreambleFields = *pf
+	STD_PreambleParsed = *pf
 }

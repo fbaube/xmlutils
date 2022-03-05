@@ -8,7 +8,7 @@ import (
 	SU "github.com/fbaube/stringutils"
 )
 
-// XmlPreambleFields is a parse of an optional PI (processing instruction) at
+// ParsedPreamble is a parse of an optional PI (processing instruction) at
 // the start of an XML file. The most typical form is defined in the stdlib:
 //
 //  "<?xml version="1.0" encoding="UTF-8"?>" + "\n"
@@ -24,7 +24,7 @@ import (
 // Probably any errors returned by this function should be panicked on, because
 // any such error is pretty fundamental and also ridiculous. Note also that
 // strictly speaking, an XML preamble is NOT a PI.
-type XmlPreambleFields struct {
+type ParsedPreamble struct {
 	// Do not include a trailing newline.
 	Preamble_raw string
 	// e.g. "0" means XML 1.0
@@ -43,14 +43,14 @@ type XmlPreambleFields struct {
 //  - Also OK:       version="1.0" encoding='UTF-8' standalone="yes"
 //  - Also OK:   fields as documented for struct "XmlPreambleFields".
 //
-func NewXmlPreambleFields(s string) (*XmlPreambleFields, error) {
+func ParsePreamble(s string) (*ParsedPreamble, error) {
 	if s == "" {
 		return nil, nil
 	}
 	// println("Doing preamble:", s)
 	// Be sure to trim a trailing newline.
 	s = S.TrimSpace(s)
-	p := new(XmlPreambleFields)
+	p := new(ParsedPreamble)
 
 	// if matching outer brackets "<?xml .. ?>", remove them.
 	if S.HasPrefix(s, "<?xml ") {
@@ -105,10 +105,10 @@ func NewXmlPreambleFields(s string) (*XmlPreambleFields, error) {
 }
 
 // Echo returns the raw preamble that was parsed, with a terminating newline.
-func (xp XmlPreambleFields) Echo() string { return xp.Preamble_raw + "\n" }
+func (xp ParsedPreamble) Echo() string { return xp.Preamble_raw + "\n" }
 
 // String includes a terminating newline.
-func (xp XmlPreambleFields) String() string {
+func (xp ParsedPreamble) String() string {
 	var xmlver, encodg, stdaln string
 	xmlver = fmt.Sprintf("<?xml version=\"1.%s\"", xp.MinorVersion)
 	if xp.Encoding != "" {

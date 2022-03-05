@@ -11,8 +11,8 @@ import (
 // XmlStructurePeek is called by FU.AnalyseFile(..)
 // when preparing an FU.AnalysisRecord .
 type XmlStructurePeek struct {
-	Preamble    string
-	Doctype     string
+	RawPreamble string
+	RawDoctype  string
 	HasDTDstuff bool
 	ContentityStructure
 	error
@@ -65,8 +65,8 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			if S.TrimSpace(tok.Target) == "xml" {
 				s = S.TrimSpace(string(tok.Inst))
 				// println("XML-PR:", tok.Target, tok.Inst)
-				if (pXSP.Preamble == "") && !didFirstPass {
-					pXSP.Preamble = "<?xml " + s + "?>"
+				if (pXSP.RawPreamble == "") && !didFirstPass {
+					pXSP.RawPreamble = "<?xml " + s + "?>"
 				} else {
 					// Not fatal
 					L.L.Error("xm.peek: Got xml PI as non-first / repeated token")
@@ -146,10 +146,10 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 				continue
 			}
 			if S.HasPrefix(s, "DOCTYPE ") {
-				if pXSP.Doctype != "" {
+				if pXSP.RawDoctype != "" {
 					L.L.Warning("xm.peek: Got second DOCTYPE")
 				} else {
-					pXSP.Doctype = "<!" + s + ">"
+					pXSP.RawDoctype = "<!" + s + ">"
 				}
 			}
 			didFirstPass = true

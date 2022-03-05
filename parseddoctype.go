@@ -22,7 +22,7 @@ import (
 //	"other",
 // }
 
-// XmlDoctype is a parse of a complete DOCTYPE declaration.
+// ParsedDoctype is a parse of a complete DOCTYPE declaration.
 // For [Lw]DITA, what interests us is something like
 //  PUBLIC "-//OASIS//DTD (PublicTextDesc)//EN" or sometimes
 //  PUBLIC "-//OASIS//ELEMENTS (PublicTextDesc)//EN" and
@@ -43,7 +43,8 @@ import (
 // but we still need to have the Doctype string in the DB as a separate column,
 // even if it is empty (i.e. "").
 //
-type XmlDoctypeFields struct {
+type ParsedDoctype struct {
+	Raw string 
 	// PIDSIDcatalogFileRecord is the PID + SID.
 	PIDSIDcatalogFileRecord
 	// DTrootElm is the tag declared in the DOCTYPE, which
@@ -70,11 +71,11 @@ type XmlDoctypeFields struct {
 //  DOCTYPE html       (i.e. HTML5)
 //  DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" (MAYBE!)
 
-func (xdf XmlDoctypeFields) Echo() string {
+func (xdf ParsedDoctype) Echo() string {
 	return "OOPS:TBS"
 } // xd.raw + "\n" }
 
-func (xdf XmlDoctypeFields) String() string {
+func (xdf ParsedDoctype) String() string {
 	TT := xdf.DTrootElm
 	if TT == "" {
 		TT = "(no rootElm)"
@@ -84,32 +85,32 @@ func (xdf XmlDoctypeFields) String() string {
 		TT /* dtmt, xdf.ContypingInfo, */, xdf.PIDSIDcatalogFileRecord.DString())
 }
 
-func (xdf XmlDoctypeFields) DString() string {
+func (xdf ParsedDoctype) DString() string {
 	return xdf.String() // fmt.Sprintf("xm.xdf.DS: %+v", xdf)
 }
 
 // === Implement interface Errable
 
-func (p *XmlDoctypeFields) HasError() bool {
+func (p *ParsedDoctype) HasError() bool {
 	return p.error != nil && p.error.Error() != ""
 }
 
 // GetError is necessary cos "Error()"" dusnt tell you whether "error"
 // is "nil", which is the indication of no error. Therefore we need
 // this function, which can actually return the telltale "nil".
-func (p *XmlDoctypeFields) GetError() error {
+func (p *ParsedDoctype) GetError() error {
 	return p.error
 }
 
 // Error satisfies interface "error", but the
 // weird thing is that "error" can be nil.
-func (p *XmlDoctypeFields) Error() string {
+func (p *ParsedDoctype) Error() string {
 	if p.error != nil {
 		return p.error.Error()
 	}
 	return ""
 }
 
-func (p *XmlDoctypeFields) SetError(e error) {
+func (p *ParsedDoctype) SetError(e error) {
 	p.error = e
 }

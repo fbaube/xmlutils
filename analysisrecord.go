@@ -14,7 +14,7 @@ type MimeType string
 // It is embedded in db.ContentityRecord
 type AnalysisRecord struct {
 	// ContypingInfo is simple fields:
-	// FileExt MimeType MType Doctype IsLwDita IsProcbl
+	// FileExt MimeType MType Doctype IsLwDita 
 	ContypingInfo
 	MarkdownFlavor string
 	// ContentityStructure includes Raw (the entire input content)
@@ -30,10 +30,10 @@ type AnalysisRecord struct {
 	XmlContype string
 	// XmlPreambleFields is nil if no preamble - it can always
 	// default to xmlutils.STD_PreambleFields (from stdlib)
-	*XmlPreambleFields
+	*ParsedPreamble
 	// XmlDoctypeFields is a ptr - nil if ContypingInfo.Doctype
 	// is "", i.e. if there is no DOCTYPE declaration
-	*XmlDoctypeFields
+	*ParsedDoctype
 	// DitaInfo
 	DitaFlavor  string
 	DitaContype string
@@ -48,7 +48,7 @@ func (p AnalysisRecord) IsXML() bool {
 func (p *AnalysisRecord) String() string {
 	/*
 		// ContypingInfo is simple fields:
-		// FileExt MimeType MType Doctype IsLwDita IsProcbl
+		// FileExt MimeType MType Doctype IsLwDita 
 		ContypingInfo
 		MarkdownFlavor string
 		// ContentityStructure includes Raw (the entire input content)
@@ -76,7 +76,7 @@ func (p *AnalysisRecord) String() string {
 	sb.WriteString("AnalysisRecord: ")
 	sb.WriteString("CntpgInfo: \n\t" + p.ContypingInfo.String() + "\n\t")
 	sb.WriteString("XmlCntp<" + p.XmlContype + "> ")
-	sb.WriteString("XmlDctpFlds<" + p.XmlDoctypeFields.String() + "> ")
+	sb.WriteString("XmlDctp<" + p.ParsedDoctype.String() + "> ")
 	return sb.String()
 }
 

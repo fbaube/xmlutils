@@ -8,7 +8,8 @@ import (
 	SU "github.com/fbaube/stringutils"
 )
 
-// ContentityStructure is embedded in XM.AnalysisRecord
+// ContentityStructure has Raw,Root,Text,Meta,MetaProps  
+// and is embedded in XM.AnalysisRecord
 type ContentityStructure struct {
 	// Text_raw + Meta_raw = Raw (maybe plus surrounding tags)
 	Raw string // The entire input file

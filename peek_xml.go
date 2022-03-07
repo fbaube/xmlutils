@@ -15,7 +15,7 @@ type XmlStructurePeek struct {
 	RawDoctype  string
 	HasDTDstuff bool
 	ContentityStructure
-	error
+	// error
 }
 
 // PeekAtStructure_xml takes a string and does the bare minimum to find XML
@@ -26,7 +26,7 @@ type XmlStructurePeek struct {
 // this function all but guarantees that the string is valid XML.
 //
 // It is called by FU.AnalyzeFile
-func PeekAtStructure_xml(content string) *XmlStructurePeek {
+func PeekAtStructure_xml(content string) (*XmlStructurePeek, error) {
 	var e error
 	var s string
 
@@ -51,8 +51,7 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 	latokens, e = DoParse_xml_locationAware(content)
 	if e != nil {
 		L.L.Error("xm.peek: " + e.Error())
-		pXSP.SetError(fmt.Errorf("xm.peek: parser error: %w", e))
-		return pXSP
+		return pXSP, fmt.Errorf("xm.peek: parser error: %w", e) 
 	}
 	for _, LAT = range latokens {
 		T = LAT.Token
@@ -157,10 +156,11 @@ func PeekAtStructure_xml(content string) *XmlStructurePeek {
 			didFirstPass = true
 		}
 	}
-	return pXSP
+	return pXSP, nil 
 }
 
 // === Implement interface Errable
+/*
 
 func (p *XmlStructurePeek) HasError() bool {
 	return p.error != nil && p.error.Error() != ""
@@ -185,3 +185,4 @@ func (p *XmlStructurePeek) Error() string {
 func (p *XmlStructurePeek) SetError(e error) {
 	p.error = e
 }
+*/ 

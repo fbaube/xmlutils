@@ -73,10 +73,14 @@ func (p *AnalysisRecord) String() string {
 		DitaContype string
 	*/
 	var sb strings.Builder
+	var sPDT string
+	if p.ParsedDoctype != nil {
+		sPDT = p.ParsedDoctype.String()
+	}  
 	sb.WriteString("AnalysisRecord: ")
 	sb.WriteString("CntpgInfo: \n\t" + p.ContypingInfo.String() + "\n\t")
 	sb.WriteString("XmlCntp<" + p.XmlContype + "> ")
-	sb.WriteString("XmlDctp<" + p.ParsedDoctype.String() + "> ")
+	sb.WriteString("XmlDctp<" + sPDT + "> ")
 	return sb.String()
 }
 

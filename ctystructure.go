@@ -171,10 +171,12 @@ func (p *ContentityStructure) TextRaw() string {
 }
 */
 
-func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
+// MakeXmlContentitySections needs to have 
+// AnalysisRecord.Raw set before calling.
+func (p *AnalysisRecord) MakeXmlContentitySections() bool {
 	// If nothing found, assume it is entirely Text.
 	if p.ContentityStructure.HasNone() {
-		println("--> No meta/text division detected")
+		L.L.Warning("No meta/text division detected")
 		// p.Text_raw = p.Raw
 		p.ContentityStructure.Text.FileRange.Beg.Pos = 0
 		p.ContentityStructure.Text.FileRange.End.Pos = 
@@ -182,8 +184,9 @@ func (p *AnalysisRecord) MakeXmlContentitySections(sCont string) bool {
 		return false
 	}
 	if p.ContentityStructure.Raw == "" {
-		L.L.Dbg("MakeXmlContentitySections: no Raw")
-		p.ContentityStructure.Raw = sCont
+		L.L.Error("MakeXmlContentitySections: no Raw")
+		// p.ContentityStructure.Raw = sCont
+		return false
 	}
 	// BEFOR?: root<html(146:306)> meta<(0:0)> text<body(155:298)>
 	// AFTER?: (mmm:root (mmm:meta/:nnn) (146:html/:306) /root:nnn)

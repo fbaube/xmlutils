@@ -55,9 +55,9 @@ var DTMTmap = []DoctypeMType{
 	{"//DTD DITA Task//", "xml/cnt/task", "task", false},
 	//
 	// https://www.w3.org/QA/2002/04/valid-dtd-list.html"
-	// NOTE: The root element "html" of the document must contain an xmlns
-	// declaration for the XHTML namespace [XMLNS]. The namespace for XHTML
-	// is defined to be http://www.w3.org/1999/xhtml
+	// NOTE: The root element "html" of the document must contain an 
+	// xmlns declaration for the XHTML namespace [XMLNS]. The namespace 
+	// for XHTML is defined to be http://www.w3.org/1999/xhtml
 	//
 	{"//DTD HTML 4.", "html/cnt/html4", "html", false},
 	{"//DTD XHTML 1.0 ", "html/cnt/xhtml1.0", "html", false},
@@ -76,13 +76,13 @@ func (p ContypingInfo) String() (s string) {
 	// , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
 }
 
-// AnalyzeDoctype expects to receive a file extension plus a content type
-// as determined by the HTTP stdlib. However a DOCTYPE is always considered
-// authoritative, so this func can ignore things like the file extension,
-// and overwrite or set any field it wants to.
+// AnalyzeDoctype expects to receive a file extension plus a content 
+// type as determined by the HTTP stdlib. However a DOCTYPE is always 
+// considered authoritative, so this func can ignore things like the 
+// file extension, and overwrite or set any field it wants to.
 //
-// It works by first trying to match the DOCTYPE against a list. If that fails,
-// stronger measures are called for.
+// It works by first trying to match the DOCTYPE against a list. 
+// If that fails, stronger measures are called for.
 //
 // Note two things about this function:
 //

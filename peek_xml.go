@@ -51,7 +51,7 @@ func PeekAtStructure_xml(content string) (*XmlStructurePeek, error) {
 	latokens, e = DoParse_xml_locationAware(content)
 	if e != nil {
 		L.L.Error("xm.peek: " + e.Error())
-		return pXSP, fmt.Errorf("xm.peek: parser error: %w", e) 
+		return pXSP, fmt.Errorf("xm.peek: parser error: %w", e)
 	}
 	for _, LAT = range latokens {
 		T = LAT.Token
@@ -156,33 +156,5 @@ func PeekAtStructure_xml(content string) (*XmlStructurePeek, error) {
 			didFirstPass = true
 		}
 	}
-	return pXSP, nil 
+	return pXSP, nil
 }
-
-// === Implement interface Errable
-/*
-
-func (p *XmlStructurePeek) HasError() bool {
-	return p.error != nil && p.error.Error() != ""
-}
-
-// GetError is necessary cos "Error()"" dusnt tell you whether "error"
-// is "nil", which is the indication of no error. Therefore we need
-// this function, which can actually return the telltale "nil".
-func (p *XmlStructurePeek) GetError() error {
-	return p.error
-}
-
-// Error satisfies interface "error", but the
-// weird thing is that "error" can be nil.
-func (p *XmlStructurePeek) Error() string {
-	if p.error != nil {
-		return p.error.Error()
-	}
-	return ""
-}
-
-func (p *XmlStructurePeek) SetError(e error) {
-	p.error = e
-}
-*/ 

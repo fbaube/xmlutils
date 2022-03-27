@@ -44,7 +44,7 @@ import (
 // even if it is empty (i.e. "").
 //
 type ParsedDoctype struct {
-	Raw string 
+	Raw string
 	// PIDSIDcatalogFileRecord is the PID + SID.
 	PIDSIDcatalogFileRecord
 	// DTrootElm is the tag declared in the DOCTYPE, which
@@ -87,30 +87,4 @@ func (xdf ParsedDoctype) String() string {
 
 func (xdf ParsedDoctype) DString() string {
 	return xdf.String() // fmt.Sprintf("xm.xdf.DS: %+v", xdf)
-}
-
-// === Implement interface Errable
-
-func (p *ParsedDoctype) HasError() bool {
-	return p.error != nil && p.error.Error() != ""
-}
-
-// GetError is necessary cos "Error()"" dusnt tell you whether "error"
-// is "nil", which is the indication of no error. Therefore we need
-// this function, which can actually return the telltale "nil".
-func (p *ParsedDoctype) GetError() error {
-	return p.error
-}
-
-// Error satisfies interface "error", but the
-// weird thing is that "error" can be nil.
-func (p *ParsedDoctype) Error() string {
-	if p.error != nil {
-		return p.error.Error()
-	}
-	return ""
-}
-
-func (p *ParsedDoctype) SetError(e error) {
-	p.error = e
 }

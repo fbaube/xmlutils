@@ -55,8 +55,8 @@ var DTMTmap = []DoctypeMType{
 	{"//DTD DITA Task//", "xml/cnt/task", "task", false},
 	//
 	// https://www.w3.org/QA/2002/04/valid-dtd-list.html"
-	// NOTE: The root element "html" of the document must contain an 
-	// xmlns declaration for the XHTML namespace [XMLNS]. The namespace 
+	// NOTE: The root element "html" of the document must contain an
+	// xmlns declaration for the XHTML namespace [XMLNS]. The namespace
 	// for XHTML is defined to be http://www.w3.org/1999/xhtml
 	//
 	{"//DTD HTML 4.", "html/cnt/html4", "html", false},
@@ -76,12 +76,12 @@ func (p ContypingInfo) String() (s string) {
 	// , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
 }
 
-// AnalyzeDoctype expects to receive a file extension plus a content 
-// type as determined by the HTTP stdlib. However a DOCTYPE is always 
-// considered authoritative, so this func can ignore things like the 
+// AnalyzeDoctype expects to receive a file extension plus a content
+// type as determined by the HTTP stdlib. However a DOCTYPE is always
+// considered authoritative, so this func can ignore things like the
 // file extension, and overwrite or set any field it wants to.
 //
-// It works by first trying to match the DOCTYPE against a list. 
+// It works by first trying to match the DOCTYPE against a list.
 // If that fails, stronger measures are called for.
 //
 // Note two things about this function:
@@ -99,7 +99,7 @@ func (p ContypingInfo) String() (s string) {
 // The last one is quite important because it is the format that appears
 // in XML catalog files.
 //
-func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
+func (pC *ContypingInfo) ParseDoctype(aDoctype string) (*ParsedDoctype, error) {
 
 	var pPDT *ParsedDoctype
 	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn(aDoctype == ""), pC.String())
@@ -107,7 +107,7 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 	// pC.IsProcbl = false
 	pPDT = new(ParsedDoctype)
 	aDoctype = S.TrimSpace(aDoctype)
-	pPDT.Raw = aDoctype 
+	pPDT.Raw = aDoctype
 
 	// First, try to match the DOCTYPE. This is the former func
 	// func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool)
@@ -119,7 +119,7 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 		// Not sure about this next line
 		pPDT.PublicTextClass = "(HTML5)"
 		L.L.Dbg("xm.adt: Got HTML5")
-		return pPDT
+		return pPDT, nil
 	}
 	for _, p := range DTMTmap {
 		// println("(1) " + aDoctype)
@@ -130,7 +130,7 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 			pC.IsLwDita = p.IsLwDITA
 			// pC.IsProcbl = p.IsLwDITA
 			L.L.Info("DOCTYPE matches: " + pC.MType)
-			return pPDT
+			return pPDT, nil
 		}
 	}
 
@@ -220,7 +220,7 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 		pPDT.DTrootElm = "html"
 		pC.MType = "html/cnt/html5"
 		pPDT.PublicTextClass = "(HTML5)"
-		return pPDT
+		return pPDT, nil
 	}
 
 	// Possible here:
@@ -231,8 +231,9 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 	unk, _ = SU.SplitOffFirstWord(aDoctype)
 	if unk != "PUBLIC" && unk != "SYSTEM" {
 		if !SU.IsInSliceIgnoreCase(unk, knownRootTags) {
-			pPDT.SetError(errors.New("Unrecognized DOCTYPE root element or " +
-				"bad DOCTYPE availability (neither PUBLIC nor SYSTEM): " + unk))
+			return pPDT, errors.New(
+				"Unrecognized DOCTYPE root element or " +
+					"bad DOCTYPE availability (neither PUBLIC nor SYSTEM): " + unk)
 		}
 		pPDT.DTrootElm, aDoctype = SU.SplitOffFirstWord(aDoctype)
 	}
@@ -257,14 +258,14 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 	// FIXME Handle cases of bad quoting.
 	qtd1, qtd2, e := SU.SplitOffQuotedToken(aDoctype)
 	if e != nil {
-		pPDT.SetError(fmt.Errorf("xm.adt.SplitOffQuotedToken(1)<%s>", aDoctype))
-		return pPDT
+		return pPDT, errors.New(
+			"xm.adt.SplitOffQuotedToken(1): " + aDoctype)
 	}
 	qtd2 = S.TrimSpace(qtd2)
 	if qtd2 != "" {
 		if !SU.IsXmlQuoted(qtd2) {
-			pPDT.SetError(fmt.Errorf("xm.adt.SplitOffQuotedToken(2)<%s>", aDoctype))
-			return pPDT
+			return pPDT, errors.New(
+				"xm.adt.SplitOffQuotedToken(2):" + aDoctype)
 		}
 		qtd2 = SU.MustXmlUnquote(qtd2)
 	}
@@ -275,20 +276,20 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 
 	if PubOrSys == "SYSTEM" {
 		if qtd2 != "" {
-			pPDT.SetError(fmt.Errorf("xm.adt.SecondArgumentForSYSTEM: %s", qtd2))
-			return pPDT
+			return pPDT, errors.New(
+				"xm.adt.SecondArgumentForSYSTEM: %s" + qtd2)
 		}
 		pPidSid, e = NewPIDSIDcatalogFileRecord("", qtd1)
 		if e != nil {
-			pPDT.SetError(fmt.Errorf("xm.adt.NewPIDSIDcatalogFileRecord<%s|%s>: %w", qtd1, qtd2, e))
-			return pPDT
+			return pPDT, errors.New(fmt.Sprintf(
+				"xm.adt.NewPIDSIDcatalogFileRecord<%s|%s>: %w", qtd1, qtd2, e))
 		}
 		// pDTF.PIDSIDcatalogFileRecord =
 	} else if PubOrSys == "PUBLIC" {
 		pPidSid, e = NewPIDSIDcatalogFileRecord(qtd1, qtd2)
 		if e != nil {
-			pPDT.SetError(fmt.Errorf("xm.adt.NewXmlPublicID<%s|%s>: %w", qtd1, qtd2, e))
-			return pPDT
+			return pPDT, errors.New(fmt.Sprintf(
+				"xm.adt.NewXmlPublicID<%s|%s>: %w", qtd1, qtd2, e))
 		}
 	} else {
 		panic("Unkwnown availability: " + PubOrSys)
@@ -298,7 +299,7 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 	sd := pPDT.PIDSIDcatalogFileRecord.PIDFPIfields.PublicTextClass
 	if sd == "" {
 		println("!!> Odd exit")
-		return pPDT
+		return pPDT, nil
 	}
 	// Now let's set the MType using some intelligent guesses,
 	// to compare to the results of GetMTypeByDocType(..)
@@ -321,5 +322,5 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) *ParsedDoctype {
 	if pC.MType == "" {
 		println("!!> No MType in AR!")
 	}
-	return pPDT
+	return pPDT, nil
 }

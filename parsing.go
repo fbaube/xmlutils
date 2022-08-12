@@ -52,15 +52,39 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []xml.Token, err error)
 
 	for {
 		if doRaw {
+			// func (d *Decoder) RawToken() (Token, error) API:
+			// RawToken is like Token() but (1) does not
+			// verify that start and end elements match,
+			// and (2) does not translate name space
+			// prefixes to their corresponding URLs.
 			T, e = parser.RawToken()
 		} else {
+			// func (d *Decoder) Token() (Token, error) API:
+			// Token returns the next XML token in the input
+			// stream. At the end of the input stream, Token
+			// returns nil, io.EOF.
+			// Token expands self-closing elements such as
+			// <br> into separate start and end elements
+			// returned by successive calls.
+			// Token guarantees that the StartElement and
+			// EndElement tokens it returns are properly
+			// nested and matched: if Token encounters an
+			// unexpected end element or EOF before all
+			// expected end elements, it returns an error.
+			// NAMESPACES: Token implements XML name spaces as
+			// described by https://www.w3.org/TR/REC-xml-names/ .
+			// Each of the Name structures contained in the
+			// Token has the Space set to the URL identifying
+			// its name space when known. If Token encounters
+			// an unrecognized name space prefix, it uses the
+			// prefix as the Space rather than report an error.
 			T, e = parser.Token()
 		}
 		if e == io.EOF {
 			break
 		}
 		if e != nil {
-			return xtokens, fmt.Errorf("pu.xml.doParse.1: %w", e)
+			return xtokens, fmt.Errorf("xu.xml.doParse.1: %w", e)
 		}
 		TT = xml.CopyToken(T)
 		xtokens = append(xtokens, TT)

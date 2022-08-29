@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	S "strings"
-
-	SU "github.com/fbaube/stringutils"
 )
 
 type ParserResults_xml struct {
@@ -98,8 +96,8 @@ func DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 	var LAT LAToken
 	xtokens = make([]LAToken, 0, 100)
 	// println("(DD) XmlTokenizeBuffer:", s)
-	var idcs []int
-	idcs = SU.AllIndices(s, "\n")
+	// var idcs []int
+	// idcs = SU.AllIndices(s, "\n")
 
 	r := S.NewReader(s)
 	var parser *xml.Decoder
@@ -119,12 +117,21 @@ func DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 		LAT = *new(LAToken)
 		LAT.Token = TT
 		LAT.Pos = pos
-		LAT.Lnr, LAT.Col = LnrAndColFromPos(pos, idcs)
+		// InputPos returns the line of the current decoder
+		// position and the 1 based input position of the line.
+		// The position gives the location of the end of the
+		// most recently returned token.
+		LAT.Lnr, LAT.Col = // LnrAndColFromPos(pos, idcs)
+			parser.InputPos()
+		// ll, cc := LnrAndColFromPos(pos, idcs)
+		// fmt.Printf("OLD L%d C%d NEW L%d C%d \n",
+		//     ll, cc, LAT.Lnr, LAT.Col)
 		xtokens = append(xtokens, LAT)
 	}
 	return xtokens, nil
 }
 
+/*
 func LnrAndColFromPos(pos int, idcs []int) (int, int) {
 	if pos < idcs[0] {
 		return 1, pos + 1
@@ -136,6 +143,7 @@ func LnrAndColFromPos(pos int, idcs []int) (int, int) {
 	}
 	return -1, -1
 }
+*/
 
 func NewConfiguredDecoder(r io.Reader) *xml.Decoder {
 	var parser *xml.Decoder

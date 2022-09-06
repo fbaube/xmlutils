@@ -5,7 +5,6 @@ import (
 	S "strings"
 )
 
-type MType string
 type Doctype string
 type MimeType string
 
@@ -14,7 +13,7 @@ type MimeType string
 // It is embedded in db.ContentityRecord
 type AnalysisRecord struct {
 	// ContypingInfo is simple fields:
-	// FileExt MimeType MType Doctype IsLwDita 
+	// FileExt MimeType MType Doctype IsLwDita
 	ContypingInfo
 	MarkdownFlavor string
 	// ContentityStructure includes Raw (the entire input content)
@@ -48,7 +47,7 @@ func (p AnalysisRecord) IsXML() bool {
 func (p *AnalysisRecord) String() string {
 	/*
 		// ContypingInfo is simple fields:
-		// FileExt MimeType MType Doctype IsLwDita 
+		// FileExt MimeType MType Doctype IsLwDita
 		ContypingInfo
 		MarkdownFlavor string
 		// ContentityStructure includes Raw (the entire input content)
@@ -76,7 +75,7 @@ func (p *AnalysisRecord) String() string {
 	var sPDT string
 	if p.ParsedDoctype != nil {
 		sPDT = p.ParsedDoctype.String()
-	}  
+	}
 	sb.WriteString("AnalysisRecord: ")
 	sb.WriteString("CntpgInfo: \n\t" + p.ContypingInfo.String() + "\n\t")
 	sb.WriteString("XmlCntp<" + p.XmlContype + "> ")

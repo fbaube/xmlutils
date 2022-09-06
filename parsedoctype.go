@@ -1,32 +1,9 @@
 package xmlutils
 
-import (
-	"errors"
-	"fmt"
-	S "strings"
-
-	// FU "github.com/fbaube/fileutils"
-	L "github.com/fbaube/mlog"
-	SU "github.com/fbaube/stringutils"
-)
-
 // This file contains LwDITA-specific stuff, but it is hard-coded
 // and does not pull in other packages, so we leave it alone for now.
 
 var knownRootTags = []string{"html", "map", "topic", "task", "concept", "reference"}
-
-// ContypingInfo has simple fields related to typing content (i.e. determining its type).
-type ContypingInfo struct {
-	FileExt         string
-	MimeType        string
-	MimeTypeAsSnift string
-	MType           string
-	IsLwDita        bool
-	// ?? FIXME ?? Doctype         string
-	// IsProcbl means, is it processable (by us) ?
-	// i.e. CAN we process it ? (Even if it might not be LwDITA.)
-	// IsProcbl bool
-}
 
 // DoctypeMType maps a DOCTYPE string to an MType string and a bool, Is it LwDITA?
 type DoctypeMType struct {
@@ -69,13 +46,11 @@ var DTMTmap = []DoctypeMType{
 	{"//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//", "html/cnt/blarg", "html", false},
 }
 
-func (p ContypingInfo) String() (s string) {
-	return fmt.Sprintf("<%s> MType<%s> MimeType<%s> (snift:%s)",
-		//  isLwdita:%s isProcbl:%s",
-		p.FileExt, p.MType, p.MimeType, p.MimeTypeAsSnift)
-	// , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
-}
+/*
 
+ParseDoctype should probably NOT be a method on ContypingInfo
+
+// ParseDoctype does stuff.
 // AnalyzeDoctype expects to receive a file extension plus a content
 // type as determined by the HTTP stdlib. However a DOCTYPE is always
 // considered authoritative, so this func can ignore things like the
@@ -87,18 +62,19 @@ func (p ContypingInfo) String() (s string) {
 // Note two things about this function:
 //
 // Firstly, it can handle PID, SID, or both:
-//  <!DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN">
-//  <!DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" "./foo.dtd">
-//  <!DOCTYPE topic SYSTEM "./foo.dtd">
+//
+//	<!DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN">
+//	<!DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" "./foo.dtd">
+//	<!DOCTYPE topic SYSTEM "./foo.dtd">
 //
 // Secondly, it can handle a less-than-complete declaration:
-//  DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
-//          topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
-//                PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
+//
+//	DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
+//	        topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
+//	              PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
 //
 // The last one is quite important because it is the format that appears
 // in XML catalog files.
-//
 func (pC *ContypingInfo) ParseDoctype(aDoctype string) (*ParsedDoctype, error) {
 
 	var pPDT *ParsedDoctype
@@ -318,9 +294,11 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) (*ParsedDoctype, error) {
 				pDTF.TopTag, Peek.RootTag)
 			panic("ROOT TAG MISMATCH")
 		}
-	*/
+	* /
 	if pC.MType == "" {
 		println("!!> No MType in AR!")
 	}
 	return pPDT, nil
 }
+
+*/

@@ -26,17 +26,17 @@ type ContypingInfo struct {
 }
 
 func (p ContypingInfo) String() (s string) {
-	return fmt.Sprintf("<%s> MType<%s> MimeType<%s> (snift:%s)",
-		//  isLwdita:%s isProcbl:%s",
-		p.FileExt, p.MType, p.MimeType, p.MimeTypeAsSnift)
-	// , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
+	return fmt.Sprintf("<%s> MimeType<%s>(stdlib:%s) MType<%s>",
+		p.FileExt, p.MimeTypeAsSnift, p.MimeType, p.MType)
 }
 
 func (p ContypingInfo) MultilineString() (s string) {
-	return fmt.Sprintf("<%s> \n\t M-Type: %s \n\t MimeTp: %s (snift:%s)",
-		//  isLwdita:%s isProcbl:%s",
-		p.FileExt, p.MType, p.MimeType, p.MimeTypeAsSnift)
-	// , SU.Yn(p.IsLwDita), SU.Yn(p.IsProcbl))
+	var mismatch string
+	if p.MimeTypeAsSnift != p.MimeType {
+		mismatch = fmt.Sprintf("(not: %s)", p.MimeType)
+	}
+	return fmt.Sprintf("<%s> \n\t MimeTp: %s %s \n\t M-Type: %s",
+		p.FileExt, p.MimeTypeAsSnift, mismatch, p.MType)
 }
 
 // ParseDoctype should probably NOT be a method on ContypingInfo !!
@@ -73,7 +73,7 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) (*ParsedDoctype, error) {
 	// pC.IsProcbl = false
 	pPDT = new(ParsedDoctype)
 	aDoctype = S.TrimSpace(aDoctype)
-	pPDT.Raw = aDoctype
+	pPDT.RawDoctype = aDoctype
 
 	// First, try to match the DOCTYPE. This is the former func
 	// func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool)

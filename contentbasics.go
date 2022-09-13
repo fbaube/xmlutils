@@ -8,11 +8,12 @@ import (
 	SU "github.com/fbaube/stringutils"
 )
 
-// ContentityStructure has Raw,Root,Text,Meta,MetaProps  
-// and is embedded in XM.AnalysisRecord
-type ContentityStructure struct {
+// ContentityBasics has Raw,Root,Text,Meta,MetaProps
+// and is embedded in XU.AnalysisRecord.
+// .
+type ContentityBasics struct {
 	// Text_raw + Meta_raw = Raw (maybe plus surrounding tags)
-	Raw string // The entire input file
+	// !! // Raw string // The entire input file
 	// Root is not meaningful for non-XML
 	Root Span
 	Text Span
@@ -23,29 +24,27 @@ type ContentityStructure struct {
 	MetaProps SU.PropSet
 }
 
-func (p *ContentityStructure) GetSpan(sp Span) string {
+// func (p *ContentityBasics) GetSpan(sp Span) string {
+func GetSpan(s string, sp Span) string {
+	if len(s) == 0 {
+		panic("Zero-len Raw")
+	}
 	if sp.End.Pos == 0 {
 		return ""
 	}
 	if sp.End.Pos == -1 && sp.Beg.Pos == 0 {
-		return p.Raw
+		return s
+	}
+	if sp.End.Pos > len(s) {
+		panic(fmt.Sprintf("Span: END %d > LEN %d",
+			sp.End.Pos, len(s)))
 	}
 	if sp.Beg.Pos > sp.End.Pos {
-		panic(fmt.Sprintf("BEG %d END %d", sp.Beg.Pos, sp.End.Pos))
+		panic(fmt.Sprintf("Span: BEG %d > END %d",
+			sp.Beg.Pos, sp.End.Pos))
 	}
-	if len(p.Raw) == 0 {
-		panic("Zero-len Raw")
-	}
-	return p.Raw[sp.Beg.Pos:sp.End.Pos]
+	return s[sp.Beg.Pos:sp.End.Pos]
 }
-
-/* KeyElmsWithRanges is embedded in XmlStructurePeek
-type Spans struct {
-	RootElm Span
-	MetaElm Span
-	TextElm Span
-}
-*/
 
 // Span FIXME Make this a ptr to a ContentityNode
 type Span struct {
@@ -110,22 +109,24 @@ func (sp Span) String() string {
 	return fmt.Sprintf("%s[%d:%d]", sp.TagName, sp.Beg.Pos, sp.End.Pos)
 }
 
-func (p *ContentityStructure) HasNone() bool {
+func (p *ContentityBasics) HasNone() bool {
 	return p.Root.TagName == "" && p.Meta.TagName == "" && p.Text.TagName == ""
 }
 
-func (p *ContentityStructure) SetToAllText() {
+// SetToNonXml just needs the length of the content.
+// .
+func (p *ContentityBasics) SetToNonXml(L int) {
 	p.Root.Beg.Pos = 0
-	p.Root.End.Pos = len(p.Raw)
+	p.Root.End.Pos = L
 	p.Meta.Beg.Pos = 0
 	p.Meta.End.Pos = 0
 	p.Text.Beg.Pos = 0
-	p.Text.End.Pos = len(p.Raw)
+	p.Text.End.Pos = L
 }
 
-// CheckXmlSections returns true is a root element was found,
+// HasRootTag returns true is a root element was found,
 // and writes messages about other findings.
-func (p *ContentityStructure) CheckXmlSections() bool {
+func (p *ContentityBasics) HasRootTag() bool {
 	if p.Root.TagName == "" {
 		L.L.Info("No XML root element found")
 		return false
@@ -162,30 +163,37 @@ func (p *KeyElmsWithRanges) IsSplittable() bool {
 }
 */
 /*
-func (p *ContentityStructure) MetaRaw() string {
+func (p *ContentityBasics) MetaRaw() string {
 	return p.Raw[p.Meta.FileRange.Beg.Pos:p.Meta.FileRange.End.Pos]
 }
 
-func (p *ContentityStructure) TextRaw() string {
+func (p *ContentityBasics) TextRaw() string {
 	return p.Raw[p.Text.FileRange.Beg.Pos:p.Text.FileRange.End.Pos]
 }
 */
 
-// MakeXmlContentitySections needs to have 
+// MakeXmlContentitySections needs to have
 // AnalysisRecord.Raw set before calling.
-func (p *AnalysisRecord) MakeXmlContentitySections() bool {
-	// If nothing found, assume it is entirely Text.
-	if p.ContentityStructure.HasNone() {
-		L.L.Warning("No meta/text division detected")
-		// p.Text_raw = p.Raw
-		p.ContentityStructure.Text.FileRange.Beg.Pos = 0
-		p.ContentityStructure.Text.FileRange.End.Pos = 
-			len(p.ContentityStructure.Raw)
+// .
+/*
+func (p *PathAnalysis) MakeXmlContentitySections() bool {
+	if p.PathProps.Raw == "" {
+		L.L.Error("MakeXmlContentitySections: no Raw")
+		// p.ContentityBasics.Raw = sCont
 		return false
 	}
-	if p.ContentityStructure.Raw == "" {
+	// If nothing found, assume it is entirely Text.
+	if p.ContentityBasics.HasNone() {
+		L.L.Warning("No meta/text division detected")
+		// p.Text_raw = p.Raw
+		p.ContentityBasics.Text.FileRange.Beg.Pos = 0
+		p.ContentityBasics.Text.FileRange.End.Pos =
+			len(p.ContentityBasics.Raw)
+		return false
+	}
+	if p.ContentityBasics.Raw == "" {
 		L.L.Error("MakeXmlContentitySections: no Raw")
-		// p.ContentityStructure.Raw = sCont
+		// p.ContentityBasics.Raw = sCont
 		return false
 	}
 	// BEFOR?: root<html(146:306)> meta<(0:0)> text<body(155:298)>
@@ -208,3 +216,4 @@ func (p *AnalysisRecord) MakeXmlContentitySections() bool {
 	}
 	return true
 }
+*/

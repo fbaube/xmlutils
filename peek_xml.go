@@ -8,25 +8,27 @@ import (
 	L "github.com/fbaube/mlog"
 )
 
-// XmlStructurePeek is called by FU.AnalyseFile(..)
+// XmlPeek is called by FU.AnalyseFile(..)
 // when preparing an FU.AnalysisRecord .
-type XmlStructurePeek struct {
+type XmlPeek struct { // has has Raw
 	RawPreamble string
 	RawDoctype  string
 	HasDTDstuff bool
-	ContentityStructure
+	// has Raw
+	ContentityBasics
 	// error
 }
 
-// PeekAtStructure_xml takes a string and does the bare minimum to find XML
-// preamble, DOCTYPE, root element, whether DTD stuff was encountered, and
-// the locations of outer elements containing metadata and body text.
+// Peek_xml takes a string and does the minimum to find XML preamble,
+// DOCTYPE, root element, whether DTD stuff was encountered, and the
+// locations of outer elements containing metadata and body text.
 //
-// It uses the Go stdlib parser, so success in finding a root element in
-// this function all but guarantees that the string is valid XML.
+// It uses the Go stdlib parser, so success in finding a root element
+// in this function all but guarantees that the string is valid XML.
 //
 // It is called by FU.AnalyzeFile
-func PeekAtStructure_xml(content string) (*XmlStructurePeek, error) {
+// .
+func Peek_xml(content string) (*XmlPeek, error) {
 	var e error
 	var s string
 
@@ -40,8 +42,10 @@ func PeekAtStructure_xml(content string) (*XmlStructurePeek, error) {
 	var foundRootElm bool
 	var metaTagToFind string
 	var textTagToFind string
-	var pXSP *XmlStructurePeek
-	pXSP = new(XmlStructurePeek)
+	var pXSP *XmlPeek
+	pXSP = new(XmlPeek)
+	// Obsolete ?
+	// pXSP.Raw = content
 
 	// DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 	var latokens []LAToken

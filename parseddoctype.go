@@ -24,27 +24,27 @@ import (
 
 // ParsedDoctype is a parse of a complete DOCTYPE declaration.
 // For [Lw]DITA, what interests us is something like
-//  PUBLIC "-//OASIS//DTD (PublicTextDesc)//EN" or sometimes
-//  PUBLIC "-//OASIS//ELEMENTS (PublicTextDesc)//EN" and
-//  maybe followed by SYSTEM...
+//
+//	PUBLIC "-//OASIS//DTD (PublicTextDesc)//EN" or sometimes
+//	PUBLIC "-//OASIS//ELEMENTS (PublicTextDesc)//EN" and
+//	maybe followed by SYSTEM...
 //
 // The structure of a DOCTYPE is like so:
-//  * PUBLIC | SYSTEM = Availability
-//  * - = Registration = Organization & DTD are not registeredd with ISO.
-//  * OASIS = Organization
-//  * DTD = Public Text Class (CAPACITY | CHARSET | DOCUMENT |
-//      DTD | ELEMENTS | ENTITIES | LPD | NONSGML | NOTATION |
-//      SHORTREF | SUBDOC | SYNTAX | TEXT )
-//  * (*) = Public Text Description, incl. any version number
-//  * EN = Public Text Language
-//  * URL = optional, explicit
+//   - PUBLIC | SYSTEM = Availability
+//   - - = Registration = Organization & DTD are not registeredd with ISO.
+//   - OASIS = Organization
+//   - DTD = Public Text Class (CAPACITY | CHARSET | DOCUMENT |
+//     DTD | ELEMENTS | ENTITIES | LPD | NONSGML | NOTATION |
+//     SHORTREF | SUBDOC | SYNTAX | TEXT )
+//   - (*) = Public Text Description, incl. any version number
+//   - EN = Public Text Language
+//   - URL = optional, explicit
 //
 // We don't include the raw DOCTYPE here because this structure can be optional
 // but we still need to have the Doctype string in the DB as a separate column,
 // even if it is empty (i.e. "").
-//
 type ParsedDoctype struct {
-	Raw string
+	RawDoctype string
 	// PIDSIDcatalogFileRecord is the PID + SID.
 	PIDSIDcatalogFileRecord
 	// DTrootElm is the tag declared in the DOCTYPE, which

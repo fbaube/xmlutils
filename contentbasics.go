@@ -125,17 +125,19 @@ func (p *ContentityBasics) SetToNonXml(L int) {
 }
 
 // HasRootTag returns true is a root element was found,
-// and writes messages about other findings.
-func (p *ContentityBasics) HasRootTag() bool {
+// and a message about missing top-level constructs,
+// and can write warnings.
+// .
+func (p *ContentityBasics) HasRootTag() (bool, string) {
 	if p.Root.TagName == "" {
-		L.L.Info("No XML root element found")
-		return false
+		return false, "No XML root element found"
 	}
+	var s string
 	if p.Meta.TagName == "" {
-		L.L.Info("No top-level metadata header element found")
+		s = "No top-level metadata header element found "
 	}
 	if p.Text.TagName == "" {
-		L.L.Info("No top-level content body text element found")
+		s += "No top-level content body text element found"
 	}
 	if p.Root.Beg.Pos != 0 && p.Root.End.Pos == 0 {
 		L.L.Warning("Key elm root has no closing tag")
@@ -146,7 +148,7 @@ func (p *ContentityBasics) HasRootTag() bool {
 	if p.Text.Beg.Pos != 0 && p.Text.End.Pos == 0 {
 		L.L.Warning("Key elm for body text has no closing tag")
 	}
-	return true
+	return true, s
 }
 
 /*

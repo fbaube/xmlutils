@@ -1,6 +1,7 @@
 package xmlutils
 
-/*
+/* Docs only
+
 https://en.wikipedia.org/wiki/Document_type_declaration
 
 http://www.blooberry.com/indexdot/html/tagpages/d/doctype.htm

@@ -131,20 +131,6 @@ func DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 	return xtokens, nil
 }
 
-/*
-func LnrAndColFromPos(pos int, idcs []int) (int, int) {
-	if pos < idcs[0] {
-		return 1, pos + 1
-	}
-	for i, v := range idcs {
-		if pos < v {
-			return i + 1, pos - idcs[i-1] + 1
-		}
-	}
-	return -1, -1
-}
-*/
-
 func NewConfiguredDecoder(r io.Reader) *xml.Decoder {
 	var parser *xml.Decoder
 	parser = xml.NewDecoder(r)

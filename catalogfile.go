@@ -90,7 +90,8 @@ func NewXmlCatalogFile(fpath string) (pXC *XmlCatalogFile, err error) {
 	// return AbsFilePath(dp)
 	println("XML catalog fileDir:", fileDir)
 	for _, entry := range pXC.XmlPublicIDsubrecords {
-		println("  Entry's AbsFilePath:" /* FIXME:60 MU.Tilded*/, (entry.AbsFilePath))
+		println("  Entry's AbsFilePath:", /* FIXME MU.Tilded */
+			(entry.AbsFilePath))
 		entry.AbsFilePath = fileDir + "/" + string(entry.AbsFilePath)
 	}
 	ok := pXC.Validate()

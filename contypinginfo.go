@@ -277,14 +277,6 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) (*ParsedDoctype, error) {
 		S.Contains(sd, "LIGHTWEIGHT DITA") {
 		pC.MType = "lwdita/xdita/" + pPDT.DTrootElm
 	}
-	/*
-		if pDTF.TopTag != "" && Peek.RootTag != "" &&
-			S.ToLower(pDTF.TopTag) != S.ToLower(Peek.RootTag) {
-			fmt.Printf("--> RootTag MISMATCH: doctype<%s> bodytext<%s> \n",
-				pDTF.TopTag, Peek.RootTag)
-			panic("ROOT TAG MISMATCH")
-		}
-	*/
 	if pC.MType == "" {
 		println("!!> No MType in AR!")
 	}

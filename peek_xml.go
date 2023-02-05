@@ -10,11 +10,13 @@ import (
 
 // XmlPeek is called by FU.AnalyseFile(..)
 // when preparing an FU.AnalysisRecord .
+// ContentityBasics has chunks of Raw
+// but not the full "Raw" string.
+// .
 type XmlPeek struct { // has has Raw
 	RawPreamble string
 	RawDoctype  string
 	HasDTDstuff bool
-	// has Raw
 	ContentityBasics
 	// error
 }

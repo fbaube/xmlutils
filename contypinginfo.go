@@ -96,6 +96,9 @@ func (pC *ContypingInfo) ParseDoctype(aDoctype string) (*ParsedDoctype, error) {
 			// !! // !! // pC.IsLwDita = p.IsLwDITA
 			// pC.IsProcbl = p.IsLwDITA
 			L.L.Info("DOCTYPE matches: " + pC.MType)
+			if !p.IsInScope {
+				L.L.Warning("DOCTYPE is not in scope")
+			}
 			return pPDT, nil
 		}
 	}

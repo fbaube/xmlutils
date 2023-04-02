@@ -19,6 +19,10 @@ var DITAtypeFileExtensions = []string{".dita", ".ditamap", ".ditaval"}
 var DITArootElms = []string{
 	"topic", "concept", "reference", "task", "bookmap", "glossentry", "glossgroup"}
 
+// MiscFileExtensions are all the file extensions that
+// we want to procss.
+var MiscFileExtensions = []string{".sqlar"}
+
 // STD_PREAMBLE is "<?xml version="1.0" encoding="UTF-8"?>" + "\n"
 var STD_PREAMBLE string = xml.Header
 

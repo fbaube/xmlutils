@@ -11,15 +11,15 @@ import (
 // ParsedPreamble is a parse of an optional PI (processing instruction) at
 // the start of an XML file. The most typical form is defined in the stdlib:
 //
-//  "<?xml version="1.0" encoding="UTF-8"?>" + "\n"
+//	"<?xml version="1.0" encoding="UTF-8"?>" + "\n"
 //
 // Here the major version MUST be 1. XML has a version 1.1 but nobody uses it,
 // so also the minor version MUST be 0, because that's what the Go stdlib XML
 // parser understands, and anything else is gonna cause crazy breakage. Fields:
 //
-//  <?xml version="version_number"         <= required, "1.0"
-//       encoding="encoding_declaration"   <= optional, assume "UTF-8"
-//     standalone="standalone_status" ?>   <= optional, can be "yes", assume "no"
+//	<?xml version="version_number"         <= required, "1.0"
+//	     encoding="encoding_declaration"   <= optional, assume "UTF-8"
+//	   standalone="standalone_status" ?>   <= optional, can be "yes", assume "no"
 //
 // Probably any errors returned by this function should be panicked on, because
 // any such error is pretty fundamental and also ridiculous. Note also that
@@ -38,11 +38,10 @@ type ParsedPreamble struct {
 // NewXmlPreambleFields parses an XML preamble, which (BTW) MUST be the first
 // line in a file. XML version MUST be "1.0". Encoding handling is incomplete.
 //
-//  - Example: <?xml version="1.0" encoding='UTF-8' standalone="yes"?>
-//  - Also OK:   xml version="1.0" encoding='UTF-8' standalone="yes"
-//  - Also OK:       version="1.0" encoding='UTF-8' standalone="yes"
-//  - Also OK:   fields as documented for struct "XmlPreambleFields".
-//
+//   - Example: <?xml version="1.0" encoding='UTF-8' standalone="yes"?>
+//   - Also OK:   xml version="1.0" encoding='UTF-8' standalone="yes"
+//   - Also OK:       version="1.0" encoding='UTF-8' standalone="yes"
+//   - Also OK:   fields as documented for struct "XmlPreambleFields".
 func ParsePreamble(s string) (*ParsedPreamble, error) {
 	if s == "" {
 		return nil, nil
@@ -104,6 +103,8 @@ func ParsePreamble(s string) (*ParsedPreamble, error) {
 	return p, nil
 }
 
+/* TRY
+
 // Echo returns the raw preamble that was parsed, with a terminating newline.
 func (xp ParsedPreamble) Echo() string { return xp.Preamble_raw + "\n" }
 
@@ -119,3 +120,5 @@ func (xp ParsedPreamble) String() string {
 	}
 	return xmlver + encodg + stdaln + "?>\n"
 }
+
+*/

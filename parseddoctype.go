@@ -1,7 +1,7 @@
 package xmlutils
 
 import (
-	"fmt"
+// !!!! "fmt"
 )
 
 // This file contains LwDITA-specific stuff, but it is hard-coded
@@ -71,6 +71,8 @@ type ParsedDoctype struct {
 //  DOCTYPE html       (i.e. HTML5)
 //  DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" (MAYBE!)
 
+/* TRY
+
 func (xdf ParsedDoctype) Echo() string {
 	return "OOPS:TBS"
 } // xd.raw + "\n" }
@@ -82,9 +84,11 @@ func (xdf ParsedDoctype) String() string {
 	}
 	// "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN" "lw-topic.dtd"
 	return fmt.Sprintf("rootElm:%s,PIDSIDrec <|> %s <|>",
-		TT /* dtmt, xdf.ContypingInfo, */, xdf.PIDSIDcatalogFileRecord.DString())
+		TT /* dtmt, xdf.ContypingInfo, * / !!!!, xdf.PIDSIDcatalogFileRecord.DString())
 }
 
 func (xdf ParsedDoctype) DString() string {
 	return xdf.String() // fmt.Sprintf("xm.xdf.DS: %+v", xdf)
 }
+
+*/

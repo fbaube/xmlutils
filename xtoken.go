@@ -176,7 +176,8 @@ func (xt XToken) IsNonElement() bool {
 	return true
 }
 
-/* OBS
+/* TMP print stuff to restore
+
 if xtkn.TDType != TD_type_ENDLM {
 	fmt.Printf("[%s] %s (%s) %s%s%s %s \n",
 		pCPR.AsString(i), S.Repeat("  ", prDpth),

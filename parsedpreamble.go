@@ -103,7 +103,7 @@ func ParsePreamble(s string) (*ParsedPreamble, error) {
 	return p, nil
 }
 
-/* TRY
+/* OBS print stuff
 
 // Echo returns the raw preamble that was parsed, with a terminating newline.
 func (xp ParsedPreamble) Echo() string { return xp.Preamble_raw + "\n" }

@@ -18,7 +18,7 @@ func (N XName) Echo() string {
 	return N.Space + N.Local
 }
 
-/* TRY
+/* OBS print stuff
 
 // EchoTo implements Markupper.
 func (N XName) EchoTo(w io.Writer) {

@@ -18,7 +18,7 @@ func (AL XAtts) Echo() string {
 	return s
 }
 
-/* TRY
+/* OBS print stuff
 
 // EchoTo implements Markupper.
 func (A XAtt) EchoTo(w io.Writer) {

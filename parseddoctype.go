@@ -71,7 +71,7 @@ type ParsedDoctype struct {
 //  DOCTYPE html       (i.e. HTML5)
 //  DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" (MAYBE!)
 
-/* TRY
+/* OBS print stuff
 
 func (xdf ParsedDoctype) Echo() string {
 	return "OOPS:TBS"

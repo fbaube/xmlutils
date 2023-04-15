@@ -5,7 +5,6 @@ import (
 	"fmt"
 	S "strings"
 
-	// FU "github.com/fbaube/fileutils"
 	L "github.com/fbaube/mlog"
 	SU "github.com/fbaube/stringutils"
 )
@@ -65,15 +64,18 @@ func (p ContypingInfo) MultilineString() (s string) {
 //
 // The last one is quite important because it is the format that appears
 // in XML catalog files.
-func (pC *ContypingInfo) ParseDoctype(aDoctype string) (*ParsedDoctype, error) {
+// .
+func (pC *ContypingInfo) ParseDoctype(sRaw Raw) (*ParsedDoctype, error) {
 
+	var aDoctype string
 	var pPDT *ParsedDoctype
 	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn(aDoctype == ""), pC.String())
 	// pC.IsLwDita = false
 	// pC.IsProcbl = false
 	pPDT = new(ParsedDoctype)
+	aDoctype = string(sRaw)
 	aDoctype = S.TrimSpace(aDoctype)
-	pPDT.RawDoctype = aDoctype
+	pPDT.Raw = Raw(aDoctype)
 
 	// First, try to match the DOCTYPE. This is the former func
 	// func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool)

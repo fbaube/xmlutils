@@ -12,12 +12,10 @@ import (
 // and is embedded in XU.AnalysisRecord.
 // .
 type ContentityBasics struct {
-	// Text_raw + Meta_raw = Raw (maybe plus surrounding tags)
-	// !! // Raw string // The entire input file
-	// Root is not meaningful for non-XML
-	Root Span
-	Text Span
-	Meta Span
+	// XmlRoot is not meaningful for non-XML
+	XmlRoot Span
+	Text    Span
+	Meta    Span
 	// MetaFormat is? "YAML","XML"
 	MetaFormat string
 	// MetaProps uses dot separators if hierarchy is needed
@@ -110,14 +108,14 @@ func (sp Span) String() string {
 }
 
 func (p *ContentityBasics) HasNone() bool {
-	return p.Root.TagName == "" && p.Meta.TagName == "" && p.Text.TagName == ""
+	return p.XmlRoot.TagName == "" && p.Meta.TagName == "" && p.Text.TagName == ""
 }
 
 // SetToNonXml just needs the length of the content.
 // .
 func (p *ContentityBasics) SetToNonXml(L int) {
-	p.Root.Beg.Pos = 0
-	p.Root.End.Pos = L
+	p.XmlRoot.Beg.Pos = 0
+	p.XmlRoot.End.Pos = L
 	p.Meta.Beg.Pos = 0
 	p.Meta.End.Pos = 0
 	p.Text.Beg.Pos = 0
@@ -129,7 +127,7 @@ func (p *ContentityBasics) SetToNonXml(L int) {
 // and can write warnings.
 // .
 func (p *ContentityBasics) HasRootTag() (bool, string) {
-	if p.Root.TagName == "" {
+	if p.XmlRoot.TagName == "" {
 		return false, "No XML root element found"
 	}
 	var s string
@@ -139,7 +137,7 @@ func (p *ContentityBasics) HasRootTag() (bool, string) {
 	if p.Text.TagName == "" {
 		s += "No top-level content body text element found"
 	}
-	if p.Root.Beg.Pos != 0 && p.Root.End.Pos == 0 {
+	if p.XmlRoot.Beg.Pos != 0 && p.XmlRoot.End.Pos == 0 {
 		L.L.Warning("Key elm root has no closing tag")
 	}
 	if p.Meta.Beg.Pos != 0 && p.Meta.End.Pos == 0 {

@@ -24,7 +24,7 @@ var DITArootElms = []string{
 var MiscFileExtensions = []string{".sqlar"}
 
 // STD_PREAMBLE is "<?xml version="1.0" encoding="UTF-8"?>" + "\n"
-var STD_PREAMBLE string = xml.Header
+var STD_PREAMBLE Raw = xml.Header
 
 // STD_PreambleFields is our parse of variable "STD_PREAMBLE".
 var STD_PreambleParsed ParsedPreamble

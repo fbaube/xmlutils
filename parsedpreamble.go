@@ -42,12 +42,13 @@ type ParsedPreamble struct {
 //   - Also OK:   xml version="1.0" encoding='UTF-8' standalone="yes"
 //   - Also OK:       version="1.0" encoding='UTF-8' standalone="yes"
 //   - Also OK:   fields as documented for struct "XmlPreambleFields".
-func ParsePreamble(s string) (*ParsedPreamble, error) {
-	if s == "" {
+func ParsePreamble(sRaw Raw) (*ParsedPreamble, error) {
+	if sRaw == "" {
 		return nil, nil
 	}
 	// println("Doing preamble:", s)
 	// Be sure to trim a trailing newline.
+	s := string(sRaw)
 	s = S.TrimSpace(s)
 	p := new(ParsedPreamble)
 

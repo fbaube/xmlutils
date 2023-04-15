@@ -19,8 +19,8 @@ import (
 // but not the full "Raw" string.
 // .
 type XmlPeek struct { // has has Raw
-	RawPreamble string
-	RawDoctype  string
+	PreambleRaw Raw // string
+	DoctypeRaw  Raw // string
 	HasDTDstuff bool
 	ContentityBasics
 	// error
@@ -118,8 +118,8 @@ func Peek_xml(content string) (*XmlPeek, error) {
 
 				s = T.DirectiveText // S.TrimSpace(string(tok.Inst))
 				// println("XML-PR:", tok.Target, tok.Inst)
-				if (pPeek.RawPreamble == "") && !didFirstPass {
-					pPeek.RawPreamble = "<?xml " + s + "?>"
+				if (pPeek.PreambleRaw == "") && !didFirstPass {
+					pPeek.PreambleRaw = Raw("<?xml " + s + "?>")
 					// fmt.Printf("GOT Raw.PREAMBLE: %s \n", s)
 				} else {
 					// Not fatal
@@ -140,9 +140,9 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			localName := T.XName.Local
 
 			switch localName {
-			case pPeek.Root.TagName:
-				pPeek.Root.End = LAT.FilePosition
-				pPeek.Root.End.Pos += len(localName) + 3
+			case pPeek.XmlRoot.TagName:
+				pPeek.XmlRoot.End = LAT.FilePosition
+				pPeek.XmlRoot.End.Pos += len(localName) + 3
 				L.L.Dbg("End root elm at: " + LAT.FilePosition.String())
 			case pPeek.Meta.TagName:
 				pPeek.Meta.End = LAT.FilePosition
@@ -166,9 +166,9 @@ func Peek_xml(content string) (*XmlPeek, error) {
 
 			if !foundRootElm {
 				fmt.Printf("FOUND FIRST (ROOT) TAG: %s \n", localName)
-				pPeek.Root.TagName = localName
-				pPeek.Root.Atts = T.XAtts.AsStdLibXml() // tok.Attr
-				pPeek.Root.Beg = LAT.FilePosition
+				pPeek.XmlRoot.TagName = localName
+				pPeek.XmlRoot.Atts = T.XAtts.AsStdLibXml() // tok.Attr
+				pPeek.XmlRoot.Beg = LAT.FilePosition
 				foundRootElm = true
 
 				var pKeyElmTriplet *KeyElmTriplet
@@ -179,7 +179,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text
 					L.L.Progress("Got key elm.beg <%s>:%s => meta<%s> text<%s>",
-						localName, pPeek.Root.Beg.String(),
+						localName, pPeek.XmlRoot.Beg.String(),
 						metaTagToFind, textTagToFind)
 				}
 			} else {
@@ -219,10 +219,10 @@ func Peek_xml(content string) (*XmlPeek, error) {
 				pPeek.HasDTDstuff = true
 			}
 			if s == "DOCTYPE" {
-				if pPeek.RawDoctype != "" {
+				if pPeek.DoctypeRaw != "" {
 					L.L.Warning("xm.peek: Got second DOCTYPE")
 				} else {
-					pPeek.RawDoctype = "<!" + s + ">"
+					pPeek.DoctypeRaw = Raw("<!" + s + ">")
 					// fmt.Printf("GOT Raw.DOCTYPE: %s \n", s)
 				}
 			}

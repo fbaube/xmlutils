@@ -92,7 +92,9 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []xml.Token, err error)
 
 func DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 	var e error
-	var T, TT xml.Token
+	var T xml.Token
+	var pXT *XToken
+	var XT XToken // xml.Token
 	var LAT LAToken
 	xtokens = make([]LAToken, 0, 100)
 	// println("(DD) XmlTokenizeBuffer:", s)
@@ -113,9 +115,14 @@ func DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 		if e != nil {
 			return xtokens, fmt.Errorf("pu.xml.doParse.2: %w", e)
 		}
-		TT = xml.CopyToken(T)
+		pXT = NewXToken(T)
+		if pXT == nil {
+			continue
+		}
+		XT = *pXT
+
 		LAT = *new(LAToken)
-		LAT.Token = TT
+		LAT.XToken = XT
 		LAT.Pos = pos
 		// InputPos returns the line of the current decoder
 		// position and the 1 based input position of the line.

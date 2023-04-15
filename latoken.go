@@ -1,13 +1,14 @@
 package xmlutils
 
 import (
-	"encoding/xml"
+	// "encoding/xml"
 	"fmt"
 )
 
 // LAToken is a location-aware XML token.
 type LAToken struct {
-	xml.Token
+	// xml.Token
+	XToken
 	FilePosition
 }
 

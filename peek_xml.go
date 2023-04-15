@@ -1,5 +1,10 @@
 package xmlutils
 
+// Problem:
+// ! hasRootTag
+// pPeek.RawDoctype is ""
+// pPeek.RawPreamble is ""
+
 import (
 	"encoding/xml"
 	"fmt"
@@ -31,6 +36,11 @@ type XmlPeek struct { // has has Raw
 // It is called by FU.AnalyzeFile
 // .
 func Peek_xml(content string) (*XmlPeek, error) {
+
+	// The return value !
+	var pPeek *XmlPeek
+	pPeek = new(XmlPeek)
+
 	var e error
 	var s string
 
@@ -44,71 +54,121 @@ func Peek_xml(content string) (*XmlPeek, error) {
 	var foundRootElm bool
 	var metaTagToFind string
 	var textTagToFind string
-	var pXSP *XmlPeek
-	pXSP = new(XmlPeek)
 	// Obsolete ?
-	// pXSP.Raw = content
+	// pPeek.Raw = content
 
 	// DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 	var latokens []LAToken
 	var LAT LAToken
-	var T xml.Token
+	// var T xml.Token
+	var T XToken
 
 	latokens, e = DoParse_xml_locationAware(content)
 	if e != nil {
 		L.L.Error("xm.peek: " + e.Error())
-		return pXSP, fmt.Errorf("xm.peek: parser error: %w", e)
+		return pPeek, fmt.Errorf("xm.peek: parser error: %w", e)
 	}
+	/* REF
+	type XToken struct {
+		xml.Token
+		TDType
+		// TagOrDirective is a convenient one-word summary.
+		TagOrDirective string
+		XName
+		XAtts
+		// DirectiveText is for directives ONLY, and
+		// not for [TD_type_ELMNT] and [TD_type_ENDLM].
+		DirectiveText string
+	*/
 	for _, LAT = range latokens {
-		T = LAT.Token
-		switch T.(type) {
-		case xml.ProcInst:
+		T = LAT.XToken
+		var TorD string
+		var skippable = false
+		if T.TDType == TD_type_ELMNT {
+			TorD = "+" + T.TagOrDirective + "+"
+		} else if T.TDType == TD_type_ENDLM {
+			TorD = "-" + T.TagOrDirective + "-"
+		} else if T.TDType == TD_type_CDATA {
+			TorD = "\"" + T.TagOrDirective + "\""
+			if T.DirectiveText == "" {
+				skippable = true
+				TorD = "(nil.str)"
+				panic("OOPS, SLIPT THRU")
+			}
+		} else {
+			TorD = "DRCTV! " + T.TagOrDirective
+		}
+		if !skippable {
+			// fmt.Printf("XTKN: %s :: %s \n", TorD, T.DirectiveText)
+			fmt.Printf("((%s::%s)) ", TorD, T.DirectiveText)
+		}
+		// switch T.(type) {
+		switch T.TDType {
+
+		case TD_type_PINST: // xml.ProcInst:
 			// Found the XML preamble ?
 			// type xml.ProcInst struct { Target string ; Inst []byte }
+
+			/* OBS
 			var tok xml.ProcInst
 			tok = xml.CopyToken(T).(xml.ProcInst)
 			if S.TrimSpace(tok.Target) == "xml" {
-				s = S.TrimSpace(string(tok.Inst))
+			*/
+			if T.TagOrDirective == "xml" {
+
+				s = T.DirectiveText // S.TrimSpace(string(tok.Inst))
 				// println("XML-PR:", tok.Target, tok.Inst)
-				if (pXSP.RawPreamble == "") && !didFirstPass {
-					pXSP.RawPreamble = "<?xml " + s + "?>"
+				if (pPeek.RawPreamble == "") && !didFirstPass {
+					pPeek.RawPreamble = "<?xml " + s + "?>"
+					// fmt.Printf("GOT Raw.PREAMBLE: %s \n", s)
 				} else {
 					// Not fatal
-					L.L.Error("xm.peek: Got xml PI as non-first / repeated token")
+					L.L.Error("xm.peek: Got \"<?xml ...>\" prolog PI " +
+						"as non-first / repeated token")
 				}
 			}
 			didFirstPass = true
-		case xml.EndElement:
+		case TD_type_ENDLM: // xml.EndElement:
 			// type xml.EndElement struct { Name Name ; Attr []Attr }
+
+			/* OBS
 			var tok xml.EndElement
 			tok = xml.CopyToken(T).(xml.EndElement)
 			// Found the XML root tag ?
 			localName := tok.Name.Local
+			*/
+			localName := T.XName.Local
+
 			switch localName {
-			case pXSP.Root.TagName:
-				pXSP.Root.End = LAT.FilePosition
-				pXSP.Root.End.Pos += len(localName) + 3
+			case pPeek.Root.TagName:
+				pPeek.Root.End = LAT.FilePosition
+				pPeek.Root.End.Pos += len(localName) + 3
 				L.L.Dbg("End root elm at: " + LAT.FilePosition.String())
-			case pXSP.Meta.TagName:
-				pXSP.Meta.End = LAT.FilePosition
-				pXSP.Meta.End.Pos += len(localName) + 3
+			case pPeek.Meta.TagName:
+				pPeek.Meta.End = LAT.FilePosition
+				pPeek.Meta.End.Pos += len(localName) + 3
 				L.L.Dbg("End meta elm at: " + LAT.FilePosition.String())
-			case pXSP.Text.TagName:
-				pXSP.Text.End = LAT.FilePosition
-				pXSP.Text.End.Pos += len(localName) + 3
+			case pPeek.Text.TagName:
+				pPeek.Text.End = LAT.FilePosition
+				pPeek.Text.End.Pos += len(localName) + 3
 				L.L.Dbg("End text elm at: " + LAT.FilePosition.String())
 			}
 
-		case xml.StartElement:
+		case TD_type_ELMNT: // xml.StartElement:
 			// type xml.StartElement struct { Name Name ; Attr []Attr }
+
+			/* OBS
 			var tok xml.StartElement
 			tok = xml.CopyToken(T).(xml.StartElement)
 			localName := tok.Name.Local
+			*/
+			localName := T.XName.Local
 
 			if !foundRootElm {
-				pXSP.Root.TagName = localName
-				pXSP.Root.Atts = tok.Attr
-				pXSP.Root.Beg = LAT.FilePosition
+				fmt.Printf("FOUND FIRST (ROOT) TAG: %s \n", localName)
+				pPeek.Root.TagName = localName
+				pPeek.Root.Atts = T.XAtts.AsStdLibXml() // tok.Attr
+				pPeek.Root.Beg = LAT.FilePosition
 				foundRootElm = true
 
 				var pKeyElmTriplet *KeyElmTriplet
@@ -119,42 +179,51 @@ func Peek_xml(content string) (*XmlPeek, error) {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text
 					L.L.Progress("Got key elm.beg <%s>:%s => meta<%s> text<%s>",
-						localName, pXSP.Root.Beg.String(),
+						localName, pPeek.Root.Beg.String(),
 						metaTagToFind, textTagToFind)
 				}
 			} else {
 				if localName == metaTagToFind {
-					pXSP.Meta.TagName = localName
-					pXSP.Meta.Atts = tok.Attr
-					pXSP.Meta.Beg = LAT.FilePosition
+					pPeek.Meta.TagName = localName
+					pPeek.Meta.Atts = T.XAtts.AsStdLibXml() // tok.Attr
+					pPeek.Meta.Beg = LAT.FilePosition
 					L.L.Dbg("Got meta elm <%s> at %s",
-						metaTagToFind, pXSP.Meta.Beg.String())
+						metaTagToFind, pPeek.Meta.Beg.String())
 				}
 				if localName == textTagToFind {
-					pXSP.Text.TagName = localName
-					pXSP.Text.Atts = tok.Attr
-					pXSP.Text.Beg = LAT.FilePosition
+					pPeek.Text.TagName = localName
+					pPeek.Text.Atts = T.XAtts.AsStdLibXml() //tok.Attr
+					pPeek.Text.Beg = LAT.FilePosition
 					L.L.Dbg("Got text elm <%s> at %s \n",
-						textTagToFind, pXSP.Text.Beg.String())
+						textTagToFind, pPeek.Text.Beg.String())
 				}
 			}
 			didFirstPass = true
-		case xml.Directive:
+
+		case TD_type_DRCTV: // xml.Directive:
 			// Found the DOCTYPE ?
 			// type Directive []byte
+			/* OBS
 			var tok xml.Directive
 			tok = xml.CopyToken(T).(xml.Directive)
 			s = S.TrimSpace(string(tok))
 			if S.HasPrefix(s, "ELEMENT ") || S.HasPrefix(s, "ATTLIST ") ||
 				S.HasPrefix(s, "ENTITY ") || S.HasPrefix(s, "NOTATION ") {
-				pXSP.HasDTDstuff = true
+				pPeek.HasDTDstuff = true
 				continue
 			}
-			if S.HasPrefix(s, "DOCTYPE ") {
-				if pXSP.RawDoctype != "" {
+			*/
+			s = T.TagOrDirective
+			switch s {
+			case "ELEMENT", "ATTLIST", "ENTITY", "NOTATION":
+				pPeek.HasDTDstuff = true
+			}
+			if s == "DOCTYPE" {
+				if pPeek.RawDoctype != "" {
 					L.L.Warning("xm.peek: Got second DOCTYPE")
 				} else {
-					pXSP.RawDoctype = "<!" + s + ">"
+					pPeek.RawDoctype = "<!" + s + ">"
+					// fmt.Printf("GOT Raw.DOCTYPE: %s \n", s)
 				}
 			}
 			didFirstPass = true
@@ -162,5 +231,5 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			didFirstPass = true
 		}
 	}
-	return pXSP, nil
+	return pPeek, nil
 }

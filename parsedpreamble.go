@@ -5,6 +5,7 @@ import (
 	"fmt"
 	S "strings"
 
+	CT "github.com/fbaube/ctoken"
 	SU "github.com/fbaube/stringutils"
 )
 
@@ -42,7 +43,7 @@ type ParsedPreamble struct {
 //   - Also OK:   xml version="1.0" encoding='UTF-8' standalone="yes"
 //   - Also OK:       version="1.0" encoding='UTF-8' standalone="yes"
 //   - Also OK:   fields as documented for struct "XmlPreambleFields".
-func ParsePreamble(sRaw Raw) (*ParsedPreamble, error) {
+func ParsePreamble(sRaw CT.Raw) (*ParsedPreamble, error) {
 	if sRaw == "" {
 		return nil, nil
 	}

@@ -1,6 +1,9 @@
 package xmlutils
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	CT "github.com/fbaube/ctoken"
+)
 
 // DTDtypeFileExtensions are all the file extensions that are
 // automatically classified as being DTD-type.
@@ -24,7 +27,7 @@ var DITArootElms = []string{
 var MiscFileExtensions = []string{".sqlar"}
 
 // STD_PREAMBLE is "<?xml version="1.0" encoding="UTF-8"?>" + "\n"
-var STD_PREAMBLE Raw = xml.Header
+var STD_PREAMBLE CT.Raw = xml.Header
 
 // STD_PreambleFields is our parse of variable "STD_PREAMBLE".
 var STD_PreambleParsed ParsedPreamble

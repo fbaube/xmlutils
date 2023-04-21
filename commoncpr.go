@@ -2,12 +2,13 @@ package xmlutils
 
 import (
 	"fmt"
+	CT "github.com/fbaube/ctoken"
 	"io"
 )
 
 type CommonCPR struct {
 	NodeDepths []int
-	FilePosns  []*FilePosition
+	FilePosns  []*CT.FilePosition
 	CPR_raw    string
 	// Writer is usually the GTokens Writer
 	io.Writer
@@ -16,7 +17,7 @@ type CommonCPR struct {
 func NewCommonCPR() *CommonCPR {
 	p := new(CommonCPR)
 	p.NodeDepths = make([]int, 0)
-	p.FilePosns = make([]*FilePosition, 0)
+	p.FilePosns = make([]*CT.FilePosition, 0)
 	return p
 }
 

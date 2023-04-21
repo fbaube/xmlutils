@@ -10,6 +10,7 @@ import (
 	FP "path/filepath"
 	S "strings"
 
+	CT "github.com/fbaube/ctoken"
 	SU "github.com/fbaube/stringutils"
 )
 
@@ -55,21 +56,22 @@ func NewXmlCatalogFile(fpath string) (pXC *XmlCatalogFile, err error) {
 	if e != nil {
 		return nil, fmt.Errorf("gparse.xml.parseResults: %w", e)
 	}
-	var catRoot xml.StartElement      // *gtoken.GToken
-	var pubEntries []xml.StartElement // []*gtoken.GToken
-	catRoot = GetFirstStartElmByTag(pCPR.NodeSlice, "catalog")
-	pubEntries = GetAllStartElmsByTag(pCPR.NodeSlice, "public")
-	if catRoot.Name.Local == "" {
+	var catRoot *CT.CToken     // xml.StartElement // *gtoken.GToken
+	var pubEntries []CT.CToken // []xml.StartElement // []*gtoken.GToken
+	catRoot = CT.GetFirstCTokenByTag(pCPR.NodeSlice, "catalog")
+	pubEntries = CT.GetAllCTokensByTag(pCPR.NodeSlice, "public")
+	if catRoot.CName.Local == "" {
 		panic("No <catalog> root elm")
 	}
 	pXC = new(XmlCatalogFile)
-	pXC.XMLName = catRoot.Name // xml.Name(gktnRoot.GName)
-	pXC.Prefer = GetAttVal(catRoot, "prefer")
+	pXC.XMLName = xml.Name(catRoot.CName) // xml.Name(gktnRoot.GName)
+	// pXC.Prefer = GetAttVal(catRoot, "prefer")
+	pXC.Prefer = catRoot.GetCAttVal("prefer")
 	pXC.XmlPublicIDsubrecords = make([]PIDSIDcatalogFileRecord, 0)
 
 	for _, GT := range pubEntries {
 		// println("  CAT-ENTRY:", GT.Echo()) // entry.GAttList.Echo())
-		pID, e := NewSIDPIDcatalogRecordfromStartElm(GT)
+		pID, e := NewSIDPIDcatalogRecordfromStartTag(GT)
 		// NOTE Gotta fix the filepath
 		// // ## pID.AbsFilePath = // FU.AbsFilePath(
 		// // ## 	FU.AbsWRT(string(pID.AbsFilePath), FP.Dir(string(fpath))) // )
@@ -103,18 +105,18 @@ func NewXmlCatalogFile(fpath string) (pXC *XmlCatalogFile, err error) {
 	return pXC, nil
 }
 
-func NewSIDPIDcatalogRecordfromStartElm(se xml.StartElement) (pID *PIDSIDcatalogFileRecord, err error) {
-	if se.Name.Local == "" {
+func NewSIDPIDcatalogRecordfromStartTag(ct CT.CToken) (pID *PIDSIDcatalogFileRecord, err error) {
+	if ct.CName.Local == "" {
 		return nil, nil
 	}
-	fmt.Printf("L.174 GT: %+v \n", se)
-	NS := se.Name.Space
+	fmt.Printf("L157 GT: %+v \n", ct)
+	NS := ct.CName.Space
 	if NS != "" && NS != NS_OASIS_XML_CATALOG {
 		panic("XML catalog entry has bad NS: " + NS)
 	}
-	println("L.179 Space:", se.Name.Space, "/ Local:", se.Name.Local)
-	attPid := GetAttVal(se, "publicId")
-	attUri := GetAttVal(se, "uri")
+	println("L.179 Space:", ct.CName.Space, "/ Local:", ct.CName.Local)
+	attPid := ct.GetCAttVal("publicId")
+	attUri := ct.GetCAttVal("uri")
 	if attPid == "" && attUri == "" {
 		println("Empty GToken for Public ID!")
 		return nil, nil

@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 
+	CT "github.com/fbaube/ctoken"
 	L "github.com/fbaube/mlog"
 	SU "github.com/fbaube/stringutils"
 )
@@ -53,8 +54,8 @@ type Span struct {
 }
 
 type FileRange struct {
-	Beg FilePosition
-	End FilePosition
+	Beg CT.FilePosition
+	End CT.FilePosition
 }
 
 type SliceBounds struct {

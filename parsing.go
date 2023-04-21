@@ -3,18 +3,19 @@ package xmlutils
 import (
 	"encoding/xml"
 	"fmt"
+	CT "github.com/fbaube/ctoken"
 	"io"
 	S "strings"
 )
 
 type ParserResults_xml struct {
 	// ParseTree ??
-	NodeSlice []xml.Token
+	NodeSlice []CT.CToken // []xml.Token
 	CommonCPR
 }
 
 func GenerateParserResults_xml(s string) (*ParserResults_xml, error) {
-	var nl []xml.Token
+	var nl []CT.CToken // []xml.Token
 	var e error
 	nl, e = DoParse_xml(s)
 	if e != nil {
@@ -30,18 +31,19 @@ func GenerateParserResults_xml(s string) (*ParserResults_xml, error) {
 // DoParse_xml takes a string, so we can assume that we can
 // discard it after use cos the caller has another copy of it.
 // To be safe, it copies every token using `xml.CopyToken(T)`.
-func DoParse_xml(s string) (xtokens []xml.Token, err error) {
+func DoParse_xml(s string) (xtokens []CT.CToken, err error) {
 	return doParse_xml_maybeRaw(s, false)
 }
 
-func DoParseRaw_xml(s string) (xtokens []xml.Token, err error) {
+func DoParseRaw_xml(s string) (xtokens []CT.CToken, err error) {
 	return doParse_xml_maybeRaw(s, true)
 }
 
-func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []xml.Token, err error) {
+func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []CT.CToken, err error) {
 	var e error
-	var T, TT xml.Token
-	xtokens = make([]xml.Token, 0, 100)
+	var TT *CT.CToken // xml.Token
+	var ttt xml.Token
+	xtokens = make([]CT.CToken, 0, 100)
 	// println("(DD) XmlTokenizeBuffer:", s)
 
 	r := S.NewReader(s)
@@ -55,7 +57,7 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []xml.Token, err error)
 			// verify that start and end elements match,
 			// and (2) does not translate name space
 			// prefixes to their corresponding URLs.
-			T, e = parser.RawToken()
+			ttt, e = parser.RawToken()
 		} else {
 			// func (d *Decoder) Token() (Token, error) API:
 			// Token returns the next XML token in the input
@@ -76,7 +78,7 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []xml.Token, err error)
 			// its name space when known. If Token encounters
 			// an unrecognized name space prefix, it uses the
 			// prefix as the Space rather than report an error.
-			T, e = parser.Token()
+			ttt, e = parser.Token()
 		}
 		if e == io.EOF {
 			break
@@ -84,19 +86,20 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []xml.Token, err error)
 		if e != nil {
 			return xtokens, fmt.Errorf("xu.xml.doParse.1: %w", e)
 		}
-		TT = xml.CopyToken(T)
-		xtokens = append(xtokens, TT)
+		// TT = xml.CopyToken(T)
+		TT = CT.NewCTokenFromXmlToken(ttt)
+		xtokens = append(xtokens, *TT)
 	}
 	return xtokens, nil
 }
 
-func DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
+func DoParse_xml_locationAware(s string) (xtokens []CT.LAToken, err error) {
 	var e error
 	var T xml.Token
-	var pXT *XToken
-	var XT XToken // xml.Token
-	var LAT LAToken
-	xtokens = make([]LAToken, 0, 100)
+	var pXT *CT.CToken
+	var XT CT.CToken // xml.Token
+	var LAT CT.LAToken
+	xtokens = make([]CT.LAToken, 0, 100)
 	// println("(DD) XmlTokenizeBuffer:", s)
 	// var idcs []int
 	// idcs = SU.AllIndices(s, "\n")
@@ -115,14 +118,14 @@ func DoParse_xml_locationAware(s string) (xtokens []LAToken, err error) {
 		if e != nil {
 			return xtokens, fmt.Errorf("pu.xml.doParse.2: %w", e)
 		}
-		pXT = NewXToken(T)
+		pXT = CT.NewCTokenFromXmlToken(T)
 		if pXT == nil {
 			continue
 		}
 		XT = *pXT
 
-		LAT = *new(LAToken)
-		LAT.XToken = XT
+		LAT = *new(CT.LAToken)
+		LAT.CToken = XT
 		LAT.Pos = pos
 		// InputPos returns the line of the current decoder
 		// position and the 1 based input position of the line.

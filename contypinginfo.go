@@ -5,6 +5,7 @@ import (
 	"fmt"
 	S "strings"
 
+	CT "github.com/fbaube/ctoken"
 	L "github.com/fbaube/mlog"
 	SU "github.com/fbaube/stringutils"
 )
@@ -65,23 +66,24 @@ func (p ContypingInfo) MultilineString() (s string) {
 // The last one is quite important because it is the format that appears
 // in XML catalog files.
 // .
-func (pC *ContypingInfo) ParseDoctype(sRaw Raw) (*ParsedDoctype, error) {
+func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 
-	var aDoctype string
+	var rawDoctype string
 	var pPDT *ParsedDoctype
-	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn(aDoctype == ""), pC.String())
+	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn(rawDoctype == ""), pC.String())
 	// pC.IsLwDita = false
 	// pC.IsProcbl = false
 	pPDT = new(ParsedDoctype)
-	aDoctype = string(sRaw)
-	aDoctype = S.TrimSpace(aDoctype)
-	pPDT.Raw = Raw(aDoctype)
+	rawDoctype = string(sRaw)
+	// L.L.Warning("ParsDctp: raw_arg: %s", rawDoctype)
+	rawDoctype = S.TrimSpace(rawDoctype)
+	pPDT.Raw = CT.Raw(rawDoctype)
 
 	// First, try to match the DOCTYPE. This is the former func
 	// func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool)
 
 	// A quick win ?
-	if aDoctype == "<!DOCTYPE html>" || aDoctype == "html" {
+	if rawDoctype == "<!DOCTYPE html>" || rawDoctype == "html" {
 		pPDT.DTrootElm = "html"
 		pC.MType = "html/cnt/html5"
 		// Not sure about this next line
@@ -89,10 +91,25 @@ func (pC *ContypingInfo) ParseDoctype(sRaw Raw) (*ParsedDoctype, error) {
 		L.L.Dbg("xm.adt: Got HTML5")
 		return pPDT, nil
 	}
+	/* REF: entries look like this:
+		// This will require special handling
+	        {"html", "html/cnt/html5", "html", false, true},
+	        // uri="dtd/lw-topic.dtd"
+		{"//DTD LIGHTWEIGHT DITA Topic//", "xml/cnt/topic", "topic", true, true},
+		{"//DTD LW DITA Topic//", "xml/cnt/topic", "topic", true, true},
+	*/
+	ss := S.Split(rawDoctype, "//")
+	// fmt.Printf("%+v\n", ss)
+	for i := 0; i < len(ss); i++ {
+		// fmt.Printf("[%d] %s \n", i, ss[i])
+		// L.L.Warning("[%d] %s \n", i, ss[i])
+	}
+	inputToMatch := "//" + ss[2] + "//"
+
 	for _, p := range DTMTmap {
-		// println("(1) " + aDoctype)
-		// println("(2) " + p.ToMatch)
-		if S.Contains(aDoctype, p.ToMatch) {
+		// println("doctype (1) " + inputToMatch)
+		// println("toMatch (2) " + p.ToMatch)
+		if S.Contains(inputToMatch, p.ToMatch) {
 			pPDT.DTrootElm = p.RootElm
 			pC.MType = p.DoctypesMType
 			// !! // !! // pC.IsLwDita = p.IsLwDITA
@@ -174,19 +191,19 @@ func (pC *ContypingInfo) ParseDoctype(sRaw Raw) (*ParsedDoctype, error) {
 	// But first we want it in a normalized form.
 
 	// if brackets, remove them.
-	if S.HasPrefix(aDoctype, "<!") {
-		aDoctype = S.TrimPrefix(aDoctype, "<!")
-		aDoctype = S.TrimSuffix(aDoctype, ">") // does not need to succeed
-		aDoctype = S.TrimSpace(aDoctype)
+	if S.HasPrefix(rawDoctype, "<!") {
+		rawDoctype = S.TrimPrefix(rawDoctype, "<!")
+		rawDoctype = S.TrimSuffix(rawDoctype, ">") // does not need to succeed
+		rawDoctype = S.TrimSpace(rawDoctype)
 	}
 	// if leading "DOCTYPE ", remove it.
-	if S.HasPrefix(aDoctype, "DOCTYPE ") {
-		aDoctype = S.TrimPrefix(aDoctype, "DOCTYPE ")
-		aDoctype = S.TrimSpace(aDoctype)
+	if S.HasPrefix(rawDoctype, "DOCTYPE ") {
+		rawDoctype = S.TrimPrefix(rawDoctype, "DOCTYPE ")
+		rawDoctype = S.TrimSpace(rawDoctype)
 	}
 
 	// Quick exit: HTML5
-	if S.EqualFold(aDoctype, "html") || S.EqualFold(aDoctype, "html>") {
+	if S.EqualFold(rawDoctype, "html") || S.EqualFold(rawDoctype, "html>") {
 		println("==> Caught HTML5 doctype later rather than sooner ?!")
 		pPDT.DTrootElm = "html"
 		pC.MType = "html/cnt/html5"
@@ -199,17 +216,18 @@ func (pC *ContypingInfo) ParseDoctype(sRaw Raw) (*ParsedDoctype, error) {
 
 	// If we split off the first word, it should be PUBLIC, SYSTEM, or a root tag.
 	var unk string
-	unk, _ = SU.SplitOffFirstWord(aDoctype)
+	unk, _ = SU.SplitOffFirstWord(rawDoctype)
 	if unk != "PUBLIC" && unk != "SYSTEM" {
 		if !SU.IsInSliceIgnoreCase(unk, knownRootTags) {
+			L.L.Warning("OOPS: %s \n", unk)
 			return pPDT, errors.New(
 				"Unrecognized DOCTYPE root element or " +
 					"bad DOCTYPE availability (neither PUBLIC nor SYSTEM): " + unk)
 		}
-		pPDT.DTrootElm, aDoctype = SU.SplitOffFirstWord(aDoctype)
+		pPDT.DTrootElm, rawDoctype = SU.SplitOffFirstWord(rawDoctype)
 	}
 	var PubOrSys string
-	PubOrSys, aDoctype = SU.SplitOffFirstWord(aDoctype)
+	PubOrSys, rawDoctype = SU.SplitOffFirstWord(rawDoctype)
 	if PubOrSys != "PUBLIC" && PubOrSys != "SYSTEM" {
 		panic("Lost the PUBLIC/SYSTEM")
 		// return nil, fmt.Errorf("Bad DOCTYPE availability<" +
@@ -227,16 +245,16 @@ func (pC *ContypingInfo) ParseDoctype(sRaw Raw) (*ParsedDoctype, error) {
 	// have to be a quoted strings. The spec says they use only
 	// double quotes, not single, but let's be open-minded.
 	// FIXME Handle cases of bad quoting.
-	qtd1, qtd2, e := SU.SplitOffQuotedToken(aDoctype)
+	qtd1, qtd2, e := SU.SplitOffQuotedToken(rawDoctype)
 	if e != nil {
 		return pPDT, errors.New(
-			"xm.adt.SplitOffQuotedToken(1): " + aDoctype)
+			"xm.adt.SplitOffQuotedToken(1): " + rawDoctype)
 	}
 	qtd2 = S.TrimSpace(qtd2)
 	if qtd2 != "" {
 		if !SU.IsXmlQuoted(qtd2) {
 			return pPDT, errors.New(
-				"xm.adt.SplitOffQuotedToken(2):" + aDoctype)
+				"xm.adt.SplitOffQuotedToken(2):" + rawDoctype)
 		}
 		qtd2 = SU.MustXmlUnquote(qtd2)
 	}

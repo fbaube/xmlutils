@@ -134,15 +134,15 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			case pPeek.XmlRoot.TagName:
 				pPeek.XmlRoot.End = LAT.FilePosition
 				pPeek.XmlRoot.End.Pos += len(localName) + 3
-				L.L.Dbg("End xml root at: " + LAT.FilePosition.String())
+				L.L.Dbg("End xml root at: " + LAT.FilePosition.Info())
 			case pPeek.Meta.TagName:
 				pPeek.Meta.End = LAT.FilePosition
 				pPeek.Meta.End.Pos += len(localName) + 3
-				L.L.Dbg("End meta elm at: " + LAT.FilePosition.String())
+				L.L.Dbg("End meta elm at: " + LAT.FilePosition.Info())
 			case pPeek.Text.TagName:
 				pPeek.Text.End = LAT.FilePosition
 				pPeek.Text.End.Pos += len(localName) + 3
-				L.L.Dbg("End text elm at: " + LAT.FilePosition.String())
+				L.L.Dbg("End text elm at: " + LAT.FilePosition.Info())
 			}
 
 		case CT.TD_type_ELMNT:
@@ -163,7 +163,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text
 					L.L.Progress("Got key elm.beg <%s>:%s => meta<%s> text<%s>",
-						localName, pPeek.XmlRoot.Beg.String(),
+						localName, pPeek.XmlRoot.Beg.Info(),
 						metaTagToFind, textTagToFind)
 				}
 			} else {
@@ -172,14 +172,14 @@ func Peek_xml(content string) (*XmlPeek, error) {
 					pPeek.Meta.Atts = T.CAtts.AsStdLibXml() // tok.Attr
 					pPeek.Meta.Beg = LAT.FilePosition
 					L.L.Dbg("Got meta elm <%s> at %s",
-						metaTagToFind, pPeek.Meta.Beg.String())
+						metaTagToFind, pPeek.Meta.Beg.Info())
 				}
 				if localName == textTagToFind {
 					pPeek.Text.TagName = localName
 					pPeek.Text.Atts = T.CAtts.AsStdLibXml() //tok.Attr
 					pPeek.Text.Beg = LAT.FilePosition
 					L.L.Dbg("Got text elm <%s> at %s \n",
-						textTagToFind, pPeek.Text.Beg.String())
+						textTagToFind, pPeek.Text.Beg.Info())
 				}
 			}
 			didFirstPass = true

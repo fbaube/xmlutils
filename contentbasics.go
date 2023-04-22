@@ -1,9 +1,7 @@
 package xmlutils
 
 import (
-	"encoding/xml"
-	"fmt"
-
+	// "encoding/xml"
 	CT "github.com/fbaube/ctoken"
 	L "github.com/fbaube/mlog"
 	SU "github.com/fbaube/stringutils"
@@ -14,48 +12,13 @@ import (
 // .
 type ContentityBasics struct {
 	// XmlRoot is not meaningful for non-XML
-	XmlRoot Span
-	Text    Span
-	Meta    Span
+	XmlRoot CT.Span
+	Text    CT.Span
+	Meta    CT.Span
 	// MetaFormat is? "YAML","XML"
 	MetaFormat string
 	// MetaProps uses dot separators if hierarchy is needed
 	MetaProps SU.PropSet
-}
-
-// func (p *ContentityBasics) GetSpan(sp Span) string {
-func GetSpan(s string, sp Span) string {
-	if len(s) == 0 {
-		panic("Zero-len Raw")
-	}
-	if sp.End.Pos == 0 {
-		return ""
-	}
-	if sp.End.Pos == -1 && sp.Beg.Pos == 0 {
-		return s
-	}
-	if sp.End.Pos > len(s) {
-		panic(fmt.Sprintf("Span: END %d > LEN %d",
-			sp.End.Pos, len(s)))
-	}
-	if sp.Beg.Pos > sp.End.Pos {
-		panic(fmt.Sprintf("Span: BEG %d > END %d",
-			sp.Beg.Pos, sp.End.Pos))
-	}
-	return s[sp.Beg.Pos:sp.End.Pos]
-}
-
-// Span FIXME Make this a ptr to a ContentityNode
-type Span struct {
-	TagName string
-	Atts    []xml.Attr
-	// SliceBounds
-	FileRange
-}
-
-type FileRange struct {
-	Beg CT.FilePosition
-	End CT.FilePosition
 }
 
 type SliceBounds struct {
@@ -102,10 +65,6 @@ func GetKeyElmTriplet(localName string) *KeyElmTriplet {
 		}
 	}
 	return nil
-}
-
-func (sp Span) String() string {
-	return fmt.Sprintf("%s[%d:%d]", sp.TagName, sp.Beg.Pos, sp.End.Pos)
 }
 
 func (p *ContentityBasics) HasNone() bool {

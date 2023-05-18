@@ -80,6 +80,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 		// not for [TD_type_ELMNT] and [TD_type_ENDLM].
 		DirectiveText string
 	*/
+	// This loop just creates a printable string.
 	for _, LAT = range latokens {
 		T = LAT.CToken
 		var TorD string
@@ -107,18 +108,28 @@ func Peek_xml(content string) (*XmlPeek, error) {
 		}
 		if !skippable {
 			// fmt.Printf("XTKN: %s :: %s \n", TorD, T.DirectiveText)
-			fmt.Printf("peek: %s \n", TorD)
+			L.L.Dbg("peek: %s", TorD)
 		}
+
+		// -------------------------------------------
+		// This loop is where real processing is done.
+		// -------------------------------------------
 		switch T.TDType {
+		// TT := T.SourceToken
+		// switch TT.(type) {
+
+		// case xml.ProcInst:
 		case CT.TD_type_PINST:
 			// Found the XML preamble ?
-			// type xml.ProcInst struct { Target string ; Inst []byte }
+			// xml.ProcInst struct { Target string ; Inst []byte }
+			// if TT.Target == "xml" {
 			if T.Text == "xml" {
 				sInst := T.ControlStrings[0]
-				// println("XML-PR:", tok.Target, tok.Inst)
+				L.L.Dbg("XML-PrI <%s> <%s>",
+					T.Text, T.ControlStrings[0])
 				if (pPeek.PreambleRaw == "") && !didFirstPass {
 					pPeek.PreambleRaw = CT.Raw("<?xml " + sInst + "?>")
-					// fmt.Printf("GOT Raw.PREAMBLE: %s \n", s)
+					L.L.Dbg("GOT Raw.PREAMBLE: %s", pPeek.PreambleRaw)
 				} else {
 					// Not fatal
 					L.L.Error("xm.peek: Got \"<?xml ...>\" prolog PI " +
@@ -187,7 +198,8 @@ func Peek_xml(content string) (*XmlPeek, error) {
 		case CT.TD_type_DRCTV: // xml.Directive:
 			// Found the DOCTYPE ?
 			// type Directive []byte
-			sDT := T.Text              // "DOCTYPE"
+			sDT := T.Text // "DOCTYPE"
+			// sRE = Root Element
 			sRE := T.ControlStrings[0] // "HTML" (etc.) IF "DOCTYPE", else WHOLE REM. TEXT
 			sXX := T.ControlStrings[1] // "etc etc etc"
 			switch sDT {
@@ -201,6 +213,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 					pPeek.DoctypeRaw = CT.Raw("<!" +
 						sDT + " " + sRE + " " + sXX + ">")
 					fmt.Printf("peek: Raw.DOCTYPE: %s \n", pPeek.DoctypeRaw)
+					L.L.Dbg("peek: Raw.DOCTYPE: %s", pPeek.DoctypeRaw)
 				}
 			}
 			didFirstPass = true

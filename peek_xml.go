@@ -88,8 +88,10 @@ func Peek_xml(content string) (*XmlPeek, error) {
 		switch T.TDType {
 		case CT.TD_type_ELMNT:
 			TorD = "+" + T.Text + "+"
+			skippable = true
 		case CT.TD_type_ENDLM:
 			TorD = "-" + T.Text + "-"
+			skippable = true
 		case CT.TD_type_CDATA:
 			TorD = "\"" + T.Text + "\""
 			if T.Text == "" {
@@ -97,6 +99,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 				TorD = "(nil.str)"
 				panic("OOPS, SLIPT THRU")
 			}
+			skippable = true
 		case CT.TD_type_DRCTV:
 			TorD = "drctv:" + T.ControlStrings[0] + "," + T.ControlStrings[1] + "," + T.Text
 		case CT.TD_type_PINST:
@@ -160,7 +163,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			// type xml.StartElement struct { Name Name ; Attr []Attr }
 			localName := T.CName.Local
 			if !foundRootElm {
-				fmt.Printf("FOUND FIRST (ROOT) TAG: %s \n", localName)
+				L.L.Progress("Found root tag: " + localName)
 				pPeek.XmlRoot.TagName = localName
 				pPeek.XmlRoot.Atts = T.CAtts.AsStdLibXml() // tok.Attr
 				pPeek.XmlRoot.Beg = LAT.FilePosition

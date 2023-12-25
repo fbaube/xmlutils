@@ -88,6 +88,10 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []CT.CToken, err error)
 		}
 		// TT = xml.CopyToken(T)
 		TT = CT.NewCTokenFromXmlToken(ttt)
+		if TT == nil {
+		   println("NIL for:", ttt)
+		   continue
+		   }
 		xtokens = append(xtokens, *TT)
 	}
 	return xtokens, nil

@@ -86,7 +86,7 @@ func (p *ContentityBasics) SetToNonXml(L int) {
 // and a message about missing top-level constructs,
 // and can write warnings.
 // .
-func (p *ContentityBasics) HasRootTag() (bool, string) {
+func (p *ContentityBasics) CheckTopTags() (bool, string) {
 	if p.XmlRoot.TagName == "" {
 		return false, "No XML root element found"
 	}
@@ -96,15 +96,16 @@ func (p *ContentityBasics) HasRootTag() (bool, string) {
 	}
 	if p.Text.TagName == "" {
 		s += "No top-level content body text element found"
+		// if MAP then ...
 	}
 	if p.XmlRoot.Beg.Pos != 0 && p.XmlRoot.End.Pos == 0 {
-		L.L.Warning("Key elm root has no closing tag")
+		L.L.Warning("Root element has no closing tag")
 	}
 	if p.Meta.Beg.Pos != 0 && p.Meta.End.Pos == 0 {
-		L.L.Warning("Key elm for metadata header has no closing tag")
+		L.L.Warning("Metadata header [wrapper] elm has no closing tag")
 	}
 	if p.Text.Beg.Pos != 0 && p.Text.End.Pos == 0 {
-		L.L.Warning("Key elm for body text has no closing tag")
+		L.L.Warning("Text body [wrapper] element has no closing tag")
 	}
 	return true, s
 }

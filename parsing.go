@@ -89,7 +89,7 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []CT.CToken, err error)
 		// TT = xml.CopyToken(T)
 		TT = CT.NewCTokenFromXmlToken(ttt)
 		if TT == nil {
-		   println("NIL for:", ttt)
+		   // fmt.Printf("Got NIL CToken for whitespace token \n")
 		   continue
 		   }
 		xtokens = append(xtokens, *TT)
@@ -124,6 +124,7 @@ func DoParse_xml_locationAware(s string) (xtokens []CT.LAToken, err error) {
 		}
 		pXT = CT.NewCTokenFromXmlToken(T)
 		if pXT == nil {
+		   // fmt.Printf("Got NIL CToken for whitespace token \n")
 			continue
 		}
 		XT = *pXT
@@ -169,3 +170,47 @@ func NewConfiguredDecoder(r io.Reader) *xml.Decoder {
 	// Done!
 	return parser
 }
+
+func (p *ParserResults_xml) NodeCount() int {
+        return len(p.NodeSlice)
+}
+
+func (p *ParserResults_xml) NodeDebug(i int) string {
+        if i >= len(p.NodeSlice) {
+                return "(indexOverrun)"
+	}
+        h := p.NodeSlice[i]
+        return fmt.Sprintf("|%+v|", h)
+        /* return fmt.Sprintf("|tp:%d:%s,data:%s,ns:%s,kids:%s,atts:%v|",
+		h.Type, NodeTypeString[h.Type], DataOfHtmlNode(&h),
+                h.Namespace, SU.Yn(h.FirstChild != nil), h.Attr) */
+}
+
+func (p *ParserResults_xml) NodeEcho(i int) string {
+        if i >= len(p.NodeSlice) {
+                return "(indexOverrun)"
+        }
+	return "(XML NodeEcho)"
+	/*
+        // var pBB *bytes.Buffer
+        var pSB = new(S.Builder)
+        // FIXME this call is recursive!
+        // html.Render(pSB, p.NodeSlice[i])
+        n := p.NodeSlice[i]
+        FC, LC := n.FirstChild, n.LastChild
+        n.FirstChild, n.LastChild = nil, nil
+        html.Render(pSB, n)
+        n.FirstChild, n.LastChild = FC, LC
+        return pSB.String()
+	*/
+}
+
+func (p *ParserResults_xml) NodeInfo(i int) string {
+        if i >= len(p.NodeSlice) {
+                return "(indexOverrun)"
+        }
+        // return fmt.Sprintf("<h[%d] lv%d,ch%d,%s>",
+        //        i, p.NodeDepths[i], p.FilePosns[i].Pos, p.NodeDebug(i))
+        return fmt.Sprintf("<h[%d] %s>", i, p.NodeDebug(i))
+}
+

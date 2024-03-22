@@ -24,13 +24,14 @@ package xmlutils
 // Note that
 //   - a plain text file MAY be presumed to be Markdown, altho it
 //     is not clear (yet) which (TXT or MKDN) should take precedence.
-//   - a Markdown file CAN and WILL be presumed to be LwDITA MDITA.
+//   - a Markdown file CAN and WILL be presumed to be LwDITA MDITA;
+//     this may cause conflicts/problems for other dialects.
 //   - mappings can appear bogus, for example HTTP stdlib "text/html"
 //     might become MType "xml/html".
 //
 // String possibilities in each field:
 //
-//   - [0] XML, HTML, BIN, TXT, MD/MKDN
+//   - [0] XML, HTML, BIN, TXT, MKDN, (new!) DIRLIKE (i.e. non-contentful)
 //   - We might (or might not) keep XML and HTML distinct
 //     for a number of reasons, but partly because in the Go stdlib,
 //     they have quite different processing, and we take advantage
@@ -45,6 +46,7 @@ package xmlutils
 //     SCH: format/filext [DTD,MOD,XSD,wotevs];
 //     TXT: TBD
 //     MKDN: flavor of Markdown (?) (note also AsciiDoc, RST, ...)
+//     DIRLIKE: dir, symlink, pipe, socket, ...?
 //
 // Possible FIXME: Let [2] (3rd) be version info (html5, lwdiat, dita13)
 // and then keep root tag info separately.

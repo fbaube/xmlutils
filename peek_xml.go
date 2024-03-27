@@ -172,7 +172,8 @@ func Peek_xml(content string) (*XmlPeek, error) {
 				var pKeyElmTriplet *KeyElmTriplet
 				pKeyElmTriplet = GetKeyElmTriplet(localName)
 				if pKeyElmTriplet == nil {
-					L.L.Warning("No info for key elm: " + localName)
+					L.L.Warning("No info for key " +
+						"(root?) elm: " + localName)
 				} else {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text

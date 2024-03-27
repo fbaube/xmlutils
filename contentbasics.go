@@ -45,6 +45,7 @@ var KeyElmTriplets = []*KeyElmTriplet{
 	{"bookmap", "", ""},
 	{"glossentry", "", ""},
 	{"glossgroup", "", ""},
+	{"meta", "", ""}, // HACK! when meta follows <doctype html> 
 }
 
 // HtmlKeyContentElms is elements that often surround the actual page content.
@@ -95,11 +96,11 @@ func (p *ContentityBasics) CheckTopTags() (bool, string) {
 		s = "No top-level metadata header element found "
 	}
 	if p.Text.TagName == "" {
-		s += "No top-level content body text element found"
+		s += "No top-level content body text element found (is Map?)"
 		// if MAP then ...
 	}
 	if p.XmlRoot.Beg.Pos != 0 && p.XmlRoot.End.Pos == 0 {
-		L.L.Warning("Root element has no closing tag")
+		L.L.Warning("Root element <%s>:  no closing tag", p.XmlRoot.TagName)
 	}
 	if p.Meta.Beg.Pos != 0 && p.Meta.End.Pos == 0 {
 		L.L.Warning("Metadata header [wrapper] elm has no closing tag")

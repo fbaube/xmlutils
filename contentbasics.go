@@ -4,6 +4,7 @@ import (
 	// "encoding/xml"
 	CT "github.com/fbaube/ctoken"
 	L "github.com/fbaube/mlog"
+	"github.com/fbaube/lwdx"
 	SU "github.com/fbaube/stringutils"
 )
 
@@ -100,7 +101,13 @@ func (p *ContentityBasics) CheckTopTags() (bool, string) {
 		// if MAP then ...
 	}
 	if p.XmlRoot.Beg.Pos != 0 && p.XmlRoot.End.Pos == 0 {
-		L.L.Warning("Root element <%s>:  no closing tag", p.XmlRoot.TagName)
+	   	if _, ok := lwdx.AllHtmlVoidTags[p.XmlRoot.TagName]; !ok {
+		   L.L.Warning("Root element <%s>:  no closing tag",
+		   p.XmlRoot.TagName)
+		} else {
+		   L.L.Warning("Need to self-close Root element <%s>",
+		   	p.XmlRoot.TagName)
+		}
 	}
 	if p.Meta.Beg.Pos != 0 && p.Meta.End.Pos == 0 {
 		L.L.Warning("Metadata header [wrapper] elm has no closing tag")

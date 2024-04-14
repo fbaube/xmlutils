@@ -6,6 +6,7 @@ import (
 	L "github.com/fbaube/mlog"
 	"github.com/fbaube/lwdx"
 	SU "github.com/fbaube/stringutils"
+	"slices"
 )
 
 // ContentityBasics has Raw,Root,Text,Meta,MetaProps
@@ -104,8 +105,12 @@ func (p *ContentityBasics) CheckTopTags() (bool, string) {
 	   	if _, ok := lwdx.AllHtmlVoidTags[p.XmlRoot.TagName]; !ok {
 		   L.L.Warning("Root element <%s>:  no closing tag",
 		   p.XmlRoot.TagName)
+		} else if slices.Contains(
+		       HtmlSelfClosingTags, p.XmlRoot.TagName) {
+		   L.L.Dbg("No need to close self-closing element <%s>",
+		   	p.XmlRoot.TagName)
 		} else {
-		   L.L.Warning("Need to self-close Root element <%s>",
+		   L.L.Warning("Need to close non-self-closing element <%s>",
 		   	p.XmlRoot.TagName)
 		}
 	}

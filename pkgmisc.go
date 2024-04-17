@@ -19,8 +19,10 @@ var DITAtypeFileExtensions = []string{".dita", ".ditamap", ".ditaval"}
 
 // DITArootElms are all the XML root elements that can be
 // classified as DITA-type. Note that LwDITA uses only "topic".
+// 2024.04: Add "map"!
 var DITArootElms = []string{
-	"topic", "concept", "reference", "task", "bookmap", "glossentry", "glossgroup"}
+	"topic", "concept", "reference", "task", "bookmap",
+	"map", "glossentry", "glossgroup"}
 
 // MiscFileExtensions are all the file extensions that
 // we want to procss.

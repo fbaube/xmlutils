@@ -70,12 +70,13 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 
 	var rawDoctype string
 	var pPDT *ParsedDoctype
-	L.L.Dbg("xm.adt: inDoctp?<%s> inCntpg: %s", SU.Yn(rawDoctype == ""), pC.String())
+	L.L.Dbg("XU.ParseDctp: inDoctp?<%s> inCntpg: %s",
+		 SU.Yn(rawDoctype == ""), pC.String())
 	// pC.IsLwDita = false
 	// pC.IsProcbl = false
 	pPDT = new(ParsedDoctype)
 	rawDoctype = string(sRaw)
-	// L.L.Warning("ParsDctp: raw_arg: %s", rawDoctype)
+	// L.L.Warning("ParseDctp: raw_arg: %s", rawDoctype)
 	rawDoctype = S.TrimSpace(rawDoctype)
 	pPDT.Raw = CT.Raw(rawDoctype)
 
@@ -83,13 +84,17 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 	// func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool)
 
 	// A quick win ?
+	L.L.Warning("rawDoctype: " + rawDoctype)
 	if rawDoctype == "<!DOCTYPE html>" || rawDoctype == "html" {
+	   	L.L.Info("XU.ParseDctp: found html5 doctype")
 		pPDT.DTrootElm = "html"
 		pC.MType = "html/cnt/html5"
 		// Not sure about this next line
 		pPDT.PublicTextClass = "(HTML5)"
 		L.L.Dbg("xm.adt: Got HTML5")
 		return pPDT, nil
+	} else if S.Contains(rawDoctype, "html") {
+	        L.L.Warning("Missed html[5]? in: " + rawDoctype)
 	}
 	/* REF: entries look like this:
 		// This will require special handling

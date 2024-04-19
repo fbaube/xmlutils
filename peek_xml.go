@@ -101,7 +101,10 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			}
 			skippable = true
 		case CT.TD_type_DRCTV:
-			TorD = "drctv:" + T.ControlStrings[0] + "," + T.ControlStrings[1] + "," + T.Text
+			TorD = "drctv:" + T.ControlStrings[0] +
+			     "," + T.ControlStrings[1] + "," + T.Text
+			/* L.L.Warning("TorD<%s> T.TDType<%s>",
+				TorD, string(T.TDType)) */
 		case CT.TD_type_PINST:
 			TorD = "pr.i.: " + T.Text + "," + T.ControlStrings[0]
 		case CT.TD_type_COMNT:
@@ -200,24 +203,47 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			didFirstPass = true
 
 		case CT.TD_type_DRCTV: // xml.Directive:
+		     	// html5: T.ControlStrings[0] is "DOCTYPE"
+			// html5: T.ControlStrings[1] is "html"
+			// html5: T.Text is "" 
 			// Found the DOCTYPE ?
 			// type Directive []byte
-			sDT := T.Text // "DOCTYPE"
+			
+			// "DOCTYPE" etc.
+			sDrctvSubtype := S.ToUpper(T.ControlStrings[0]) 
 			// sRE = Root Element
-			sRE := T.ControlStrings[0] // "HTML" (etc.) IF "DOCTYPE", else WHOLE REM. TEXT
-			sXX := T.ControlStrings[1] // "etc etc etc"
-			switch sDT {
+			// "HTML" (etc.) IF "DOCTYPE", else WHOLE REM. TEXT
+			sRE := T.ControlStrings[1]
+			
+			// ============================
+			//  Special handling for html5
+			// ============================
+			if sDrctvSubtype == "DOCTYPE" &&
+			   S.EqualFold(T.ControlStrings[1], "HTML") &&
+			   len(T.ControlStrings) == 2 {
+			   	pPeek.DoctypeRaw = CT.Raw("<!DOCTYPE html>")
+				L.L.Dbg("peek: Raw.DOCTYPE: %s",
+					pPeek.DoctypeRaw)
+				L.L.Info("peek: Got html5; TODO set bounds")
+				// TODO: set beg+end bounds: for tag? more?
+				pPeek.XmlRoot.TagName = "html" 
+				didFirstPass = true
+				return pPeek, nil
+			}
+			sXX := T.ControlStrings[2] // "etc etc etc"
+			switch sDrctvSubtype {
 			case "ELEMENT", "ATTLIST", "ENTITY", "NOTATION":
 				pPeek.HasDTDstuff = true
 				// TODO: Do something with sRE
 			case "DOCTYPE":
 				if pPeek.DoctypeRaw != "" {
-					L.L.Warning("xm.peek: Got second DOCTYPE")
+				   L.L.Warning("XU.Peek: Got second DOCTYPE")
 				} else {
-					pPeek.DoctypeRaw = CT.Raw("<!" +
-						sDT + " " + sRE + " " + sXX + ">")
-					fmt.Printf("peek: Raw.DOCTYPE: %s \n", pPeek.DoctypeRaw)
-					L.L.Dbg("peek: Raw.DOCTYPE: %s", pPeek.DoctypeRaw)
+				   pPeek.DoctypeRaw = CT.Raw("<!" +
+					sDrctvSubtype + " " + sRE + " " + sXX + ">")
+				   pPeek.XmlRoot.TagName = sRE
+				   L.L.Dbg("XU.Peek: Raw.DOCTYPE: %s", pPeek.DoctypeRaw)
+				   L.L.Warning("peek: Raw.DOCTYPE: %s", pPeek.DoctypeRaw)
 				}
 			}
 			didFirstPass = true

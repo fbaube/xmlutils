@@ -84,7 +84,7 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 	// func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool)
 
 	// A quick win ?
-	L.L.Warning("rawDoctype: " + rawDoctype)
+	L.L.Dbg("rawDoctype: " + rawDoctype)
 	if rawDoctype == "<!DOCTYPE html>" || rawDoctype == "html" {
 	   	L.L.Info("XU.ParseDctp: found html5 doctype")
 		pPDT.DTrootElm = "html"

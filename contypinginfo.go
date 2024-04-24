@@ -80,11 +80,9 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 	rawDoctype = S.TrimSpace(rawDoctype)
 	pPDT.Raw = CT.Raw(rawDoctype)
 
-	// First, try to match the DOCTYPE. This is the former func
-	// func GetMTypeByDoctype(dt string) (mtype string, isLwdita bool)
-
-	// A quick win ?
+	// First, try to match the DOCTYPE. 
 	L.L.Dbg("rawDoctype: " + rawDoctype)
+	// Here, a quick win ?
 	if rawDoctype == "<!DOCTYPE html>" || rawDoctype == "html" {
 	   	L.L.Info("XU.ParseDctp: found html5 doctype")
 		pPDT.DTrootElm = "html"
@@ -103,6 +101,12 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 		{"//DTD LIGHTWEIGHT DITA Topic//", "xml/cnt/topic", "topic", true, true},
 		{"//DTD LW DITA Topic//", "xml/cnt/topic", "topic", true, true},
 	*/
+	if !S.Contains(rawDoctype, "//") {
+	   // Something like: <!DOCTYPE topic SYSTEM "lw-topic.dtd">
+	   L.L.Warning("GOT GNARLY DOCTYPE: " + rawDoctype)
+	   return nil, errors.New("Unrecognised/unimplemented Doctype: " +
+	   	  rawDoctype)
+	}
 	ss := S.Split(rawDoctype, "//")
 	// fmt.Printf("%+v\n", ss)
 	for i := 0; i < len(ss); i++ {

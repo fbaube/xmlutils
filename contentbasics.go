@@ -107,7 +107,7 @@ func (p *ContentityBasics) CheckTopTags() (bool, string) {
 		   p.XmlRoot.TagName)
 		} else if slices.Contains(
 		       HtmlSelfClosingTags, p.XmlRoot.TagName) {
-		   L.L.Dbg("No need to close self-closing element <%s>",
+		   L.L.Debug("No need to close self-closing element <%s>",
 		   	p.XmlRoot.TagName)
 		} else {
 		   L.L.Warning("Need to close non-self-closing element <%s>",

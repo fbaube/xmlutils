@@ -70,7 +70,7 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 
 	var rawDoctype string
 	var pPDT *ParsedDoctype
-	L.L.Dbg("XU.ParseDctp: inDoctp?<%s> inCntpg: %s",
+	L.L.Debug("XU.ParseDctp: inDoctp?<%s> inCntpg: %s",
 		 SU.Yn(rawDoctype == ""), pC.String())
 	// pC.IsLwDita = false
 	// pC.IsProcbl = false
@@ -81,7 +81,7 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 	pPDT.Raw = CT.Raw(rawDoctype)
 
 	// First, try to match the DOCTYPE. 
-	L.L.Dbg("rawDoctype: " + rawDoctype)
+	L.L.Debug("rawDoctype: " + rawDoctype)
 	// Here, a quick win ?
 	if rawDoctype == "<!DOCTYPE html>" || rawDoctype == "html" {
 	   	L.L.Info("XU.ParseDctp: found html5 doctype")
@@ -89,7 +89,7 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 		pC.MType = "html/cnt/html5"
 		// Not sure about this next line
 		pPDT.PublicTextClass = "(HTML5)"
-		L.L.Dbg("xm.adt: Got HTML5")
+		L.L.Debug("xm.adt: Got HTML5")
 		return pPDT, nil
 	} else if S.Contains(rawDoctype, "html") {
 	        L.L.Warning("Missed html[5]? in: " + rawDoctype)

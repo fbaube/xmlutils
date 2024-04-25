@@ -94,7 +94,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 		case CT.TD_type_DRCTV:
 			TorD = "drctv:" + T.ControlStrings[0] +
 			     "," + T.ControlStrings[1] + "," + T.Text
-			L.L.Dbg("Directive: TorD<%s> T.TDType<%s>",
+			L.L.Debug("Directive: TorD<%s> T.TDType<%s>",
 				TorD, string(T.TDType)) 
 		case CT.TD_type_PINST:
 			TorD = "pr.i.: " + T.Text + "," + T.ControlStrings[0]
@@ -105,7 +105,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 		}
 		if !skippable {
 			// fmt.Printf("XTKN: %s :: %s \n", TorD, T.DirectiveText)
-			L.L.Dbg("XU.Peek: %s", TorD)
+			L.L.Debug("XU.Peek: %s", TorD)
 		}
 
 		// -------------------------------------------
@@ -122,11 +122,11 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			// if TT.Target == "xml" {
 			if T.Text == "xml" {
 				sInst := T.ControlStrings[0]
-				L.L.Dbg("XML-PrI <%s> <%s>",
+				L.L.Debug("XML-PrI <%s> <%s>",
 					T.Text, T.ControlStrings[0])
 				if (pPeek.PreambleRaw == "") && !didFirstPass {
 					pPeek.PreambleRaw = CT.Raw("<?xml " + sInst + "?>")
-					L.L.Dbg("GOT Raw.PREAMBLE: %s", pPeek.PreambleRaw)
+					L.L.Debug("GOT Raw.PREAMBLE: %s", pPeek.PreambleRaw)
 				} else {
 					// Not fatal
 					L.L.Error("xm.peek: Got \"<?xml ...>\" prolog PI " +
@@ -142,22 +142,22 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			case pPeek.XmlRoot.TagName:
 				pPeek.XmlRoot.End = LAT.FilePosition
 				pPeek.XmlRoot.End.Pos += len(localName) + 3
-				L.L.Dbg("End xml root at: " + LAT.FilePosition.Info())
+				L.L.Debug("End xml root at: " + LAT.FilePosition.Info())
 			case pPeek.Meta.TagName:
 				pPeek.Meta.End = LAT.FilePosition
 				pPeek.Meta.End.Pos += len(localName) + 3
-				L.L.Dbg("End meta elm at: " + LAT.FilePosition.Info())
+				L.L.Debug("End meta elm at: " + LAT.FilePosition.Info())
 			case pPeek.Text.TagName:
 				pPeek.Text.End = LAT.FilePosition
 				pPeek.Text.End.Pos += len(localName) + 3
-				L.L.Dbg("End text elm at: " + LAT.FilePosition.Info())
+				L.L.Debug("End text elm at: " + LAT.FilePosition.Info())
 			}
 
 		case CT.TD_type_ELMNT:
 			// type xml.StartElement struct { Name Name ; Attr []Attr }
 			localName := T.CName.Local
 			if !foundRootElm {
-				L.L.Progress("Found root tag: " + localName)
+				L.L.Info("Found root tag: " + localName)
 				pPeek.XmlRoot.TagName = localName
 				pPeek.XmlRoot.Atts = T.CAtts.AsStdLibXml() // tok.Attr
 				pPeek.XmlRoot.Beg = LAT.FilePosition
@@ -171,7 +171,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 				} else {
 					metaTagToFind = pKeyElmTriplet.Meta
 					textTagToFind = pKeyElmTriplet.Text
-					L.L.Progress("Got key elm.beg <%s>:%s => meta<%s> text<%s>",
+					L.L.Debug("Got key elm.beg <%s>:%s => meta<%s> text<%s>",
 						localName, pPeek.XmlRoot.Beg.Info(),
 						metaTagToFind, textTagToFind)
 				}
@@ -180,14 +180,14 @@ func Peek_xml(content string) (*XmlPeek, error) {
 					pPeek.Meta.TagName = localName
 					pPeek.Meta.Atts = T.CAtts.AsStdLibXml() // tok.Attr
 					pPeek.Meta.Beg = LAT.FilePosition
-					L.L.Dbg("Got meta elm <%s> at %s",
+					L.L.Debug("Got meta elm <%s> at %s",
 						metaTagToFind, pPeek.Meta.Beg.Info())
 				}
 				if localName == textTagToFind {
 					pPeek.Text.TagName = localName
 					pPeek.Text.Atts = T.CAtts.AsStdLibXml() //tok.Attr
 					pPeek.Text.Beg = LAT.FilePosition
-					L.L.Dbg("Got text elm <%s> at %s \n",
+					L.L.Debug("Got text elm <%s> at %s \n",
 						textTagToFind, pPeek.Text.Beg.Info())
 				}
 			}

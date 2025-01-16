@@ -29,29 +29,25 @@ var NS_OASIS_XML_CATALOG = "urn:oasis:names:tc:entity:xmlns:xml:catalog:"
 // WARNING: Go has lotsa XML namespace problems:
 // https://github.com/golang/go/issues/13400#issuecomment-162459219
 
-// XML_NS_Recognized is recognized values in the "xml:" namespace.
+// XML_NS_Recognized is recognized values in the "xml:" namespace:
+//  - "lang" identifies the human language used in the scope
+//    of the element to which it's attached.
+//  - "space (default|preserve)" says whether white space
+//    to be considered as significant in the scope of the
+//    element to which it's attached.
+//  - The XML Base spec (Second edition) describes a facility,
+//    like HTML BASE, for defining base URIs for parts of XML
+//    documents. It defines xml:base, and describes in detail
+//    how to use it in processing relative URI references.
+//  - The "xml:id" spec defines xml:id, which is of type "ID".
+//    independently of any DTD or schema.
+//  - "Father" denotes Jon Bosak, the chair of the original 
+//    XML WG: "In appreciation for his vision, leadership and 
+//    dedication the W3C XML Plenary today 10.02.2000 reserves 
+//    for Jon Bosak in perpetuity the XML name "xml:Father".
+
 var XML_NS_Recognized = []string{
-	// `lang` identifies the human language used in the
-	// scope of the element to which it's attached.
-	"lang",
-	// `space (default|preserve)` says whether white space
-	// to be considered as significant in the scope of the
-	// element to which it's attached.
-	"space",
-	// The XML Base spec (Second edition) describes a facility,
-	// like HTML BASE, for defining base URIs for parts of XML
-	// documents. It defines xml:base, and describes in detail
-	// how to use it in processing relative URI references.
-	"base",
-	// The xml:id spec defines xml:id, which is of type "ID".
-	// independently of any DTD or schema.
-	"id",
-	// "Father" denotes Jon Bosak, the chair of the original XML WG:
-	// "In appreciation for his vision, leadership and dedication
-	// the W3C XML Plenary today 10.02.2000 reserves for Jon Bosak
-	// in perpetuity the XML name "xml:Father".
-	"Father",
-}
+	"lang",	"space", "base", "id", "Father" }
 
 // More info:
 // - https://www.w3.org/2001/xml.xsd

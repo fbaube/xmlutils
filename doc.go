@@ -1,5 +1,4 @@
-// Package xmlutils is actually more like content-analysis-utils,
-// including the ability to process XML files, both with and
-// without DOCTYPE.
+// Package xmlutils is mostly content analysis for XML files,
+// including both with and without DOCTYPE.
 // .
 package xmlutils

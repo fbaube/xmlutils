@@ -20,29 +20,28 @@ import (
 //
 //	<?xml version="version_number"         <= required, "1.0"
 //	     encoding="encoding_declaration"   <= optional, assume "UTF-8"
-//	   standalone="standalone_status" ?>   <= optional, can be "yes", assume "no"
+//	   standalone="standalone_status" ?>   <= opt'l, can be "yes", dflt "no"
 //
-// Probably any errors returned by this function should be panicked on, because
-// any such error is pretty fundamental and also ridiculous. Note also that
-// strictly speaking, an XML preamble is NOT a PI.
+// Probably any errors returned by this function should be panicked on, 
+// because any such error is pretty fundamental and also ridiculous. 
+// Note also that strictly speaking, an XML preamble is NOT a PI.
 type ParsedPreamble struct {
-	// Do not include a trailing newline.
+	// Preamble_raw does not include a trailing newline
 	Preamble_raw string
-	// e.g. "0" means XML 1.0
+	// MinorVersion "0" means XML 1.0
 	MinorVersion string
-	// Valid values and forms are TBS.
+	// Encoding has Valid values and forms TBS
 	Encoding string
-	// "yes"  or "no"
+	// IsStandalone has value "yes" or "no"
 	IsStandalone bool
 }
 
-// NewXmlPreambleFields parses an XML preamble, which (BTW) MUST be the first
-// line in a file. XML version MUST be "1.0". Encoding handling is incomplete.
-//
-//   - Example: <?xml version="1.0" encoding='UTF-8' standalone="yes"?>
-//   - Also OK:   xml version="1.0" encoding='UTF-8' standalone="yes"
-//   - Also OK:       version="1.0" encoding='UTF-8' standalone="yes"
-//   - Also OK:   fields as documented for struct "XmlPreambleFields".
+// ParsePreamble parses an XML preamble, which (BTW) MUST be the first line
+// in a file. XML version MUST be "1.0". Encoding handling is incomplete.
+//  - Example: <?xml version="1.0" encoding='UTF-8' standalone="yes"?>
+//  - Also OK:   xml version="1.0" encoding='UTF-8' standalone="yes"
+//  - Also OK:       version="1.0" encoding='UTF-8' standalone="yes"
+//  - Also OK:   fields as documented for struct "XmlPreambleFields".
 func ParsePreamble(sRaw CT.Raw) (*ParsedPreamble, error) {
 	if sRaw == "" {
 		return nil, nil

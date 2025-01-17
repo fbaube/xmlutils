@@ -1,6 +1,8 @@
 package xmlutils
 
-// This file: About the "xml" namespace
+// This file is all about the "xml" namespace.
+
+// SEE: https://github.com/nbio/xml
 
 // TODO NS is specified, inherited, default.
 
@@ -23,11 +25,14 @@ type NSsnapshot struct {
 // NS_XML is the XML namespace.
 var NS_XML = "http://www.w3.org/XML/1998/namespace"
 
-// NS_OASIS_XML_CATALOG is the OASIS namespace for XML catalogs.
+// NS_OASIS_XML_CATALOG is the OASIS namespace (as URN) for XML catalogs.
 var NS_OASIS_XML_CATALOG = "urn:oasis:names:tc:entity:xmlns:xml:catalog:"
 
-// WARNING: Go has lotsa XML namespace problems:
+// WARNING:
+// Go has lotsa XML namespace problems:
 // https://github.com/golang/go/issues/13400#issuecomment-162459219
+// Suggested fix:
+// https://github.com/nbio/xml
 
 // XML_NS_Recognized is recognized values in the "xml:" namespace:
 //  - "lang" identifies the human language used in the scope
@@ -94,3 +99,4 @@ var XML_NS_Recognized = []string{
 // processor finds that a document has violated the constraints of this spec.
 //
 // https://www.w3.org/TR/xml-names/
+

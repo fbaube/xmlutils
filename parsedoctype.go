@@ -5,7 +5,8 @@ package xmlutils
 
 var knownRootTags = []string{"html", "map", "topic", "task", "concept", "reference"}
 
-// DoctypeMType maps a DOCTYPE string to an MType string and a bool, Is it LwDITA?
+// DoctypeMType maps a DOCTYPE string to an MType string and a bool,
+// ? Is it LwDITA ?
 type DoctypeMType struct {
 	ToMatch       string
 	DoctypesMType string
@@ -45,5 +46,6 @@ var DTMTmap = []DoctypeMType{
 	{"//DTD SVG 1.0//", "xml/img/svg1.0", "svg", false, false},
 	{"//DTD SVG 1.1", "xml/img/svg", "svg", false, false},
 	{"//DTD XHTML Basic 1.1//", "html/cnt/topic", "html", false, false},
-	{"//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//", "html/cnt/blarg", "html", false, false},
+	{"//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//", "html/cnt/blarg",
+		"html", false, false},
 }

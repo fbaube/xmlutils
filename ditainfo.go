@@ -1,9 +1,9 @@
 package xmlutils
 
-// DitaFlavor is a [Lw]DITA flavor. See enumeration "DitaFlavors".
+// DitaFlavor is a [Lw]DITA flavor. See [DitaFlavors]. 
 type DitaFlavor string
 
-// DitaContype is a [Lw]DITA Topic, Map, etc. See enumeration "DitaContypes".
+// DitaContype is a [Lw]DITA Topic, Map, etc. See [DitaContypes].
 type DitaContype string
 
 // DitaInfo is two enumerations (so far): Markup flavor and Content type.
@@ -17,9 +17,10 @@ type DitaContype string
 //	DitaContype
 // }
 
-// DitaFlavors - see "type DitaFlavor".
+// DitaFlavors - see [DitaFlavor].
 var DitaFlavors = []DitaFlavor{"1.2", "1.3", "XDITA", "HDITA", "MDATA"}
 
-// DitaContypes - see "type DitaContype".
+// DitaContypes - see [DitaContype]. 
 var DitaContypes = []DitaContype{"Map", "Bookmap", "Topic", "Task", "Concept",
 	"Reference", "Dita", "Glossary", "Conrefs", "LwMap", "LwTopic"}
+

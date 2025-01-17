@@ -51,6 +51,5 @@ package xmlutils
 // and then keep root tag info separately.
 //
 // Possible FIXME: Append version info, probably after a semicolon.
-//
-
+// .
 type MType string

@@ -12,16 +12,6 @@ import (
 // [1] IMG, CNT (Content), TOC (Map), SCH(ema)
 // [2] XML: per-DTD; BIN: fmt/filext; MD: flavor; SCH: fmt/filext
 
-// type XmlDoctypeFamily string
-//      XmlDoctypeFamilies are the broad groups of DOCTYPES.
-//  var XmlDoctypeFamilies = []XmlDoctypeFamily {
-//	"lwdita",
-//	"dita",
-//	"html5",
-//	"html",
-//	"other",
-// }
-
 // ParsedDoctype is a parse of a complete DOCTYPE declaration.
 // For [Lw]DITA, what interests us is something like
 //
@@ -30,30 +20,31 @@ import (
 //	maybe followed by SYSTEM...
 //
 // The structure of a DOCTYPE is like so:
-//   - PUBLIC | SYSTEM = Availability
-//   - - = Registration = Organization & DTD are not registeredd with ISO.
-//   - OASIS = Organization
-//   - DTD = Public Text Class (CAPACITY | CHARSET | DOCUMENT |
-//     DTD | ELEMENTS | ENTITIES | LPD | NONSGML | NOTATION |
-//     SHORTREF | SUBDOC | SYNTAX | TEXT )
-//   - (*) = Public Text Description, incl. any version number
-//   - EN = Public Text Language
-//   - URL = optional, explicit
+//  - PUBLIC | SYSTEM = Availability
+//  - - = Registration = Organization & DTD are not registeredd with ISO.
+//  - OASIS = Organization
+//  - DTD = Public Text Class (CAPACITY | CHARSET | DOCUMENT |
+//    DTD | ELEMENTS | ENTITIES | LPD | NONSGML | NOTATION |
+//    SHORTREF | SUBDOC | SYNTAX | TEXT )
+//  - (*) = Public Text Description, incl. any version number
+//  - EN = Public Text Language
+//  - URL = optional, explicit
 //
-// We don't include the raw DOCTYPE here because this structure can be optional
-// but we still need to have the Doctype string in the DB as a separate column,
-// even if it is empty (i.e. "").
+// We don't include the raw DOCTYPE here because this structure can be
+// optional but we still need to have the Doctype string in the DB as 
+// a separate column, even if it is empty (i.e. "").
 type ParsedDoctype struct {
-	CT.Raw // Raw Doctype string
+     	// Raw is the raw Doctype string
+	CT.Raw 
 	// PIDSIDcatalogFileRecord is the PID + SID.
 	PIDSIDcatalogFileRecord
 	// DTrootElm is the tag declared in the DOCTYPE, which
 	// should match the root tag in the text of the file.
 	DTrootElm string
-	// MType is here because a DOCTYPE does indeed give
+	error
+	// MType was here because a DOCTYPE does indeed give
 	// us enough information to create one.
 	// DoctypeMType string
-	error
 }
 
 // NewXmlDoctypeFieldsInclMType parses an XML DOCTYPE declaration.
@@ -63,13 +54,14 @@ type ParsedDoctype struct {
 // one that tells the user what DOCTYPE declaration will reference the DTD.
 // In other words, the XML Catalog reference. Therefore, this function should
 // parse an input string that begins as minimally as a PUBLIC or SYSTEM (see
-// the last example above), and maybe don't worry about how the input string ends.
+// the last example above), and maybe don't worry about how the input string
+// ends.
 //
 // Some input strings of great interest:
-//  DOCTYPE topic PUBLIC "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN"
-//  DOCTYPE map   PUBLIC "-//OASIS//DTD LIGHTWEIGHT DITA Map//EN"
-//  DOCTYPE html       (i.e. HTML5)
-//  DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" (MAYBE!)
+//  - DOCTYPE topic PUBLIC "-//OASIS//DTD LIGHTWEIGHT DITA Topic//EN"
+//  - DOCTYPE map   PUBLIC "-//OASIS//DTD LIGHTWEIGHT DITA Map//EN"
+//  - DOCTYPE html       (i.e. HTML5)
+//  - DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" (MAYBE!)
 
 /* OBS print stuff
 

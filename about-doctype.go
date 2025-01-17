@@ -1,6 +1,6 @@
 package xmlutils
 
-/* Docs only
+/* This file is documentation only
 
 https://en.wikipedia.org/wiki/Document_type_declaration
 

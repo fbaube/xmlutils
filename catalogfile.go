@@ -1,11 +1,11 @@
 package xmlutils
 
+// This is a quite old file wth mysterious goings-on.
+
 import (
 	"encoding/xml"
 	"fmt"
 	"os"
-
-	// "path"
 
 	FP "path/filepath"
 	S "strings"
@@ -17,13 +17,14 @@ import (
 // XmlCatalogFile represents a parsed XML catalog file, at the top level.
 type XmlCatalogFile struct {
 	XMLName xml.Name `xml:"catalog"`
-	// "public" or "system"
+	// Prefer is "public" or "system"
 	Prefer                string                    `xml:"prefer,attr"`
 	XmlPublicIDsubrecords []PIDSIDcatalogFileRecord `xml:"public"`
-	// We do this so we can peel off the directory path
+	// AbsFilePath is so we can peel off the directory path
 	AbsFilePath string
 }
 
+// GetByPublicID retrieves from [XmlPublicIDsubrecords].
 func (p *XmlCatalogFile) GetByPublicID(s string) *PIDSIDcatalogFileRecord {
 	if s == "" {
 		return nil
@@ -105,24 +106,25 @@ func NewXmlCatalogFile(fpath string) (pXC *XmlCatalogFile, err error) {
 	return pXC, nil
 }
 
+// NewSIDPIDcatalogRecordfromStartTag is TBS. 
 func NewSIDPIDcatalogRecordfromStartTag(ct CT.CToken) (pID *PIDSIDcatalogFileRecord, err error) {
 	if ct.CName.Local == "" {
 		return nil, nil
 	}
-	fmt.Printf("L157 GT: %+v \n", ct)
+	fmt.Printf("L112 GT: %+v \n", ct)
 	NS := ct.CName.Space
 	if NS != "" && NS != NS_OASIS_XML_CATALOG {
 		panic("XML catalog entry has bad NS: " + NS)
 	}
-	println("L.179 Space:", ct.CName.Space, "/ Local:", ct.CName.Local)
+	println("L.117 Space:", ct.CName.Space, "/ Local:", ct.CName.Local)
 	attPid := ct.GetCAttVal("publicId")
 	attUri := ct.GetCAttVal("uri")
 	if attPid == "" && attUri == "" {
 		println("Empty GToken for Public ID!")
 		return nil, nil
 	}
-	println("L.186 attPid is:", attPid)
-	println("L.187 attUri is:", attUri)
+	println("L.124 attPid is:", attPid)
+	println("L.125 attUri is:", attUri)
 
 	// -//OASIS//DTD LIGHTWEIGHT DITA Topic//EN
 	var ss []string

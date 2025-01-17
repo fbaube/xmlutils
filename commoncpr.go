@@ -6,6 +6,7 @@ import (
 	"io"
 )
 
+// CommonCPR is Concrete Parse Results common to all formats processed.
 type CommonCPR struct {
 	NodeDepths []int
 	FilePosns  []*CT.FilePosition
@@ -14,6 +15,7 @@ type CommonCPR struct {
 	io.Writer
 }
 
+// NewCommonCPR exists to make two slices.
 func NewCommonCPR() *CommonCPR {
 	p := new(CommonCPR)
 	p.NodeDepths = make([]int, 0)
@@ -21,6 +23,7 @@ func NewCommonCPR() *CommonCPR {
 	return p
 }
 
+// AsString TODO should probably be renamed to String.
 func (p *CommonCPR) AsString(i int) string {
 	var sND, sFP = "?", "?"
 

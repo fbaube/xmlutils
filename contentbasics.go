@@ -1,7 +1,6 @@
 package xmlutils
 
 import (
-	// "encoding/xml"
 	CT "github.com/fbaube/ctoken"
 	L "github.com/fbaube/mlog"
 	"github.com/fbaube/lwdx"
@@ -9,36 +8,42 @@ import (
 	"slices"
 )
 
-// ContentityBasics has Raw,Root,Text,Meta,MetaProps
-// and is embedded in XU.AnalysisRecord.
+// ContentityBasics describes the top-level structure of
+// a Contentity (content entity). It has XmlRoot, Text,
+// Meta, MetaProps, and is embedded in struct [XmlPeek].
 // .
 type ContentityBasics struct {
 	// XmlRoot is not meaningful for non-XML
 	XmlRoot CT.Span
 	Text    CT.Span
 	Meta    CT.Span
-	// MetaFormat is? "YAML","XML"
+	// MetaFormat is "YAML" or "XML"
 	MetaFormat string
 	// MetaProps uses dot separators if hierarchy is needed
 	MetaProps SU.PropSet
 }
 
+// SliceBounds specifies a subslice. 
 type SliceBounds struct {
 	BegIdx, EndIdx int
 }
 
+// KeyElmTriplet is a set of tags that appear together in
+// a well-known content format. 
 type KeyElmTriplet struct {
 	Name string
 	Meta string
 	Text string
 }
 
+// KeyElmTriplets are for HTML5, LwDITA, and DITA. 
 var KeyElmTriplets = []*KeyElmTriplet{
-	// WHATWG: "The head element of a document is the first head element that
-	// is a child of the html element, if there is one, or null otherwise.
-	// The body element of a document is the first of the html element's
-	// children that is either a body element or a frameset element, or
-	// null if there is no such element.
+	// WHATWG: "The head element of a document is the first head 
+	// element that is a child of the html element, if there is 
+	// one, or null otherwise. The body element of a document is 
+	// the first of the html element's children that is either a 
+	// body element or a frameset element, or null if there is no
+	// such element.
 	{"html", "head", "body"},
 	{"topic", "prolog", "body"},
 	{"map", "topicmeta", ""},
@@ -61,6 +66,8 @@ var HtmlSectioningContentElms = []string{"article", "aside", "nav", "section"}
 var HtmlSectioningRootElms = []string{
 	"blockquote", "body", "details", "dialog", "fieldset", "figure", "td"}
 
+// GetKeyElmTriplet uses an XML localName to retrieve
+// the other elements that are expected.
 func GetKeyElmTriplet(localName string) *KeyElmTriplet {
 	for _, ke := range KeyElmTriplets {
 		if ke.Name == localName {
@@ -70,12 +77,14 @@ func GetKeyElmTriplet(localName string) *KeyElmTriplet {
 	return nil
 }
 
+// HasNone returns false if no expected top-level structure is found.
 func (p *ContentityBasics) HasNone() bool {
-	return p.XmlRoot.TagName == "" && p.Meta.TagName == "" && p.Text.TagName == ""
+	return p.XmlRoot.TagName == "" &&
+	       p.Meta.TagName == "" && p.Text.TagName == ""
 }
 
-// SetToNonXml just needs the length of the content.
-// .
+// SetToNonXml just needs the length of the content,
+// and sets no useful information about deeper structure. 
 func (p *ContentityBasics) SetToNonXml(L int) {
 	p.XmlRoot.Beg.Pos = 0
 	p.XmlRoot.End.Pos = L
@@ -85,9 +94,9 @@ func (p *ContentityBasics) SetToNonXml(L int) {
 	p.Text.End.Pos = L
 }
 
-// HasRootTag returns true is a root element was found,
-// and a message about missing top-level constructs,
-// and can write warnings.
+// HasRootTag returns true is a root element was found, 
+// plus a message about any missing top-level constructs,
+// and it can return warnings.
 // .
 func (p *ContentityBasics) CheckTopTags() (bool, string) {
 	if p.XmlRoot.TagName == "" {

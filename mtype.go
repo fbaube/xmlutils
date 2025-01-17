@@ -29,14 +29,13 @@ package xmlutils
 //   - mappings can appear bogus, for example HTTP stdlib "text/html"
 //     might become MType "xml/html".
 //
-// String possibilities in each field:
+// String possibilities (but in LOWER CASE!) in each field:
 //
 //   - [0] XML, HTML, BIN, TXT, MKDN, (new!) DIRLIKE (i.e. non-contentful)
-//   - We might (or might not) keep XML and HTML distinct
-//     for a number of reasons, but partly because in the Go stdlib,
-//     they have quite different processing, and we take advantage
-//     of it to keep HTML processing free of nasty surprises and
-//     unhelpful strictness
+//   - We might (or not) keep XML and HTML distinct for a number of 
+//     reasons, but partly because in the Go stdlib, they are processed 
+//     quite differently, and we take advantage of it to keep HTML pro-
+//     cessing free of nasty surprises and unhelpful strictness
 //   - We might (or might not) keep MKDN distinct from TXT
 //   - [1] CNT (Content), MAP (ToC), IMG, SCH(ema) [and maybe others TBD?]
 //   - [2] Depends on [0]:
@@ -54,22 +53,4 @@ package xmlutils
 // Possible FIXME: Append version info, probably after a semicolon.
 //
 
-// Possible TODO:
-//
-// type XmlDoctypeFamily string
-//
-// The XmlDoctypeFamilies are the broad groups of DOCTYPES.
-//
-//	var XmlDoctypeFamilies = []XmlDoctypeFamily {
-//	"lwdita",
-//	"dita13",
-//	"dita",
-//	"html5",
-//	"html4",
-//	 "svg",
-//	 "mathml",
-//	"other",
-//	}
-//
-// .
 type MType string

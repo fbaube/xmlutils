@@ -5,8 +5,8 @@ import (
 	"fmt"
 	S "strings"
 
-	CT "github.com/fbaube/ctoken"
 	L "github.com/fbaube/mlog"
+	CT "github.com/fbaube/ctoken"
 	SU "github.com/fbaube/stringutils"
 )
 
@@ -18,10 +18,10 @@ type ContypingInfo struct {
 	MimeType        string
 	MimeTypeAsSnift string
 	MType           string
-	// !! // !! // IsLwDita        bool
-	// ?? FIXME ?? Doctype         string
-	// IsProcbl means, is it processable (by us) ?
-	// i.e. CAN we process it ? (Even if it might not be LwDITA.)
+	// IsLwDita       bool
+	// IsProcbl means, is it processable 
+	// (by us) ? i.e. CAN we process it ?
+	// (Even if it might not be LwDITA.)
 	// IsProcbl bool
 }
 
@@ -30,6 +30,8 @@ func (p ContypingInfo) String() (s string) {
 		p.FileExt, p.MimeTypeAsSnift, p.MimeType, p.MType)
 }
 
+// MultilineString should probably be renamed to Debug,
+// in implementing [Stringser].
 func (p ContypingInfo) MultilineString() (s string) {
 	var mismatch string
 	if p.MimeTypeAsSnift != p.MimeType {
@@ -39,25 +41,25 @@ func (p ContypingInfo) MultilineString() (s string) {
 		p.FileExt, p.MimeTypeAsSnift, mismatch, p.MType)
 }
 
-// ParseDoctype should probably NOT be a method on ContypingInfo !!
+// ParseDoctype should probably NOT be a method on ContypingInfo.
 //
-// AnalyzeDoctype expects to receive a file extension plus a content
-// type as determined by the HTTP stdlib. However a DOCTYPE is always
-// considered authoritative, so this func can ignore things like the
-// file extension, and overwrite or set any field it wants to.
+// It expects to receive (a file extension) plus (a content type
+// as determined by the HTTP stdlib. However a DOCTYPE is always
+// considered authoritative, so this func can ignore things like 
+// the file extension, and overwrite or set any field it wants to.
 //
 // It works by first trying to match the DOCTYPE against a list.
 // If that fails, stronger measures are called for.
 //
 // Note two things about this function:
 //
-// Firstly, it can handle PID, SID, or both:
+//  - Firstly, it can handle PID, SID, or both:
 //
 //	<!DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN">
 //	<!DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" "./foo.dtd">
 //	<!DOCTYPE topic SYSTEM "./foo.dtd">
 //
-// Secondly, it can handle a less-than-complete declaration:
+//  - Secondly, it can handle a less-than-complete declaration:
 //
 //	DOCTYPE topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
 //	        topic PUBLIC "-//OASIS//DTD LWDITA Topic//EN" (and variations)
@@ -131,23 +133,13 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 		}
 	}
 
-	// OK so we did not match the DOCTYPE. So now let's analyze it in
-	// excruciating detail.
+	// OK so we did not match the DOCTYPE. 
+	// So now let's analyze it in excruciating detail.
 
 	// Copied from mcfile.go:
 	// [0] XML, BIN, TXT, MD
 	// [1] IMG, CNT (Content), TOC (Map), SCH(ema)
 	// [2] XML: per-DTD; BIN: fmt/filext; MD: flavor; SCH: fmt/filext
-
-	// type XmlDoctypeFamily string
-	//      XmlDoctypeFamilies are the broad groups of DOCTYPES.
-	//  var XmlDoctypeFamilies = []XmlDoctypeFamily {
-	//	"lwdita",
-	//	"dita",
-	//	"html5",
-	//	"html",
-	//	"other",
-	// }
 
 	// XmlDoctype is a parse of a complete DOCTYPE declaration.
 	// For [Lw]DITA, what interests us is something like
@@ -302,7 +294,8 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 	// Now let's set the MType using some intelligent guesses,
 	// to compare to the results of GetMTypeByDocType(..)
 	if S.Contains(sd, "DITA") {
-		pC.MType = "dita/[TBS]/" + pPDT.DTrootElm
+	//	pC.MType = "dita/[TBS]/" + pPDT.DTrootElm
+		pC.MType = "xml/dita/" + pPDT.DTrootElm
 	}
 	if S.Contains(sd, "XDITA") ||
 		S.Contains(sd, "LW DITA") ||

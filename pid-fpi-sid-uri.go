@@ -5,7 +5,6 @@ import (
 	"fmt"
 	S "strings"
 
-	// FU "github.com/fbaube/fileutils"
 	SU "github.com/fbaube/stringutils"
 )
 

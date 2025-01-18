@@ -12,12 +12,13 @@ import (
 
 	CT "github.com/fbaube/ctoken"
 	L "github.com/fbaube/mlog"
+	_ "github.com/fbaube/fileutils" // for docu 
 )
 
-// XmlPeek is called by FU.AnalyseFile(..)
-// when preparing an FU.AnalysisRecord .
-// ContentityBasics has chunks of Raw
-// but not the full "Raw" string.
+// XmlPeek is used by [fileutils.AnalyseFile] 
+// when preparing a [fileutils.AnalysisRecord].
+// Note that ContentityBasics has chunks of 
+// Raw but not the full "Raw" string.
 // .
 type XmlPeek struct { // has Raw
 	PreambleRaw CT.Raw // string
@@ -34,7 +35,7 @@ type XmlPeek struct { // has Raw
 // It uses the Go stdlib parser, so success in finding a root element
 // in this function all but guarantees that the string is valid XML.
 //
-// It is called by FU.AnalyzeFile
+// It is called by [fileutils.AnalyzeFile].
 // .
 func Peek_xml(content string) (*XmlPeek, error) {
 
@@ -260,100 +261,6 @@ func Peek_xml(content string) (*XmlPeek, error) {
 type LAToken struct {
         CToken
         FilePosition
-}
-
-// CToken is the lowest common denominator of tokens parsed
-// from XML mixed content and other content-oriented markup.
-// It has [stringutils.MarkupType].
-//
-// CToken:
-//   - Common Token
-//   - Content Token
-//   - Combined Token
-//   - Canonical Token
-//   - Consolidated Token
-//   - ConMuchoGusto Token :-P
-//
-// A CToken contains all that can be parsed from a token that
-// is considered in isolation, as-is, without the context of
-// surrounding markup. It should record/reflect/reproduce any
-// XML (or HTML) token faithfully, and also accommodate any
-// token from Markdown or (in the future) related markup
-// such as Docbook or Asciidoc or RST (restructured text).
-//
-// The use of an XML-like data structure as the lingua franca
-// is also meant to make XML-style automated processing simpler.
-//
-// The use of a single unified token representation is intended
-// most of all to simplify & unify tokenisation across LwDITA's
-// three supported input formats: XDITA XML, HDITA HTML5, and
-// MDITA-XP Markdown. It also serves to represent all the
-// various kinds of XML directives, including DTDs(!).
-//
-// Creation of a new CToken from an [encoding/xml.Token] is
-// by design very straightforward, but creation from other
-// types of token, such as HTML or Markdown, must be done
-// in their other packages in order to prevent circular
-// dependencies.
-//
-// For convenience & simplicity, some items in the struct
-// are simply aliases for Go's XML structs, but then these
-// must also be adaptable for Markdown. For example, when
-// Pandoc-style attributes are used.
-//
-// 2024.04 Declarations like <!DOCTYPE html> are causing a
-// lot of toruble, so they will be discussed in the code.
-//
-// CToken implements interface [stringutils.Stringser].
-// .
-type CToken struct {
-	// ==================================
-	// The original ("source code") token,
-	// and other information about it
-	// ==================================
-	// SourceToken is the original token.
-	// Keep it around "just in case".
-	// TODO: Make this an Echoer !
-	// Types:
-	//  - XML: [xml.Token] from [xml.Decoder]
-	//  - HTML: TBS
-	//  - Markdown: TBS
-	// Note that an XML Token is transitory,
-	// so every Token has to be cloned, by
-	// calling [xml.CopyToken].
-	SourceToken interface{}
-	// MarkupType of the original token; the value is
-	// one of MU_type_(XML/HTML/MKDN/BIN/SQL/DIRLIKE). 
-	// It is particularly helpful to have this info at the
-	// token level when we consider that for example, we can
-	// embed HTML tags in Markdown. Note that in the future,
-	// each value could actually be a namespace declaration.
-	SU.MarkupType
-	// FilePosition is char position, and line nr & column nr.
-	FilePosition
-
-	// TDType comprises (a) the types of [xml.Token]
-	// (they are all different struct's, actually),
-	// plus (b) the (sub)types of [xml.Directive].
-	// Note that [TD_type_ENDLM] ("EndElement") is
-	// superfluous when token depth info is available.
-	TDType
-	// CName is ONLY for elements
-	// (i.e. [TD_type_ELMNT] and [TD_type_ENDLM]).
-	CName
-	// CAtts is ONLY for [TD_type_ELMNT].
-	CAtts
-	// Text holds CDATA, and a PI's Instruction,
-	// and a DOCTYPE's root element declaration,
-	// and
-	Text string
-	// ControlStrings is tipicly XML PI & Directive stuff.
-	// When it is used, its length is 1 or 2.
-	//  - XML PI: the Target field
-	//  - XML directive: the directive subtype
-	// But this field also available for other data that
-	// is not classifiable as source text.
-	ControlStrings []string
 }
 
 func NewCTokenFromXmlToken(XT xml.Token) *CToken {

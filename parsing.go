@@ -8,12 +8,14 @@ import (
 	S "strings"
 )
 
+// ParserResults_xml is TBS.
 type ParserResults_xml struct {
-	// ParseTree ??
+	// NodeSlice is driven by the stdlib XML parser in [encoding/xml].
 	NodeSlice []CT.CToken // []xml.Token
 	CommonCPR
 }
 
+// GenerateParserResults_xml is TBS.
 func GenerateParserResults_xml(s string) (*ParserResults_xml, error) {
 	var nl []CT.CToken // []xml.Token
 	var e error
@@ -35,10 +37,12 @@ func DoParse_xml(s string) (xtokens []CT.CToken, err error) {
 	return doParse_xml_maybeRaw(s, false)
 }
 
+// DoParseRaw_xml( is TBS.
 func DoParseRaw_xml(s string) (xtokens []CT.CToken, err error) {
 	return doParse_xml_maybeRaw(s, true)
 }
 
+// doParse_xml_maybeRaw is TBS.
 func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []CT.CToken, err error) {
 	var e error
 	var TT *CT.CToken // xml.Token
@@ -53,10 +57,10 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []CT.CToken, err error)
 	for {
 		if doRaw {
 			// func (d *Decoder) RawToken() (Token, error) API:
-			// RawToken is like Token() but (1) does not
-			// verify that start and end elements match,
-			// and (2) does not translate name space
-			// prefixes to their corresponding URLs.
+			// RawToken is like func [xml.Token] but (1) does 
+			// not verify that start & end elements match, and
+			// (2) does not translate namespace prefixes to
+			// their corresponding URLs.
 			ttt, e = parser.RawToken()
 		} else {
 			// func (d *Decoder) Token() (Token, error) API:
@@ -97,6 +101,7 @@ func doParse_xml_maybeRaw(s string, doRaw bool) (xtokens []CT.CToken, err error)
 	return xtokens, nil
 }
 
+// DoParse_xml_locationAware is TBS.
 func DoParse_xml_locationAware(s string) (xtokens []CT.LAToken, err error) {
 	var e error
 	var T xml.Token
@@ -146,6 +151,9 @@ func DoParse_xml_locationAware(s string) (xtokens []CT.LAToken, err error) {
 	return xtokens, nil
 }
 
+// NewConfiguredDecoder returns a new [xml.Decoder] that has been
+// confgured with non-strict namespace parsing, HTML auto-closing
+// tags, and HTML entities. 
 func NewConfiguredDecoder(r io.Reader) *xml.Decoder {
 	var parser *xml.Decoder
 	parser = xml.NewDecoder(r)

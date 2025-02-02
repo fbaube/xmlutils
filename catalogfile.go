@@ -3,7 +3,7 @@ package xmlutils
 // This is a quite old file wth mysterious goings-on.
 
 import (
-	"encoding/xml"
+	"github.com/nbio/xml"
 	"fmt"
 	"os"
 

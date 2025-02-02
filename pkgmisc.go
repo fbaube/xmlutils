@@ -1,7 +1,7 @@
 package xmlutils
 
 import (
-	"encoding/xml"
+	"github.com/nbio/xml"
 	CT "github.com/fbaube/ctoken"
 )
 

@@ -6,7 +6,7 @@ package xmlutils
 // pPeek.RawPreamble is ""
 
 import (
-	"encoding/xml"
+	"github.com/nbio/xml"
 	"fmt"
 	S "strings"
 

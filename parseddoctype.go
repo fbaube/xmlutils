@@ -34,8 +34,9 @@ import (
 // optional but we still need to have the Doctype string in the DB as 
 // a separate column, even if it is empty (i.e. "").
 type ParsedDoctype struct {
-     	// Raw is the raw Doctype string
-	CT.Raw 
+     	// RawDT is the raw Doctype string; 
+	// renamed cos of potential conflicts.
+	RawDT CT.Raw 
 	// PIDSIDcatalogFileRecord is the PID + SID.
 	PIDSIDcatalogFileRecord
 	// DTrootElm is the tag declared in the DOCTYPE, which

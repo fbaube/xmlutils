@@ -80,7 +80,7 @@ func (pC *ContypingInfo) ParseDoctype(sRaw CT.Raw) (*ParsedDoctype, error) {
 	rawDoctype = string(sRaw)
 	// L.L.Warning("ParseDctp: raw_arg: %s", rawDoctype)
 	rawDoctype = S.TrimSpace(rawDoctype)
-	pPDT.Raw = CT.Raw(rawDoctype)
+	pPDT.RawDT = CT.Raw(rawDoctype)
 
 	// First, try to match the DOCTYPE. 
 	L.L.Debug("rawDoctype: " + rawDoctype)

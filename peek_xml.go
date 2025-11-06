@@ -221,7 +221,7 @@ func Peek_xml(content string) (*XmlPeek, error) {
 			   	pPeek.DoctypeRaw = CT.Raw("<!DOCTYPE html>")
 				L.L.Info("peek: Raw html DOCTYPE: %s",
 					pPeek.DoctypeRaw)
-				L.L.Info("peek: Got html5; TODO set bounds")
+				L.L.Info("peek: Got html5; TODO: set bounds")
 				// TODO: set beg+end bounds: for tag? more?
 				pPeek.XmlRoot.TagName = "html" 
 				didFirstPass = true

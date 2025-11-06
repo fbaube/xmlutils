@@ -4,7 +4,7 @@ package xmlutils
 
 // SEE: https://github.com/nbio/xml
 
-// TODO NS is specified, inherited, default.
+// TODO: NS is specified, inherited, default.
 
 // NS is e.g. { "xml", "http://www.w3.org/XML/1998/namespace" }
 type NS struct {

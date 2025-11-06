@@ -165,7 +165,7 @@ func NewConfiguredDecoder(r io.Reader) *xml.Decoder {
 	// When Strict == false, AutoClose is a set of elements to consider
 	// closed immediately after they are opened, regardless of whether
 	// an end element is present. For example, <br/>.
-	// TODO Add anything for LwDITA ?
+	// TODO: Add anything for LwDITA ?
 	parser.AutoClose = xml.HTMLAutoClose
 	// Entity can map non-standard entity names to string replacements.
 	// The parser is preloaded with the following standard XML mappings,

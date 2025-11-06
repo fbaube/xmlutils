@@ -23,7 +23,7 @@ func NewCommonCPR() *CommonCPR {
 	return p
 }
 
-// AsString TODO should probably be renamed to String.
+// AsString TODO: Should probably be renamed to String.
 func (p *CommonCPR) AsString(i int) string {
 	var sND, sFP = "?", "?"
 
